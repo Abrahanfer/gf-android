@@ -1,17 +1,18 @@
 package me.abrahanfer.geniusfeed;
 
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import me.abrahanfer.geniusfeed.models.FeedItemRead;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -44,29 +45,57 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void testRequest(){
+    public void testRequest() {
         // Make a request to API
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://www.google.com";
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        class RetrieveSomething extends AsyncTask<String, Void, String> {
+            // RequestQueue queue = Volley.newRequestQueue(this);
+    private Exception exception;
+
+            protected String doInBackground(String...urls) {
+                String url = "http://10.0.240.29/feed_item_reads.json";
+
+                // Request a string response from the provided URL.
+        /*JsonObjectRequest jsonRequest = new JsonObjectRequest(url,null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         TextView mTextView =(TextView) findViewById(R.id.textTest);
                         // Display the first 500 characters of the response string.
-                        mTextView.setText("Response is: "+ response.substring(0,500));
+                        mTextView.setText("Response is: "+ response.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 TextView mTextView =(TextView) findViewById(R.id.textTest);
-                mTextView.setText("That didn't work!");
+                mTextView.setText("That didn't work!" + error.networkResponse.data);
             }
         });
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        queue.add(jsonRequest);*/
+
+                // Testing Spring Framework
+                RestTemplate restTemplate = new RestTemplate();
+
+                restTemplate.getMessageConverters().
+
+                        add(new MappingJackson2HttpMessageConverter()
+
+                        );
+
+                FeedItemRead[] feedItemReads = restTemplate.getForObject(url, FeedItemRead[].class);
+                for (
+                        FeedItemRead item
+                        : feedItemReads)
+
+                {
+                    System.out.println(item.getFeedItem());
+                }
+                return new String();
+            }
+        };
+
+        new RetrieveSomething().execute("mierda");
     }
 }
