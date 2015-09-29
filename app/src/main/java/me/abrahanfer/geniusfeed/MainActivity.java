@@ -5,13 +5,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.webkit.HttpAuthHandler;
 
 
-import org.json.JSONObject;
+import org.springframework.http.HttpAuthentication;
+import org.springframework.http.HttpBasicAuthentication;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 
 public class MainActivity extends ActionBarActivity {
@@ -51,13 +56,13 @@ public class MainActivity extends ActionBarActivity {
 
         class RetrieveSomething extends AsyncTask<String, Void, String> {
             // RequestQueue queue = Volley.newRequestQueue(this);
-    private Exception exception;
+            private Exception exception;
 
             protected String doInBackground(String...urls) {
-                String url = "http://10.0.240.29/feed_item_reads.json";
+                String url = "http://192.168.1.55/feed_item_reads.json";
 
                 // Request a string response from the provided URL.
-        /*JsonObjectRequest jsonRequest = new JsonObjectRequest(url,null,
+                /*JsonObjectRequest jsonRequest = new JsonObjectRequest(url,null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -74,7 +79,11 @@ public class MainActivity extends ActionBarActivity {
         });
         // Add the request to the RequestQueue.
         queue.add(jsonRequest);*/
-
+                // Adding header for Basic HTTP Authentication
+                HttpAuthentication authHeader = new HttpBasicAuthentication("test-user-1", "test1");
+                HttpHeaders requestHeaders = new HttpHeaders();
+                requestHeaders.setAuthorization(authHeader);
+                HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
                 // Testing Spring Framework
                 RestTemplate restTemplate = new RestTemplate();
 
@@ -84,14 +93,14 @@ public class MainActivity extends ActionBarActivity {
 
                         );
 
-                FeedItemRead[] feedItemReads = restTemplate.getForObject(url, FeedItemRead[].class);
-                for (
-                        FeedItemRead item
-                        : feedItemReads)
+                HttpEntity<FeedItemReadDRResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, FeedItemReadDRResponse.class);
 
-                {
-                    System.out.println(item.getFeedItem());
-                }
+                FeedItemReadDRResponse result = response.getBody();
+                System.out.println("Array size: " + result.getResults().length);
+                FeedItemReadDRResponse djangoRestResponse = restTemplate.getForObject(url, FeedItemReadDRResponse.class);
+                    System.out.println(djangoRestResponse.getCount());
+                FeedItemRead[] feedItemReads = djangoRestResponse.getResults();
+                System.out.println("Array size: " + feedItemReads.length);
                 return new String();
             }
         };
