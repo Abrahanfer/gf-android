@@ -114,15 +114,22 @@ public class MainActivity extends ActionBarActivity {
             }
 
             protected void onPostExecute(FeedItemRead[] feedItemReads){
+                String[] titles = new String[feedItemReads.length];
+                for(int i = 0; i < feedItemReads.length; ++i)
+                    titles[i] = feedItemReads[i].getFeed_item().getTitle();
+
                 ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
-                ArrayAdapter<FeedItemRead> feedItemReadArrayAdapter = new
-                        ArrayAdapter<FeedItemRead>(self,)
+                ArrayAdapter<String> feedItemReadArrayAdapter = new
+                        ArrayAdapter<String>(getApplicationContext(),
+                        R.layout.feed_item,
+                        titles);
+
+                listFeeds.setAdapter(feedItemReadArrayAdapter);
             }
         };
 
         String ip = "10.0.240.29";
         String url = "http://" + ip + "/feed_item_reads/unread.json";
-
 
         new RetrieveFeedItemUnreads().execute(url);
 
