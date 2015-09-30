@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.HttpAuthHandler;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -22,8 +23,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -31,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupListFeedItems();
         testRequest();
     }
 
@@ -114,15 +121,16 @@ public class MainActivity extends ActionBarActivity {
             }
 
             protected void onPostExecute(FeedItemRead[] feedItemReads){
+                ArrayList<FeedItemRead> feedArrayList = new
+                        ArrayList<FeedItemRead>(Arrays.asList(feedItemReads));
                 String[] titles = new String[feedItemReads.length];
                 for(int i = 0; i < feedItemReads.length; ++i)
                     titles[i] = feedItemReads[i].getFeed_item().getTitle();
 
                 ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
-                ArrayAdapter<String> feedItemReadArrayAdapter = new
-                        ArrayAdapter<String>(getApplicationContext(),
-                        R.layout.feed_item,
-                        titles);
+                FeedItemArrayAdapter feedItemReadArrayAdapter = new
+                        FeedItemArrayAdapter(getApplicationContext(),
+                        feedArrayList);
 
                 listFeeds.setAdapter(feedItemReadArrayAdapter);
             }
@@ -132,8 +140,19 @@ public class MainActivity extends ActionBarActivity {
         String url = "http://" + ip + "/feed_item_reads/unread.json";
 
         new RetrieveFeedItemUnreads().execute(url);
+    }
 
+    public void setupListFeedItems(){
+        ListView listFeedItems =(ListView) findViewById(R.id.listFeeds);
 
-
+        listFeedItems.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        System.out.println("Fed Item clock" + position);
+                    }
+                }
+        );
     }
 }
