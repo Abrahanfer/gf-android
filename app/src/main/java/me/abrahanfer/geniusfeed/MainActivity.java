@@ -1,11 +1,17 @@
 package me.abrahanfer.geniusfeed;
 
+import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.HttpAuthHandler;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 
 import org.springframework.http.HttpAuthentication;
@@ -54,12 +60,14 @@ public class MainActivity extends ActionBarActivity {
         // Make a request to API
         // Instantiate the RequestQueue.
 
-        class RetrieveSomething extends AsyncTask<String, Void, String> {
+        class RetrieveFeedItemUnreads extends AsyncTask<String, Void,
+                FeedItemRead[]> {
             // RequestQueue queue = Volley.newRequestQueue(this);
             private Exception exception;
 
-            protected String doInBackground(String...urls) {
-                String url = "http://192.168.1.55/feed_item_reads.json";
+            @Override
+            protected FeedItemRead[] doInBackground(String...urls) {
+
 
                 // Request a string response from the provided URL.
                 /*JsonObjectRequest jsonRequest = new JsonObjectRequest(url,null,
@@ -80,7 +88,8 @@ public class MainActivity extends ActionBarActivity {
         // Add the request to the RequestQueue.
         queue.add(jsonRequest);*/
                 // Adding header for Basic HTTP Authentication
-                HttpAuthentication authHeader = new HttpBasicAuthentication("test-user-1", "test1");
+                HttpAuthentication authHeader = new HttpBasicAuthentication
+                        ("test-user-1", "test1");
                 HttpHeaders requestHeaders = new HttpHeaders();
                 requestHeaders.setAuthorization(authHeader);
                 HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
@@ -93,18 +102,31 @@ public class MainActivity extends ActionBarActivity {
 
                         );
 
-                HttpEntity<FeedItemReadDRResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, FeedItemReadDRResponse.class);
+                HttpEntity<FeedItemReadDRResponse> response = restTemplate
+                        .exchange(urls[0], HttpMethod.GET, requestEntity,
+                                FeedItemReadDRResponse.class);
 
                 FeedItemReadDRResponse result = response.getBody();
-                System.out.println("Array size: " + result.getResults().length);
-                FeedItemReadDRResponse djangoRestResponse = restTemplate.getForObject(url, FeedItemReadDRResponse.class);
-                    System.out.println(djangoRestResponse.getCount());
-                FeedItemRead[] feedItemReads = djangoRestResponse.getResults();
+                FeedItemRead[] feedItemReads = result.getResults();
                 System.out.println("Array size: " + feedItemReads.length);
-                return new String();
+
+                return feedItemReads;
+            }
+
+            protected void onPostExecute(FeedItemRead[] feedItemReads){
+                ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
+                ArrayAdapter<FeedItemRead> feedItemReadArrayAdapter = new
+                        ArrayAdapter<FeedItemRead>(self,)
             }
         };
 
-        new RetrieveSomething().execute("mierda");
+        String ip = "10.0.240.29";
+        String url = "http://" + ip + "/feed_item_reads/unread.json";
+
+
+        new RetrieveFeedItemUnreads().execute(url);
+
+
+
     }
 }
