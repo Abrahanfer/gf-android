@@ -1,5 +1,6 @@
 package me.abrahanfer.geniusfeed;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -32,6 +33,10 @@ import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
 
 public class MainActivity extends ActionBarActivity {
+    public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
+            ".FEED_ITEM_READ";
+    public final static String DOMAIN = "10.0.240.29";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +128,6 @@ public class MainActivity extends ActionBarActivity {
             protected void onPostExecute(FeedItemRead[] feedItemReads){
                 ArrayList<FeedItemRead> feedArrayList = new
                         ArrayList<FeedItemRead>(Arrays.asList(feedItemReads));
-                String[] titles = new String[feedItemReads.length];
-                for(int i = 0; i < feedItemReads.length; ++i)
-                    titles[i] = feedItemReads[i].getFeed_item().getTitle();
 
                 ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
                 FeedItemArrayAdapter feedItemReadArrayAdapter = new
@@ -136,21 +138,31 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        String ip = "10.0.240.29";
-        String url = "http://" + ip + "/feed_item_reads/unread.json";
+
+        String url = "http://" + DOMAIN + "/feed_item_reads/unread.json";
 
         new RetrieveFeedItemUnreads().execute(url);
     }
 
     public void setupListFeedItems(){
-        ListView listFeedItems =(ListView) findViewById(R.id.listFeeds);
+        final ListView listFeedItems =(ListView) findViewById(R.id.listFeeds);
 
         listFeedItems.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        System.out.println("Fed Item clock" + position);
+                        System.out.println("Fed Item click" + position);
+                        Intent intent = new Intent(getApplicationContext(),FeedItemActivity
+                                .class);
+                        FeedItemRead feedItemRead =(FeedItemRead) listFeedItems
+                                .getAdapter()
+                                .getItem
+                                (position);
+                        intent.putExtra(FEED_ITEM_READ, feedItemRead
+                                .getPk());
+
+                        startActivity(intent);
                     }
                 }
         );
