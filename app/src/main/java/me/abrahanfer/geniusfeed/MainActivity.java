@@ -80,25 +80,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected FeedItemRead[] doInBackground(String...urls) {
 
-
-                // Request a string response from the provided URL.
-                /*JsonObjectRequest jsonRequest = new JsonObjectRequest(url,null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        TextView mTextView =(TextView) findViewById(R.id.textTest);
-                        // Display the first 500 characters of the response string.
-                        mTextView.setText("Response is: "+ response.toString());
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                TextView mTextView =(TextView) findViewById(R.id.textTest);
-                mTextView.setText("That didn't work!" + error.networkResponse.data);
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(jsonRequest);*/
+                
                 // Adding header for Basic HTTP Authentication
                 HttpAuthentication authHeader = new HttpBasicAuthentication
                         ("test-user-1", "test1");
