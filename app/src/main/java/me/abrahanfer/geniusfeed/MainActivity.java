@@ -30,6 +30,7 @@ import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
+import me.abrahanfer.geniusfeed.utils.Authentication;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -75,7 +76,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected FeedItemRead[] doInBackground(String...urls) {
 
-                
+                if(Authentication.getCredentials() == null){
+                    
+                }
                 // Adding header for Basic HTTP Authentication
                 HttpAuthentication authHeader = new HttpBasicAuthentication
                         ("test-user-1", "test1");
@@ -118,7 +121,8 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        String ip = "10.0.240.29";
+        //String ip = "10.0.240.29";
+        String ip = "192.168.1.55";
         String url = "http://" + ip + "/feed_item_reads/unread.json";
 
         new RetrieveFeedItemUnreads().execute(url);
@@ -132,7 +136,7 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        System.out.println("Fed Item clock" + position);
+                        System.out.println("Fed Item click" + position);
                     }
                 }
         );
