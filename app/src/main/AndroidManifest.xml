@@ -19,6 +19,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login" >
+        </activity>
+        <activity
             android:name=".FeedItemActivity"
             android:label="@string/title_activity_feed_item" >
         </activity>

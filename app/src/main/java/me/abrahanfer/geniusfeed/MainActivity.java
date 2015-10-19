@@ -31,6 +31,7 @@ import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
+import me.abrahanfer.geniusfeed.utils.Authentication;
 
 public class MainActivity extends ActionBarActivity {
     public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
@@ -80,7 +81,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected FeedItemRead[] doInBackground(String...urls) {
 
-                
+                if(Authentication.getCredentials() == null){
+
+                }
                 // Adding header for Basic HTTP Authentication
                 HttpAuthentication authHeader = new HttpBasicAuthentication
                         ("test-user-1", "test1");
