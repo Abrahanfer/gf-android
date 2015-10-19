@@ -1,7 +1,9 @@
 package me.abrahanfer.geniusfeed;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.Authentication;
+import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 
 public class MainActivity extends ActionBarActivity {
     public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
@@ -89,8 +92,72 @@ public class MainActivity extends ActionBarActivity {
                     Intent intent = new Intent(getApplicationContext(),LoginActivity
                             .class);
 
-                    startActivity(intent);
-                    return null;
+                    final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
+                            new GeniusFeedContract.GeniusFeedDbHelper
+                                    (getApplicationContext());
+
+                    class GetCredentialsFromDB extends AsyncTask<Void, Void,
+                            SQLiteDatabase> {
+
+                        private Exception exception;
+
+                        @Override
+                        protected SQLiteDatabase doInBackground(Void... params) {
+
+
+                            return mDbHelper.getReadableDatabase();
+                        }
+
+                        @Override
+                        protected void onPostExecute(
+                                SQLiteDatabase database){
+
+                            String[] projection = {
+                                    GeniusFeedContract.User._ID,
+                                    GeniusFeedContract.User.COLUMN_NAME_USERNAME,
+                                    GeniusFeedContract.User.COLUMN_NAME_PASSWORD
+                            };
+
+                            // How you want the results sorted in the resulting Cursor
+                            String sortOrder =
+                                    GeniusFeedContract.User
+                                            ._ID + " ASCE";
+
+                            Cursor c = database.query(
+                                    GeniusFeedContract.User.TABLE_NAME,  // The
+                                    // table to query
+                                    projection,                               // The columns to return
+                                    null,
+                                    null,
+                                    null,                                     // don't group the rows
+                                    null,                                     // don't filter by row groups
+                                    sortOrder                                 // The sort order
+                            );
+
+                            // If DB is empty launch login view
+                            // Else go on
+                            c.moveToFirst();
+                            String username = c.getString(c
+                                    .getColumnIndexOrThrow(GeniusFeedContract
+                                            .User.COLUMN_NAME_USERNAME));
+                            String password = c.getString(c
+                                    .getColumnIndexOrThrow(GeniusFeedContract
+                                            .User.COLUMN_NAME_PASSWORD));
+
+                            Authentication authentication = new
+                                    Authentication(username, password);
+                            Authentication.setCredentials(authentication);
+
+                            testRequest();
+                        }
+                    }
+
+                    new GetCredentialsFromDB().execute();
+
+                    }
+
+                //startActivity(intent);
+                //  return null;
                 }
                 System.out.println("Que bastinazo NO!!???");
                 String username = authentication.getUsername();
