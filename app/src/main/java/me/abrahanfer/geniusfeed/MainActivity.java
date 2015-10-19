@@ -36,7 +36,10 @@ import me.abrahanfer.geniusfeed.utils.Authentication;
 public class MainActivity extends ActionBarActivity {
     public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
             ".FEED_ITEM_READ";
-    public final static String DOMAIN = "10.0.240.29";
+    public final static String LOGIN_CREDENTIALS = "me.abrahanfer.geniusfeed" +
+            ".LOGIN_CREDENTIALS";
+   // public final static String DOMAIN = "10.0.240.29";
+   public final static String DOMAIN = "192.168.1.55";
 
 
     @Override
@@ -81,12 +84,20 @@ public class MainActivity extends ActionBarActivity {
             @Override
             protected FeedItemRead[] doInBackground(String...urls) {
 
-                if(Authentication.getCredentials() == null){
+                Authentication authentication = Authentication.getCredentials();
+                if(authentication == null){
+                    Intent intent = new Intent(getApplicationContext(),LoginActivity
+                            .class);
 
+                    startActivity(intent);
+                    return null;
                 }
+                System.out.println("Que bastinazo NO!!???");
+                String username = authentication.getUsername();
+                String password = authentication.getPassword();
                 // Adding header for Basic HTTP Authentication
                 HttpAuthentication authHeader = new HttpBasicAuthentication
-                        ("test-user-1", "test1");
+                        (username, password);
                 HttpHeaders requestHeaders = new HttpHeaders();
                 requestHeaders.setAuthorization(authHeader);
                 HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);

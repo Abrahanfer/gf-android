@@ -1,9 +1,13 @@
 package me.abrahanfer.geniusfeed;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import me.abrahanfer.geniusfeed.utils.Authentication;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -33,5 +37,13 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setCredentials(View view){
+        Authentication authentication = new Authentication("test-user-1","test1");
+        Authentication.setCredentials(authentication);
+
+        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        startActivity(intent);
     }
 }
