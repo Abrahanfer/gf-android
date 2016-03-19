@@ -7,9 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.einmalfel.earl.AtomEntry;
+import com.einmalfel.earl.AtomFeed;
 import com.einmalfel.earl.EarlParser;
+import com.einmalfel.earl.RSSFeed;
+import com.einmalfel.earl.RSSItem;
 
 import org.springframework.http.HttpAuthentication;
 import org.springframework.http.HttpBasicAuthentication;
@@ -26,18 +31,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItem;
+import me.abrahanfer.geniusfeed.models.FeedItemAtom;
+import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.utils.FeedItemsArrayAdapter;
 
 /**
  * Created by abrahan on 19/03/16.
  */
 public class FeedActivity extends AppCompatActivity {
-    final String EARL_TAG = "EarlFeedUtil";
-
+    final static public String EARL_TAG = "EarlFeedUtil";
+    private com.einmalfel.earl.Feed mFeed;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,11 +92,11 @@ public class FeedActivity extends AppCompatActivity {
 
     public void getFeedItemsFromFeed(final URL feedLink){
         class RetrieveFeedItems extends AsyncTask<URL, Void,
-                FeedItem[]> {
+                ArrayList<FeedItem> > {
             private Exception exception;
 
             @Override
-            protected FeedItem[] doInBackground(URL... url) {
+            protected ArrayList<FeedItem> doInBackground(URL... url) {
                 InputStream inputStream = null;
                 com.einmalfel.earl.Feed feed = null;
                 Log.i(EARL_TAG, "Mirando link" + url);
@@ -95,7 +104,7 @@ public class FeedActivity extends AppCompatActivity {
                     inputStream = feedLink.openConnection().getInputStream();
                 }catch (IOException exception) {
                     Log.d(EARL_TAG, "Exception IO");
-                    return new FeedItem[0];
+                    return new ArrayList<FeedItem>();
                 }
                 try {
                     feed = EarlParser.parseOrThrow(inputStream, 0);
@@ -108,22 +117,43 @@ public class FeedActivity extends AppCompatActivity {
                 }
 
                 Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
-                for (com.einmalfel.earl.Item item : feed.getItems()) {
-                    String title = item.getTitle();
-                    Log.i(EARL_TAG, "Item title: " + (title == null ? "N/A" : title));
+                mFeed = feed;
+                ArrayList<FeedItem> feedItems = new ArrayList<>();
+                if (RSSFeed.class.isInstance(feed)) {
+                    RSSFeed rssFeed = (RSSFeed) feed;
+                    for (RSSItem rssItem : rssFeed.items) {
+                        String title = rssItem.getTitle();
+                        Log.i(EARL_TAG, "RSS title: " + (title == null ? "N/A" : title));
+                        feedItems.add(new FeedItemRSS(rssItem));
+                    }
+                }else {
+                    if (AtomFeed.class.isInstance(feed)){
+                        AtomFeed atomFeed = (AtomFeed) feed;
+                        for (AtomEntry atomEntry: atomFeed.entries) {
+                            String title = atomEntry.getTitle();
+                            Log.i(EARL_TAG, "Atom title: " + (title == null ? "N/A" : title));
+                            feedItems.add(new FeedItemAtom(atomEntry));
+                        }
+                    }
                 }
 
-                FeedItem[] feedItems = new FeedItem[0];
                 System.out.println("GOOD REQUEST!!!");
 
                 return feedItems;
             }
 
-            protected void onPostExecute(FeedItem[] feedItems){
-                //TextView textView =(TextView) findViewById(R.id.feedItemTextView);
+            protected void onPostExecute(ArrayList<FeedItem> feedItems){
+                TextView textView =(TextView) findViewById(R.id.feedTextView);
+                if (mFeed != null) {
+                    textView.setText(mFeed.getTitle());
+                }
 
-                //textView.setText(feedItemRead.getFeed_item().getTitle());
+                ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
+                FeedItemsArrayAdapter feedItemsArrayAdapter = new
+                        FeedItemsArrayAdapter(getApplicationContext(),
+                                         feedItems);
 
+                listFeedItems.setAdapter(feedItemsArrayAdapter);
                 System.out.println("Terminamos de obtener los feeds");
             }
         };

@@ -1,11 +1,27 @@
 package me.abrahanfer.geniusfeed.models;
 
+import android.util.Log;
+
+import com.einmalfel.earl.Item;
+
+import java.net.MalformedURLException;
 import java.net.URL;
+
+import me.abrahanfer.geniusfeed.FeedActivity;
 
 /**
  * Created by abrahan on 29/09/15.
  */
 public class FeedItem {
+
+    public FeedItem(Item item) {
+        pk = item.getPublicationDate().toString();
+        title = item.getTitle();
+        link = item.getLink();
+
+        Log.d(FeedActivity.EARL_TAG, "Mirando las enclosures" + item.getEnclosures());
+    }
+
     public String getPk() {
         return pk;
     }
@@ -22,11 +38,11 @@ public class FeedItem {
         this.title = title;
     }
 
-    public URL getLink() {
+    public String getLink() {
         return link;
     }
 
-    public void setLink(URL link) {
+    public void setLink(String link) {
         this.link = link;
     }
 
@@ -40,6 +56,6 @@ public class FeedItem {
 
     private String pk;
     private String title;
-    private URL link;
+    private String link;
     private Feed feed;
 }
