@@ -1,19 +1,16 @@
-package me.abrahanfer.geniusfeed.models;
+package me.abrahanfer.geniusfeed.models.DRResponseModels;
 
 import java.net.URL;
 
 /**
- * Created by abrahan on 29/09/15.
+ * Created by abrahan on 19/03/16.
  */
-public class FeedItemReadDRResponse {
-
+public class DRResponse {
     private Long count;
 
     private URL next;
 
     private URL previous;
-
-    private FeedItemRead[] results;
 
     public Long getCount() {
         return count;
@@ -37,13 +34,5 @@ public class FeedItemReadDRResponse {
 
     public void setPrevious(URL previous) {
         this.previous = previous;
-    }
-
-    public FeedItemRead[] getResults() {
-        return results;
-    }
-
-    public void setResults(FeedItemRead[] results) {
-        this.results = results;
     }
 }

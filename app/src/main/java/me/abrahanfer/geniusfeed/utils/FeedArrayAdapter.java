@@ -12,20 +12,21 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 import me.abrahanfer.geniusfeed.R;
+import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 
 /**
  * Created by abrahanfer on 30/09/15.
  */
-public class FeedItemArrayAdapter extends ArrayAdapter<FeedItemRead> {
-    public FeedItemArrayAdapter(Context context ,ArrayList<FeedItemRead>
-            feedItemReads){
-        super(context, 0, feedItemReads);
+public class FeedArrayAdapter extends ArrayAdapter<Feed> {
+    public FeedArrayAdapter(Context context ,ArrayList<Feed>
+            feeds){
+        super(context, 0, feeds);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
-        FeedItemRead feedItemRead = getItem(position);
+        Feed feed = getItem(position);
 
         if (convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout
@@ -37,8 +38,8 @@ public class FeedItemArrayAdapter extends ArrayAdapter<FeedItemRead> {
         TextView linkText =(TextView) convertView.findViewById(R.id
                 .textFeedItemLink);
 
-        titleText.setText(feedItemRead.getFeed_item().getTitle());
-        linkText.setText(feedItemRead.getFeed_item().getLink().toString());
+        titleText.setText(feed.getTitle());
+        linkText.setText(feed.getLink().toString());
 
         return convertView;
     }

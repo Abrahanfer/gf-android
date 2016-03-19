@@ -1,20 +1,13 @@
 package me.abrahanfer.geniusfeed;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.DataSetObserver;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.HttpAuthHandler;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
@@ -24,21 +17,22 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
+import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
-import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
-import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
+import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.Authentication;
-import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 
 public class MainActivity extends ActionBarActivity {
-    public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
-            ".FEED_ITEM_READ";
+    public final static String FEED = "me.abrahanfer.geniusfeed" +
+            ".FEED";
     public final static String LOGIN_CREDENTIALS = "me.abrahanfer.geniusfeed" +
             ".LOGIN_CREDENTIALS";
    // public final static String DOMAIN = "10.0.240.29";
@@ -49,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupListFeedItems();
+        setupListFeeds();
         testRequest();
     }
 
@@ -79,151 +73,91 @@ public class MainActivity extends ActionBarActivity {
         // Make a request to API
         // Instantiate the RequestQueue.
 
-        class RetrieveFeedItemUnreads extends AsyncTask<String, Void,
-                FeedItemRead[]> {
-            // RequestQueue queue = Volley.newRequestQueue(this);
+        class RetrieveFeeds extends AsyncTask<String, Void,
+                Feed[]> {
             private Exception exception;
 
             @Override
-            protected FeedItemRead[] doInBackground(String...urls) {
+            protected Feed[] doInBackground(String...urls) {
 
                 Authentication authentication = Authentication.getCredentials();
-                if(authentication == null){
-                    Intent intent = new Intent(getApplicationContext(),LoginActivity
+                if(authentication == null) {
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity
                             .class);
 
-                    final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
-                            new GeniusFeedContract.GeniusFeedDbHelper
-                                    (getApplicationContext());
 
-                    class GetCredentialsFromDB extends AsyncTask<Void, Void,
-                            SQLiteDatabase> {
-
-                        private Exception exception;
-
-                        @Override
-                        protected SQLiteDatabase doInBackground(Void... params) {
+                    startActivity(intent);
+                    return new Feed[0];
+                }else {
+                    String username = authentication.getUsername();
+                    String password = authentication.getPassword();
 
 
-                            return mDbHelper.getReadableDatabase();
-                        }
+                    // Adding header for Basic HTTP Authentication
+                    HttpAuthentication authHeader = new HttpBasicAuthentication(username, password);
+                    HttpHeaders requestHeaders = new HttpHeaders();
+                    requestHeaders.setAuthorization(authHeader);
+                    HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
 
-                        @Override
-                        protected void onPostExecute(
-                                SQLiteDatabase database){
+                    RestTemplate restTemplate = new RestTemplate();
 
-                            String[] projection = {
-                                    GeniusFeedContract.User._ID,
-                                    GeniusFeedContract.User.COLUMN_NAME_USERNAME,
-                                    GeniusFeedContract.User.COLUMN_NAME_PASSWORD
-                            };
+                    restTemplate.getMessageConverters()
+                            .add(new MappingJackson2HttpMessageConverter());
+                    try {
+                        HttpEntity<FeedDRResponse> response = restTemplate
+                                .exchange(urls[0], HttpMethod.GET, requestEntity,
+                                        FeedDRResponse.class);
 
-                            // How you want the results sorted in the resulting Cursor
-                            String sortOrder =
-                                    GeniusFeedContract.User
-                                            ._ID + " ASCE";
+                        FeedDRResponse result = response.getBody();
+                        Feed[] feeds = result.getResults();
+                        System.out.println("Array size: " + feeds.length);
 
-                            Cursor c = database.query(
-                                    GeniusFeedContract.User.TABLE_NAME,  // The
-                                    // table to query
-                                    projection,                               // The columns to return
-                                    null,
-                                    null,
-                                    null,                                     // don't group the rows
-                                    null,                                     // don't filter by row groups
-                                    sortOrder                                 // The sort order
-                            );
-
-                            // If DB is empty launch login view
-                            // Else go on
-                            c.moveToFirst();
-                            String username = c.getString(c
-                                    .getColumnIndexOrThrow(GeniusFeedContract
-                                            .User.COLUMN_NAME_USERNAME));
-                            String password = c.getString(c
-                                    .getColumnIndexOrThrow(GeniusFeedContract
-                                            .User.COLUMN_NAME_PASSWORD));
-
-                            Authentication authentication = new
-                                    Authentication(username, password);
-                            Authentication.setCredentials(authentication);
-
-                            testRequest();
-                        }
+                        return feeds;
+                    } catch (RestClientException springException) {
+                        System.out.println("Mirando la excepcion de Spring");
+                        System.out.println(springException);
+                        return new Feed[0];
                     }
-
-                    new GetCredentialsFromDB().execute();
-
-                    }
-
-                //startActivity(intent);
-                //  return null;
                 }
-                System.out.println("Que bastinazo NO!!???");
-                String username = authentication.getUsername();
-                String password = authentication.getPassword();
-                // Adding header for Basic HTTP Authentication
-                HttpAuthentication authHeader = new HttpBasicAuthentication
-                        (username, password);
-                HttpHeaders requestHeaders = new HttpHeaders();
-                requestHeaders.setAuthorization(authHeader);
-                HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-                // Testing Spring Framework
-                RestTemplate restTemplate = new RestTemplate();
-
-                restTemplate.getMessageConverters().
-
-                        add(new MappingJackson2HttpMessageConverter()
-
-                        );
-
-                HttpEntity<FeedItemReadDRResponse> response = restTemplate
-                        .exchange(urls[0], HttpMethod.GET, requestEntity,
-                                FeedItemReadDRResponse.class);
-
-                FeedItemReadDRResponse result = response.getBody();
-                FeedItemRead[] feedItemReads = result.getResults();
-                System.out.println("Array size: " + feedItemReads.length);
-
-                return feedItemReads;
             }
 
-            protected void onPostExecute(FeedItemRead[] feedItemReads){
-                ArrayList<FeedItemRead> feedArrayList = new
-                        ArrayList<FeedItemRead>(Arrays.asList(feedItemReads));
+            protected void onPostExecute(Feed[] feeds){
+                System.out.println("Mirando en onPostExecute 2" + feeds + "Tantos feed");
+                ArrayList<Feed> feedArrayList = new
+                        ArrayList<>(Arrays.asList(feeds));
 
                 ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
-                FeedItemArrayAdapter feedItemReadArrayAdapter = new
-                        FeedItemArrayAdapter(getApplicationContext(),
+                FeedArrayAdapter feedArrayAdapter = new
+                        FeedArrayAdapter(getApplicationContext(),
                         feedArrayList);
 
-                listFeeds.setAdapter(feedItemReadArrayAdapter);
+                listFeeds.setAdapter(feedArrayAdapter);
             }
-        };
+        }
 
 
-        String url = "http://" + DOMAIN + "/feed_item_reads/unread.json";
+        String url = "http://" + DOMAIN + "/feeds";
 
-        new RetrieveFeedItemUnreads().execute(url);
+        new RetrieveFeeds().execute(url);
     }
 
-    public void setupListFeedItems(){
-        final ListView listFeedItems =(ListView) findViewById(R.id.listFeeds);
+    public void setupListFeeds(){
+        final ListView listFeeds =(ListView) findViewById(R.id.listFeeds);
 
-        listFeedItems.setOnItemClickListener(
+        listFeeds.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        System.out.println("Fed Item click" + position);
-                        Intent intent = new Intent(getApplicationContext(),FeedItemActivity
+                        System.out.println("Feed click" + position);
+                        Intent intent = new Intent(getApplicationContext(),FeedActivity
                                 .class);
-                        FeedItemRead feedItemRead =(FeedItemRead) listFeedItems
+                        Feed feed =(Feed) listFeeds
                                 .getAdapter()
                                 .getItem
                                 (position);
-                        intent.putExtra(FEED_ITEM_READ, feedItemRead
-                                .getPk());
+                        intent.putExtra(FEED, feed
+                                .getLink().toString());
 
                         startActivity(intent);
                     }

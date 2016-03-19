@@ -1,13 +1,10 @@
 package me.abrahanfer.geniusfeed;
 
-import android.app.Notification;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.springframework.http.HttpAuthentication;
@@ -20,13 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
-import me.abrahanfer.geniusfeed.models.FeedItemReadDRResponse;
-import me.abrahanfer.geniusfeed.utils.FeedItemArrayAdapter;
 
 public class FeedItemActivity extends AppCompatActivity {
 
@@ -36,7 +27,7 @@ public class FeedItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feed_item);
 
         String pkFeedItemRead = getIntent()
-                .getStringExtra(MainActivity.FEED_ITEM_READ);
+                .getStringExtra(MainActivity.FEED);
 
         TextView textView = (TextView) findViewById(R.id.feedItemTextView);
 
