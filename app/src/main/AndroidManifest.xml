@@ -29,7 +29,8 @@
         </activity>
         <activity
             android:name=".FeedItemActivity"
-            android:label="@string/title_activity_feed_item" >
+            android:label="@string/title_activity_feed_item"
+            android:parentActivityName=".FeedActivity" >
         </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

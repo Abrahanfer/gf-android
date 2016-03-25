@@ -3,8 +3,12 @@ package me.abrahanfer.geniusfeed;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import org.springframework.http.HttpAuthentication;
@@ -17,25 +21,41 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import me.abrahanfer.geniusfeed.models.FeedItemAtom;
+import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 
 public class FeedItemActivity extends AppCompatActivity {
 
+    private String feedItemType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("MIERDAS", "aqui no esta llegando");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_item);
+        feedItemType = getIntent()
+                .getStringExtra(FeedActivity.FEED_ITEM_TYPE);
+        WebView webView = (WebView) findViewById(R.id.feedItemWebView);
+        webView.setWebViewClient(new WebViewClient());
+        if(feedItemType.equalsIgnoreCase("Atom")){
+            FeedItemAtom feedItemAtom = getIntent()
+                    .getParcelableExtra(FeedActivity.FEED_ITEM);
+            webView.loadData(feedItemAtom.getValue(), "text/html", "UTF-8");
+            /*if(feedItemAtom.getType().equalsIgnoreCase("html")) {
+                Log.e("VALORES ATOM",
+                      "Comprobando cosas" + feedItemAtom.getValue());
+                TextView textView = (TextView) findViewById(R.id.feedItemTextView);
+                textView.setText(Html.fromHtml(feedItemAtom.getValue()));
+            }*/
+        }else{
+            if(feedItemType.equalsIgnoreCase("RSS")){
+                FeedItemRSS feedItemRSS = getIntent()
+                        .getParcelableExtra(FeedActivity.FEED_ITEM);
 
-        String pkFeedItemRead = getIntent()
-                .getStringExtra(MainActivity.FEED);
-
-        TextView textView = (TextView) findViewById(R.id.feedItemTextView);
-
-        textView.setText("");
-
-        getFeedItemRead(pkFeedItemRead);
-        markFeedItemAsRead(pkFeedItemRead);
-
+                webView.loadUrl(feedItemRSS.getRssFeedItemURL());
+            }
+        }
 
     }
 
@@ -91,7 +111,7 @@ public class FeedItemActivity extends AppCompatActivity {
 
 
 
-                    FeedItemRead feedItemRead =  response.getBody();;
+                    FeedItemRead feedItemRead =  response.getBody();
 
                     System.out.println("GOOD REQUEST!!!");
 
@@ -99,12 +119,9 @@ public class FeedItemActivity extends AppCompatActivity {
                 }
 
                 protected void onPostExecute(FeedItemRead feedItemRead){
-                    TextView textView =(TextView) findViewById(R.id.feedItemTextView);
 
-                    textView.setText(feedItemRead.getFeed_item().getTitle());
                 }
-            };
-
+            }
 
             String url = "http://" + MainActivity.DOMAIN + "/feed_item_reads/" +
                     pkFeedItem +

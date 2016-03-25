@@ -1,5 +1,6 @@
 package me.abrahanfer.geniusfeed;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -7,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -45,14 +48,20 @@ import me.abrahanfer.geniusfeed.utils.FeedItemsArrayAdapter;
  * Created by abrahan on 19/03/16.
  */
 public class FeedActivity extends AppCompatActivity {
+    public final static String FEED_ITEM = "me.abrahanfer.geniusfeed" +
+            ".FEED_ITEM";
+    public final static String FEED_ITEM_TYPE = "me.abrahanfer.geniusfeed" +
+            ".FeedItemType";
     final static public String EARL_TAG = "EarlFeedUtil";
+    final static public String FEED_ACTIVITY_TAG = "EarlFeedUtil";
     private com.einmalfel.earl.Feed mFeed;
+    private URL feedLink;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
-        URL feedLink = null;
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(MainActivity.FEED));
@@ -66,6 +75,7 @@ public class FeedActivity extends AppCompatActivity {
         textView.setText("");
 
         getFeedItemsFromFeed(feedLink);
+
     }
 
     @Override
@@ -137,8 +147,6 @@ public class FeedActivity extends AppCompatActivity {
                     }
                 }
 
-                System.out.println("GOOD REQUEST!!!");
-
                 return feedItems;
             }
 
@@ -154,15 +162,36 @@ public class FeedActivity extends AppCompatActivity {
                                          feedItems);
 
                 listFeedItems.setAdapter(feedItemsArrayAdapter);
-                System.out.println("Terminamos de obtener los feeds");
+                Log.d(FEED_ACTIVITY_TAG, "Terminamos de obtener los feeds");
+                setupListFeeds();
             }
-        };
-
-
-        /*String url = "http://" + MainActivity.DOMAIN + "/feed_item_reads/" +
-                pkFeed +
-                ".json";*/
+        }
 
         new RetrieveFeedItems().execute(feedLink);
+    }
+
+    public void setupListFeeds(){
+        final ListView listFeeds = (ListView) findViewById(R.id.listFeedItems);
+
+        listFeeds.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        Log.d(FEED_ACTIVITY_TAG, "Feed Item click" + position);
+                        Intent
+                                intent = new Intent(getApplicationContext(), FeedItemActivity
+                                .class);
+                        FeedItem feedItem =(FeedItem) listFeeds
+                                .getAdapter()
+                                .getItem(position);
+                        intent.putExtra(FEED_ITEM_TYPE,
+                                        FeedItemAtom.class.isInstance(feedItem) ? "Atom" : "RSS");
+                        intent.putExtra(FEED_ITEM, feedItem);
+
+                        startActivity(intent);
+                    }
+                }
+        );
     }
 }

@@ -1,5 +1,7 @@
 package me.abrahanfer.geniusfeed.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.einmalfel.earl.Item;
@@ -12,14 +14,29 @@ import me.abrahanfer.geniusfeed.FeedActivity;
 /**
  * Created by abrahan on 29/09/15.
  */
-public class FeedItem {
+public class FeedItem implements Parcelable {
+
+    private String pk;
+    private String title;
+    private String link;
+    private Feed feed;
+
+    public FeedItem(){}
 
     public FeedItem(Item item) {
         pk = item.getPublicationDate().toString();
         title = item.getTitle();
         link = item.getLink();
 
-        Log.d(FeedActivity.EARL_TAG, "Mirando las enclosures" + item.getEnclosures());
+        Log.d(FeedActivity.EARL_TAG, "Mirando las enclosures" +
+                item.getEnclosures());
+    }
+
+    protected FeedItem(Parcel in) {
+        pk = in.readString();
+        title = in.readString();
+        link = in.readString();
+        feed = (Feed)in.readParcelable(Feed.class.getClassLoader());
     }
 
     public String getPk() {
@@ -54,8 +71,29 @@ public class FeedItem {
         this.feed = feed;
     }
 
-    private String pk;
-    private String title;
-    private String link;
-    private Feed feed;
+    // 99.9% of the time you can just ignore this
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // write your object's data to the passed-in Parcel
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(pk);
+        out.writeString(title);
+        out.writeString(link);
+        out.writeParcelable(feed, flags);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>() {
+        public FeedItem createFromParcel(Parcel in) {
+            return new FeedItem(in);
+        }
+
+        public FeedItem[] newArray(int size) {
+            return new FeedItem[size];
+        }
+    };
 }
