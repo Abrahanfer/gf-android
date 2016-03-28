@@ -30,13 +30,13 @@ public class FeedArrayAdapter extends ArrayAdapter<Feed> {
 
         if (convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout
-                    .feed_item,parent, false);
+                    .feed,parent, false);
         }
 
         TextView titleText =(TextView) convertView.findViewById(R.id
-                .textFeedItemTitle);
+                .textFeedTitle);
         TextView linkText =(TextView) convertView.findViewById(R.id
-                .textFeedItemLink);
+                .textFeedLink);
 
         titleText.setText(feed.getTitle());
         linkText.setText(feed.getLink().toString());
