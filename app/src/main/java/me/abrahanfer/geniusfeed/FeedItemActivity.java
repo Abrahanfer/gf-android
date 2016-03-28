@@ -36,13 +36,11 @@ public class FeedItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feed_item);
         feedItemType = getIntent()
                 .getStringExtra(FeedActivity.FEED_ITEM_TYPE);
-        WebView webView = (WebView) findViewById(R.id.feedItemWebView);
-        webView.setWebViewClient(new WebViewClient());
         if(feedItemType.equalsIgnoreCase("Atom")){
             FeedItemAtom feedItemAtom = getIntent()
                     .getParcelableExtra(FeedActivity.FEED_ITEM);
-            webView.loadData(feedItemAtom.getValue(), "text/html", "UTF-8");
-            /*if(feedItemAtom.getType().equalsIgnoreCase("html")) {
+
+           /* if(feedItemAtom.getType().equalsIgnoreCase("html")) {
                 Log.e("VALORES ATOM",
                       "Comprobando cosas" + feedItemAtom.getValue());
                 TextView textView = (TextView) findViewById(R.id.feedItemTextView);
@@ -52,8 +50,6 @@ public class FeedItemActivity extends AppCompatActivity {
             if(feedItemType.equalsIgnoreCase("RSS")){
                 FeedItemRSS feedItemRSS = getIntent()
                         .getParcelableExtra(FeedActivity.FEED_ITEM);
-
-                webView.loadUrl(feedItemRSS.getRssFeedItemURL());
             }
         }
 
