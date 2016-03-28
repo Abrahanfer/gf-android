@@ -65,7 +65,7 @@ public class FeedActivity extends AppCompatActivity {
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(MainActivity.FEED));
-        } catch (MalformedURLException exceptino) {
+        } catch (MalformedURLException exception) {
             System.out.println("Viene mal la URL");
         }
 
