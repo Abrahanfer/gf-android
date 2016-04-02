@@ -119,7 +119,8 @@ public class FeedItemActivity extends AppCompatActivity {
                 }
             }
 
-            String url = "http://" + MainActivity.DOMAIN + "/feed_item_reads/" +
+            String url = "http://" + FeedListFragment.DOMAIN +
+                    "/feed_item_reads/" +
                     pkFeedItem +
                     ".json";
 
@@ -174,7 +175,7 @@ public class FeedItemActivity extends AppCompatActivity {
         };
 
 
-        String url = "http://" + MainActivity.DOMAIN + "/feed_item_reads/" +
+        String url = "http://" + FeedListFragment.DOMAIN + "/feed_item_reads/" +
                 pkFeedItemRead +
                 "";
 
