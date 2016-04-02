@@ -3,4 +3,5 @@
     <item name="blue_text_view_border" type="color">#2ab6e5</item>
     <item name="gradient_start" type="color">#2ab6e5</item>
     <item name="gradient_end" type="color">#1c7999</item>
+
 </resources>

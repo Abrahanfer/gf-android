@@ -8,4 +8,9 @@
     <string name="title_activity_feed">FeedItemActivity</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
+    <string name="open_drawer_menu">Open Menu</string>
+    <string name="close_drawer_menu">Close Menu</string>
+    <string name="list_feed_menu_item">List Feeds</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>
