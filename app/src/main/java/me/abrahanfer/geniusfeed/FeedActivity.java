@@ -84,8 +84,9 @@ public class FeedActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle("Prueba");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        setProgressBarIndeterminateVisibility(true);
+        mProgressBar = (ProgressBar) findViewById(R.id
+                                                                    .pbLoading);
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         getFeedItemsFromFeed(feedLink);
     }
@@ -175,7 +176,8 @@ public class FeedActivity extends AppCompatActivity {
 
                 listFeedItems.setAdapter(feedItemsArrayAdapter);
                 Log.d(FEED_ACTIVITY_TAG, "Terminamos de obtener los feeds");
-                setProgressBarIndeterminateVisibility(false);
+                mProgressBar.setVisibility(ProgressBar
+                                                   .INVISIBLE);
                 setupListFeeds();
             }
         }
