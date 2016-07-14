@@ -12,6 +12,6 @@
         android:id="@+id/textFeedLink"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textFeedItemTitle"
+        android:layout_below="@+id/textFeedTitle"
         android:textColor="#00ccff"/>
 </RelativeLayout>

@@ -1,16 +1,21 @@
 package me.abrahanfer.geniusfeed;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.einmalfel.earl.AtomEntry;
@@ -56,32 +61,39 @@ public class FeedActivity extends AppCompatActivity {
     final static public String FEED_ACTIVITY_TAG = "EarlFeedUtil";
     private com.einmalfel.earl.Feed mFeed;
     private URL feedLink;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
 
+        setContentView(R.layout.activity_feed);
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(FeedListFragment.FEED));
         } catch (MalformedURLException exception) {
-            System.out.println("Viene mal la URL");
+            Log.e("FEED_ACTIVITY","Viene mal la URL");
         }
 
         TextView textView =
                 (TextView) findViewById(R.id.feedTextView);
-
         textView.setText("");
 
-        getFeedItemsFromFeed(feedLink);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("Prueba");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setProgressBarIndeterminateVisibility(true);
+
+        getFeedItemsFromFeed(feedLink);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_feed, menu);
+        //getMenuInflater().inflate(R.menu.menu_feed, menu);
         return true;
     }
 
@@ -163,6 +175,7 @@ public class FeedActivity extends AppCompatActivity {
 
                 listFeedItems.setAdapter(feedItemsArrayAdapter);
                 Log.d(FEED_ACTIVITY_TAG, "Terminamos de obtener los feeds");
+                setProgressBarIndeterminateVisibility(false);
                 setupListFeeds();
             }
         }

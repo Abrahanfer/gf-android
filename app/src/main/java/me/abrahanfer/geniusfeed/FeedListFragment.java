@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.springframework.http.HttpAuthentication;
 import org.springframework.http.HttpBasicAuthentication;
@@ -27,6 +29,7 @@ import java.util.Arrays;
 
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
+import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 
@@ -43,6 +46,7 @@ public class FeedListFragment extends Fragment {
 
     private View mBaseView;
     private Activity mActivity;
+    private ProgressBar mProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,31 +54,24 @@ public class FeedListFragment extends Fragment {
         // Inflate the layout for this fragment
         mBaseView = inflater.inflate(R.layout.feed_list_fragment,
                                 container, false);
+
         return mBaseView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = getActivity();
-       
+        mProgressBar = (ProgressBar) mActivity.findViewById(R.id
+                                                                    .pbLoading);
         setupListFeeds();
         testRequest();
     }
 
     public void testRequest() {
+        // ProgressBar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
         // Make a request to API
         // Instantiate the RequestQueue.
 
@@ -124,6 +121,7 @@ public class FeedListFragment extends Fragment {
                         System.out.println(
                                 "Array size: " + feeds.length);
 
+
                         return feeds;
                     } catch (RestClientException springException) {
                         System.out.println(
@@ -149,6 +147,8 @@ public class FeedListFragment extends Fragment {
                         mActivity.getApplicationContext(),
                         feedArrayList);
 
+                mProgressBar.setVisibility(ProgressBar
+                                                  .INVISIBLE);
                 listFeeds.setAdapter(feedArrayAdapter);
             }
         }
@@ -173,12 +173,12 @@ public class FeedListFragment extends Fragment {
                         Intent intent = new Intent(
                                 mActivity.getApplicationContext(),
                                 FeedActivity.class);
+
                         Feed feed = (Feed) listFeeds.getAdapter()
                                                     .getItem(
                                                             position);
                         intent.putExtra(FEED,
                                         feed.getLink().toString());
-
                         startActivity(intent);
                     }
                 });
