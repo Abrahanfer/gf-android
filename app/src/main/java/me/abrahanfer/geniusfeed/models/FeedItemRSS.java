@@ -10,12 +10,15 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Created by abrahan on 19/03/16.
  */
 public class FeedItemRSS extends FeedItem{
     final static public String FEED_ITEM_RSS_MODEL_TAG = "FeedItemAtomModel";
+
+    private String rssFeedItemURL;
 
     public String getRssFeedItemURL() {
         return rssFeedItemURL;
@@ -25,10 +28,9 @@ public class FeedItemRSS extends FeedItem{
         this.rssFeedItemURL = rssFeedItemURL.toString();
     }
 
-    private String rssFeedItemURL;
-
     public FeedItemRSS(RSSItem rssItem){
         super(rssItem);
+        super.setPublicationDate(rssItem.getPublicationDate());
         rssFeedItemURL = rssItem.link.toString();
     }
 

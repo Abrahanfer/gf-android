@@ -1,5 +1,6 @@
 package me.abrahanfer.geniusfeed.utils;
 
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 
 /**
@@ -40,11 +41,22 @@ public class Authentication {
             return singleton;
     }
 
-    public static Boolean setCredentials(Authentication authentication){
+    public static Boolean setCredentials(Authentication
+                                                 authentication) {
         //Set authentication in DB
+
+
         //Return results of operation
         singleton = authentication;
 
         return Boolean.TRUE;
     }
+
+    /*public static abstract  class AuthenticationEntry implements
+            BaseColumns {
+        public static final String TABLE_NAME = "entry";
+        public static final String COLUMN_NAME_ENTRY_ID = "entryid";
+        public static final String COLUMN_NAME_TITLE = "title";
+        public static final String COLUMN_NAME_SUBTITLE = "subtitle";
+    }*/
 }

@@ -8,6 +8,7 @@ import com.einmalfel.earl.Item;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 import me.abrahanfer.geniusfeed.FeedActivity;
 
@@ -19,6 +20,7 @@ public class FeedItem implements Parcelable {
     private String pk;
     private String title;
     private String link;
+    private Date publicationDate;
     private Feed feed;
 
     public FeedItem(){}
@@ -65,6 +67,14 @@ public class FeedItem implements Parcelable {
 
     public Feed getFeed() {
         return feed;
+    }
+
+    public void setPublicationDate(Date publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public Date getPublicationDate() {
+        return publicationDate;
     }
 
     public void setFeed(Feed feed) {

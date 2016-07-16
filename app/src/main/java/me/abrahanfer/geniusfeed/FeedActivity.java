@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 Abrahán Fernández Nieto
+ *
+ * TODO License
+ */
+
 package me.abrahanfer.geniusfeed;
 
 import android.animation.ObjectAnimator;
@@ -40,6 +46,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.zip.DataFormatException;
 
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -50,7 +58,7 @@ import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedItemsArrayAdapter;
 
 /**
- * Created by abrahan on 19/03/16.
+ * Class to handle activity to show items from feed
  */
 public class FeedActivity extends AppCompatActivity {
     public final static String FEED_ITEM = "me.abrahanfer.geniusfeed" +
@@ -58,7 +66,7 @@ public class FeedActivity extends AppCompatActivity {
     public final static String FEED_ITEM_TYPE = "me.abrahanfer.geniusfeed" +
             ".FeedItemType";
     final static public String EARL_TAG = "EarlFeedUtil";
-    final static public String FEED_ACTIVITY_TAG = "EarlFeedUtil";
+    final static public String FEED_ACTIVITY_TAG = "FeedActivity";
     private com.einmalfel.earl.Feed mFeed;
     private URL feedLink;
     private ProgressBar mProgressBar;
@@ -73,7 +81,7 @@ public class FeedActivity extends AppCompatActivity {
             feedLink = new URL(getIntent()
                     .getStringExtra(FeedListFragment.FEED));
         } catch (MalformedURLException exception) {
-            Log.e("FEED_ACTIVITY","Viene mal la URL");
+            Log.e(FEED_ACTIVITY_TAG,"BAD URL FORMAT");
         }
 
         TextView textView =
@@ -84,6 +92,8 @@ public class FeedActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle("Prueba");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Set up progressBar
         mProgressBar = (ProgressBar) findViewById(R.id
                                                                     .pbLoading);
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -169,13 +179,29 @@ public class FeedActivity extends AppCompatActivity {
                     textView.setText(mFeed.getTitle());
                 }
 
+                // Sort FeedItem objects by publication date
+                Collections.sort(feedItems, new
+                        Comparator<FeedItem>()   {
+                            @Override
+                            public int compare(FeedItem feedItem1,
+                                               FeedItem feedItem2)
+                            {
+
+                                return  feedItem1
+                                        .getPublicationDate()
+                                        .compareTo(feedItem2
+                                                   .getPublicationDate()) * -1;
+                            }
+                        });
+
                 ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
                 FeedItemsArrayAdapter feedItemsArrayAdapter = new
                         FeedItemsArrayAdapter(getApplicationContext(),
                                          feedItems);
 
                 listFeedItems.setAdapter(feedItemsArrayAdapter);
-                Log.d(FEED_ACTIVITY_TAG, "Terminamos de obtener los feeds");
+                Log.d(FEED_ACTIVITY_TAG, "Get all feed items " +
+                        "completed");
                 mProgressBar.setVisibility(ProgressBar
                                                    .INVISIBLE);
                 setupListFeeds();

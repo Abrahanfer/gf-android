@@ -39,6 +39,7 @@ public class FeedItemAtom extends FeedItem implements Parcelable{
 
     public FeedItemAtom(AtomEntry entry) {
         super(entry);
+        super.setPublicationDate(entry.getPublicationDate());
         atomEntryURL = entry.links.get(0).toString();
         type = entry.content.type;
         value = entry.content.value;
