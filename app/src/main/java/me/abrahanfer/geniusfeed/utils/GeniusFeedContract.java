@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 /**
- * Created by abrahanfer on 19/10/15.
+ * Class SQL DBHelper
  */
 public class GeniusFeedContract {
     public GeniusFeedContract() {}
@@ -14,7 +14,7 @@ public class GeniusFeedContract {
     /* Inner class that defines the table contents */
     public static abstract class User implements BaseColumns {
         public static final String TABLE_NAME = "user";
-        public static final String COLUMN_NAME_ENTRY_ID = "userid";
+        public static final String COLUMN_NAME_USER_ID = "userid";
         public static final String COLUMN_NAME_USERNAME = "username";
         public static final String COLUMN_NAME_PASSWORD = "password";
     }
@@ -24,9 +24,9 @@ public class GeniusFeedContract {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + User.TABLE_NAME + " (" +
                     User._ID + " INTEGER PRIMARY KEY," +
-                    User.COLUMN_NAME_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
+                    User.COLUMN_NAME_USER_ID + TEXT_TYPE + COMMA_SEP +
                     User.COLUMN_NAME_USERNAME + TEXT_TYPE + COMMA_SEP +
-                    User.COLUMN_NAME_PASSWORD + TEXT_TYPE + COMMA_SEP +
+                    User.COLUMN_NAME_PASSWORD + TEXT_TYPE +
             " )";
 
     private static final String SQL_DELETE_ENTRIES =

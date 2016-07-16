@@ -3,6 +3,8 @@ package me.abrahanfer.geniusfeed;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpBasicAuthentication;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -32,6 +35,7 @@ import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
+import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 
 /**
  * Created by abrahan on 2/04/16.
@@ -65,7 +69,8 @@ public class FeedListFragment extends Fragment {
         mProgressBar = (ProgressBar) mActivity.findViewById(R.id
                                                                     .pbLoading);
         setupListFeeds();
-        testRequest();
+        setupAuthenticationFromDB();
+        //testRequest();
     }
 
     public void testRequest() {
@@ -81,6 +86,7 @@ public class FeedListFragment extends Fragment {
             @Override
             protected Feed[] doInBackground(String... urls) {
 
+                Log.e("FeedListFragment", "Error con barra de progreso 2");
                 Authentication authentication = Authentication
                         .getCredentials();
                 if (authentication == null) {
@@ -110,6 +116,7 @@ public class FeedListFragment extends Fragment {
                     restTemplate.getMessageConverters()
                                 .add(new MappingJackson2HttpMessageConverter());
                     try {
+                        Log.e("FeedListFragment", "Error con barra de progreso 3");
                         HttpEntity<FeedDRResponse> response
                                 = restTemplate
                                 .exchange(urls[0], HttpMethod.GET,
@@ -182,5 +189,71 @@ public class FeedListFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
+    }
+
+    public void setupAuthenticationFromDB() {
+        // ProgressBar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        Log.e("FeedListFragment", "Error con barra de progreso -3");
+        // Get DBHelper
+        final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
+                new GeniusFeedContract.GeniusFeedDbHelper(getContext
+                                                                 ());
+
+        Log.e("FeedListFragment", "Error con barra de progreso -2");
+        class GetReadableDatabase extends AsyncTask<Void, Void, SQLiteDatabase> {
+            @Override
+            protected SQLiteDatabase doInBackground(Void... params) {
+                Log.e("FeedListFragment", "Error con barra de progreso -1");
+                return mDbHelper.getReadableDatabase();
+            }
+
+            protected void onPostExecute(SQLiteDatabase dataBase) {
+                // Define projector
+                String[] projection = {
+                        GeniusFeedContract.User.COLUMN_NAME_USER_ID,
+                        GeniusFeedContract.User.COLUMN_NAME_USERNAME,
+                        GeniusFeedContract.User.COLUMN_NAME_PASSWORD
+                };
+
+                Cursor c = dataBase.query(
+                        GeniusFeedContract.User.TABLE_NAME,
+                        projection,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "1"
+                );
+
+                if(c.getCount() > 0) {
+                    c.moveToFirst();
+                    String username = c.getString
+                            (c.getColumnIndex(GeniusFeedContract.User
+                                     .COLUMN_NAME_USERNAME));
+                    String password = c.getString
+                            (c.getColumnIndex(GeniusFeedContract.User
+                                     .COLUMN_NAME_PASSWORD));
+
+                    if (username != null &&
+                            !username.trim().isEmpty() &&
+                            password != null &&
+                            !password.trim().isEmpty()) {
+                        Authentication auth = new Authentication(username,password);
+                        Authentication.setCredentials(auth);
+                    }
+                }
+                Log.e("FeedListFragment", "Error con barra de progreso 1");
+                // Remove progressBar
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                testRequest();
+            }
+
+        }
+
+        new GetReadableDatabase().execute();
+
+
     }
 }
