@@ -11,12 +11,11 @@ import android.support.annotation.Nullable;
  */
 public class Authentication {
     private String username;
-    private String password;
+    private String token;
     private static Authentication singleton;
 
-    public Authentication(String username, String password){
+    public Authentication(String username){
         this.username = username;
-        this.password = password;
     }
 
     public String getUsername() {
@@ -27,12 +26,12 @@ public class Authentication {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Nullable

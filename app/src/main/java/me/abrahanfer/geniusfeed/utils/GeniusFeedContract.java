@@ -16,7 +16,7 @@ public class GeniusFeedContract {
         public static final String TABLE_NAME = "user";
         public static final String COLUMN_NAME_USER_ID = "userid";
         public static final String COLUMN_NAME_USERNAME = "username";
-        public static final String COLUMN_NAME_PASSWORD = "password";
+        public static final String COLUMN_NAME_TOKEN = "token";
     }
 
     private static final String TEXT_TYPE = " TEXT";
@@ -26,7 +26,7 @@ public class GeniusFeedContract {
                     User._ID + " INTEGER PRIMARY KEY," +
                     User.COLUMN_NAME_USER_ID + TEXT_TYPE + COMMA_SEP +
                     User.COLUMN_NAME_USERNAME + TEXT_TYPE + COMMA_SEP +
-                    User.COLUMN_NAME_PASSWORD + TEXT_TYPE +
+                    User.COLUMN_NAME_TOKEN + TEXT_TYPE +
             " )";
 
     private static final String SQL_DELETE_ENTRIES =

@@ -6,5 +6,9 @@
         android:id="@+id/nav_feed_list"
         android:checked="false"
         android:title="@string/list_feed_menu_item" />
+
+     <item android:id="@+id/nav_login"
+           android:checked="false"
+           android:title="Login"/>
     </group>
 </menu>

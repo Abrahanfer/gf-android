@@ -34,6 +34,7 @@ import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.utils.Authentication;
+import me.abrahanfer.geniusfeed.utils.Constants;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 
@@ -46,7 +47,7 @@ public class FeedListFragment extends Fragment {
     public final static String LOGIN_CREDENTIALS =
             "me.abrahanfer.geniusfeed" + ".LOGIN_CREDENTIALS";
     // public final static String DOMAIN = "10.0.240.29";
-    public final static String DOMAIN = "192.168.1.55";
+    // public final static String DOMAIN = "192.168.1.55";
 
     private View mBaseView;
     private Activity mActivity;
@@ -85,27 +86,24 @@ public class FeedListFragment extends Fragment {
 
             @Override
             protected Feed[] doInBackground(String... urls) {
-
-                Log.e("FeedListFragment", "Error con barra de progreso 2");
-                Authentication authentication = Authentication
-                        .getCredentials();
+                Authentication authentication = Authentication.getCredentials();
                 if (authentication == null) {
-                    Intent intent = new Intent(
-                            mActivity.getApplicationContext(),
-                            LoginActivity.class);
-
-
+                    Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
                     startActivity(intent);
+
                     return new Feed[0];
                 } else {
                     String username = authentication.getUsername();
-                    String password = authentication.getPassword();
+                    final String token = authentication.getToken();
 
 
                     // Adding header for Basic HTTP Authentication
-                    HttpAuthentication authHeader
-                            = new HttpBasicAuthentication(username,
-                                                          password);
+                    HttpAuthentication authHeader = new HttpAuthentication() {
+                        @Override
+                        public String getHeaderValue() {
+                            return "Token " + token;
+                        }
+                    };
                     HttpHeaders requestHeaders = new HttpHeaders();
                     requestHeaders.setAuthorization(authHeader);
                     HttpEntity<?> requestEntity
@@ -161,7 +159,7 @@ public class FeedListFragment extends Fragment {
         }
 
 
-        String url = "http://" + DOMAIN + "/feeds";
+        String url = Constants.getHostByEnviroment() + "/feeds";
 
         new RetrieveFeeds().execute(url);
     }
@@ -194,17 +192,14 @@ public class FeedListFragment extends Fragment {
     public void setupAuthenticationFromDB() {
         // ProgressBar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        Log.e("FeedListFragment", "Error con barra de progreso -3");
+
         // Get DBHelper
         final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
-                new GeniusFeedContract.GeniusFeedDbHelper(getContext
-                                                                 ());
+                new GeniusFeedContract.GeniusFeedDbHelper(getContext());
 
-        Log.e("FeedListFragment", "Error con barra de progreso -2");
         class GetReadableDatabase extends AsyncTask<Void, Void, SQLiteDatabase> {
             @Override
             protected SQLiteDatabase doInBackground(Void... params) {
-                Log.e("FeedListFragment", "Error con barra de progreso -1");
                 return mDbHelper.getReadableDatabase();
             }
 
@@ -213,7 +208,7 @@ public class FeedListFragment extends Fragment {
                 String[] projection = {
                         GeniusFeedContract.User.COLUMN_NAME_USER_ID,
                         GeniusFeedContract.User.COLUMN_NAME_USERNAME,
-                        GeniusFeedContract.User.COLUMN_NAME_PASSWORD
+                        GeniusFeedContract.User.COLUMN_NAME_TOKEN
                 };
 
                 Cursor c = dataBase.query(
@@ -232,19 +227,20 @@ public class FeedListFragment extends Fragment {
                     String username = c.getString
                             (c.getColumnIndex(GeniusFeedContract.User
                                      .COLUMN_NAME_USERNAME));
-                    String password = c.getString
+                    String token = c.getString
                             (c.getColumnIndex(GeniusFeedContract.User
-                                     .COLUMN_NAME_PASSWORD));
+                                     .COLUMN_NAME_TOKEN));
 
                     if (username != null &&
                             !username.trim().isEmpty() &&
-                            password != null &&
-                            !password.trim().isEmpty()) {
-                        Authentication auth = new Authentication(username,password);
+                            token != null &&
+                            !token.trim().isEmpty()) {
+                        Authentication auth = new Authentication(username);
+                        auth.setToken(token);
                         Authentication.setCredentials(auth);
                     }
                 }
-                Log.e("FeedListFragment", "Error con barra de progreso 1");
+
                 // Remove progressBar
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 testRequest();

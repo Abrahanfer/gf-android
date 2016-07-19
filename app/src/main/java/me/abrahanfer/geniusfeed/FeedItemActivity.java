@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import me.abrahanfer.geniusfeed.models.FeedItemAtom;
 import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.utils.Constants;
 
 public class FeedItemActivity extends AppCompatActivity {
 
@@ -119,7 +120,7 @@ public class FeedItemActivity extends AppCompatActivity {
                 }
             }
 
-            String url = "http://" + FeedListFragment.DOMAIN +
+            String url = Constants.getHostByEnviroment() +
                     "/feed_item_reads/" +
                     pkFeedItem +
                     ".json";
@@ -175,7 +176,7 @@ public class FeedItemActivity extends AppCompatActivity {
         };
 
 
-        String url = "http://" + FeedListFragment.DOMAIN + "/feed_item_reads/" +
+        String url = Constants.getHostByEnviroment() + "/feed_item_reads/" +
                 pkFeedItemRead +
                 "";
 

@@ -94,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_feed_list:
                 fragmentClass = FeedListFragment.class;
                 break;
+            case R.id.nav_login:
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                return;
             default:
                 fragmentClass = FeedListFragment.class;
         }
