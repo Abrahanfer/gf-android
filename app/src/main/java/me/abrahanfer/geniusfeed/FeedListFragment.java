@@ -1,5 +1,6 @@
 package me.abrahanfer.geniusfeed;
 
+import android.animation.FloatEvaluator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,9 +27,11 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.w3c.dom.ls.LSInput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -37,6 +40,13 @@ import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
+import me.abrahanfer.geniusfeed.utils.Token;
+import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
+import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Created by abrahan on 2/04/16.
@@ -77,11 +87,63 @@ public class FeedListFragment extends Fragment {
     public void testRequest() {
         // ProgressBar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        String username;
+        String token;
+
+        // TODO Make request with retrofit
+        Authentication authentication = Authentication.getCredentials();
+        if (authentication == null) {
+            Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+
+            return ;
+        } else {
+            username = authentication.getUsername();
+            token = authentication.getToken();
+        }
+
+        GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
+
+        Call<FeedDRResponse> call = service.getFeeds();
+
+        call.enqueue(new Callback<FeedDRResponse>() {
+            @Override
+            public void onResponse(Call<FeedDRResponse> call, Response<FeedDRResponse> response) {
+                if (response.isSuccessful()) {
+                    // tasks available
+                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                    // TODO All ok
+                    ArrayList<Feed> feedArrayList = new ArrayList<>(
+                            response.body().getResults());
+
+                    ListView listFeeds = (ListView) mBaseView
+                            .findViewById(
+                                    R.id.listFeeds);
+                    FeedArrayAdapter feedArrayAdapter
+                            = new FeedArrayAdapter(
+                            mActivity.getApplicationContext(),
+                            feedArrayList);
+
+                    mProgressBar.setVisibility(ProgressBar
+                                                       .INVISIBLE);
+                    listFeeds.setAdapter(feedArrayAdapter);
+                } else {
+                    // error response, no access to resource?
+                    Log.e("ERROR FEED LIST", "error in response");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FeedDRResponse> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Log.e("Error GetFeeds RETROFIT", t.getMessage());
+            }
+        });
 
         // Make a request to API
         // Instantiate the RequestQueue.
 
-        class RetrieveFeeds extends AsyncTask<String, Void, Feed[]> {
+        /*class RetrieveFeeds extends AsyncTask<String, Void, Feed[]> {
             private Exception exception;
 
             @Override
@@ -113,6 +175,11 @@ public class FeedListFragment extends Fragment {
 
                     restTemplate.getMessageConverters()
                                 .add(new MappingJackson2HttpMessageConverter());
+
+
+
+
+
                     try {
                         Log.e("FeedListFragment", "Error con barra de progreso 3");
                         HttpEntity<FeedDRResponse> response
@@ -156,12 +223,12 @@ public class FeedListFragment extends Fragment {
                                                   .INVISIBLE);
                 listFeeds.setAdapter(feedArrayAdapter);
             }
-        }
+        }*/
 
 
         String url = Constants.getHostByEnviroment() + "/feeds";
 
-        new RetrieveFeeds().execute(url);
+       // new RetrieveFeeds().execute(url);
     }
 
     public void setupListFeeds() {
