@@ -19,7 +19,7 @@ import retrofit2.http.POST;
 
 public interface GeniusFeedService {
     // User and login endpoints
-    @POST("/login-token-auth")
+    @POST("/auth/login/")
     Call<Token> getLoginToken(@Body LoginBundle loginBundle);
 
     // Feeds Endpoints

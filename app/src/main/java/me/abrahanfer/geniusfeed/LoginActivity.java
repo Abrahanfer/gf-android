@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     // tasks available
 
-                    String token = response.body().getToken();
+                    String token = response.body().getAuth_token();
                     Log.d("Login Token ", token);
                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                     Authentication authentication = Authentication.getCredentials();

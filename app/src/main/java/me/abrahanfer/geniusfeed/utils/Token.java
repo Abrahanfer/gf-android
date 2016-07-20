@@ -5,17 +5,17 @@ package me.abrahanfer.geniusfeed.utils;
  */
 
 public class Token {
-    public String getToken() {
-        return token;
+    public String getAuth_token() {
+        return auth_token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setAuth_token(String auth_token) {
+        this.auth_token = auth_token;
     }
 
-    private String token;
+    private String auth_token;
 
-    public Token(String token){
-        this.token = token;
+    public Token(String auth_token){
+        this.auth_token = auth_token;
     }
 }
