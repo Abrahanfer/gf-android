@@ -1,6 +1,7 @@
 package me.abrahanfer.geniusfeed;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,42 +12,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.auth.api.Auth;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.http.HttpAuthentication;
-import org.springframework.http.HttpBasicAuthentication;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.Text;
-
-import java.sql.BatchUpdateException;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import me.abrahanfer.geniusfeed.models.DRResponseModels.DRTokenResponse;
-import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
-import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
-import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
-import me.abrahanfer.geniusfeed.utils.LoginBundle;
-import me.abrahanfer.geniusfeed.utils.Token;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.LoginBundle;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.Token;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -92,6 +68,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void setCredentials(View view) {
+        // Check if no view has focus:
+        View viewAux = this.getCurrentFocus();
+        if (viewAux != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(viewAux.getWindowToken(), 0);
+        }
+
         // TODO Set username from EditText view
         final EditText usernameEdit = (EditText) findViewById(R.id.editTextUsername);
         final EditText passwordEdit = (EditText) findViewById(R.id.editTextPassword);
@@ -132,7 +115,6 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         Log.e("LOGIN_ACTIVITY", "loginactivity 1");
         GeniusFeedService service = retrofit.create(GeniusFeedService.class);
-
         Call<Token> call = service.getLoginToken(new LoginBundle(username, password));
         call.enqueue(new Callback<Token>() {
             @Override

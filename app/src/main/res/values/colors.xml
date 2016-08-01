@@ -6,7 +6,7 @@
     <item name="color_primary" type="color">#3F51B5</item>
     <item name="color_primary_dark" type="color">#303F9F</item>
     <item name="color_primary_light" type="color">#C5CAE9</item>
-    <item name="color_text" type="color">#FFFFFF</item>
+    <item name="color_text" type="color">#ffffff</item>
     <item name="color_text_primary" type="color">#212121</item>
     <item name="color_text_secondary" type="color">#727272</item>
     <item name="color_divider_dolor" type="color">#B6B6B6</item>

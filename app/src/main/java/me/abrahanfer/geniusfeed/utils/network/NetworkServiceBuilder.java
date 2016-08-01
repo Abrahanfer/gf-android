@@ -20,18 +20,15 @@ public class NetworkServiceBuilder {
     public static final String API_BASE_URL = Constants.getHostByEnviroment();
     public static final String TOKEN_STRING = "Token";
 
-    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-    private static Retrofit.Builder builder = new Retrofit.Builder().baseUrl(API_BASE_URL)
-                                                                    .addConverterFactory(GsonConverterFactory.create());
-
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
     }
 
     public static <S> S createService(Class<S> serviceClass, final String authToken) {
 
-
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit.Builder builder = new Retrofit.Builder().baseUrl(API_BASE_URL)
+                                                         .addConverterFactory(GsonConverterFactory.create());
 
         if (authToken != null) {
             httpClient.addInterceptor(new Interceptor() {

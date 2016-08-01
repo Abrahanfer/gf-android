@@ -7,6 +7,8 @@
     <string name="title_activity_feed_item">FeedItemActivity</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="login_username">Username</string>
+    <string name="login_username_hint">username</string>
+    <string name="login_password_hint">password</string>
     <string name="login_password">Password</string>
     <string name="open_drawer_menu">Open Menu</string>
     <string name="close_drawer_menu">Close Menu</string>

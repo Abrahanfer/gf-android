@@ -22,11 +22,11 @@ public class FeedItem implements Parcelable {
     private String link;
     private Date publicationDate;
     private Feed feed;
+    private String item_id;
 
     public FeedItem(){}
 
     public FeedItem(Item item) {
-        pk = item.getPublicationDate().toString();
         title = item.getTitle();
         link = item.getLink();
 
@@ -38,6 +38,8 @@ public class FeedItem implements Parcelable {
         pk = in.readString();
         title = in.readString();
         link = in.readString();
+        item_id = in.readString();
+        publicationDate = (java.util.Date) in.readSerializable();
         feed = (Feed)in.readParcelable(Feed.class.getClassLoader());
     }
 
@@ -81,6 +83,14 @@ public class FeedItem implements Parcelable {
         this.feed = feed;
     }
 
+    public String getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(String item_id) {
+        this.item_id = item_id;
+    }
+
     // 99.9% of the time you can just ignore this
     @Override
     public int describeContents() {
@@ -93,6 +103,8 @@ public class FeedItem implements Parcelable {
         out.writeString(pk);
         out.writeString(title);
         out.writeString(link);
+        out.writeString(item_id);
+        out.writeSerializable(publicationDate);
         out.writeParcelable(feed, flags);
     }
 
@@ -106,4 +118,18 @@ public class FeedItem implements Parcelable {
             return new FeedItem[size];
         }
     };
+
+    // Override equal method
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof FeedItem))return false;
+        FeedItem otherFeedItem = (FeedItem) other;
+        if (otherFeedItem.getItem_id().equals(this.getItem_id())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

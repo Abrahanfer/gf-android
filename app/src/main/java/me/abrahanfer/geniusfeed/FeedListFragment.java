@@ -1,15 +1,12 @@
 package me.abrahanfer.geniusfeed;
 
-import android.animation.FloatEvaluator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,35 +15,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import org.springframework.http.HttpAuthentication;
-import org.springframework.http.HttpBasicAuthentication;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.ls.LSInput;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
-import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
-import me.abrahanfer.geniusfeed.utils.Token;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Created by abrahan on 2/04/16.
@@ -56,6 +38,10 @@ public class FeedListFragment extends Fragment {
             ".FEED";
     public final static String LOGIN_CREDENTIALS =
             "me.abrahanfer.geniusfeed" + ".LOGIN_CREDENTIALS";
+
+    public final static String FEED_LINK = "FEED_LINK";
+    public final static String FEED_PK = "FEED_PK";
+    public final static String FEED_API = "FEED_API";
     // public final static String DOMAIN = "10.0.240.29";
     // public final static String DOMAIN = "192.168.1.55";
 
@@ -84,7 +70,7 @@ public class FeedListFragment extends Fragment {
         //testRequest();
     }
 
-    public void testRequest() {
+    public void getFeedFromAPI() {
         // ProgressBar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         String username;
@@ -104,29 +90,35 @@ public class FeedListFragment extends Fragment {
 
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
-        Call<FeedDRResponse> call = service.getFeeds();
+        Call<FeedDRResponse> call = service.getFeeds(1);
 
         call.enqueue(new Callback<FeedDRResponse>() {
             @Override
             public void onResponse(Call<FeedDRResponse> call, Response<FeedDRResponse> response) {
                 if (response.isSuccessful()) {
-                    // tasks available
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    // TODO All ok
                     ArrayList<Feed> feedArrayList = new ArrayList<>(
                             response.body().getResults());
 
-                    ListView listFeeds = (ListView) mBaseView
-                            .findViewById(
-                                    R.id.listFeeds);
-                    FeedArrayAdapter feedArrayAdapter
-                            = new FeedArrayAdapter(
-                            mActivity.getApplicationContext(),
-                            feedArrayList);
+                    if (response.body().getNext() != null){
+                        getFeedFromAPIPagination(feedArrayList, 2);
+                    }else{
+                        // tasks available
+                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                        // TODO All ok
 
-                    mProgressBar.setVisibility(ProgressBar
-                                                       .INVISIBLE);
-                    listFeeds.setAdapter(feedArrayAdapter);
+                        ListView listFeeds = (ListView) mBaseView
+                                .findViewById(
+                                        R.id.listFeeds);
+                        FeedArrayAdapter feedArrayAdapter
+                                = new FeedArrayAdapter(
+                                mActivity.getApplicationContext(),
+                                feedArrayList);
+
+                        mProgressBar.setVisibility(ProgressBar
+                                                           .INVISIBLE);
+                        listFeeds.setAdapter(feedArrayAdapter);
+                    }
+
                 } else {
                     // error response, no access to resource?
                     Log.e("ERROR FEED LIST", "error in response");
@@ -139,96 +131,45 @@ public class FeedListFragment extends Fragment {
                 Log.e("Error GetFeeds RETROFIT", t.getMessage());
             }
         });
+    }
 
-        // Make a request to API
-        // Instantiate the RequestQueue.
+    public void getFeedFromAPIPagination(final List<Feed> feedList, final int page) {
+        String token = Authentication.getCredentials().getToken();
+        GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
-        /*class RetrieveFeeds extends AsyncTask<String, Void, Feed[]> {
-            private Exception exception;
+        Call<FeedDRResponse> call = service.getFeeds(page);
 
+        call.enqueue(new Callback<FeedDRResponse>() {
             @Override
-            protected Feed[] doInBackground(String... urls) {
-                Authentication authentication = Authentication.getCredentials();
-                if (authentication == null) {
-                    Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
+            public void onResponse(Call<FeedDRResponse> call, Response<FeedDRResponse> response) {
+                if (response.isSuccessful()) {
+                    ArrayList<Feed> feedArrayList = new ArrayList<>(
+                            response.body().getResults());
+                    feedList.addAll(feedArrayList);
 
-                    return new Feed[0];
-                } else {
-                    String username = authentication.getUsername();
-                    final String token = authentication.getToken();
+                    if (response.body().getNext() != null){
+                        getFeedFromAPIPagination(feedList, page + 1);
+                    }else{
 
+                        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-                    // Adding header for Basic HTTP Authentication
-                    HttpAuthentication authHeader = new HttpAuthentication() {
-                        @Override
-                        public String getHeaderValue() {
-                            return "Token " + token;
-                        }
-                    };
-                    HttpHeaders requestHeaders = new HttpHeaders();
-                    requestHeaders.setAuthorization(authHeader);
-                    HttpEntity<?> requestEntity
-                            = new HttpEntity<Object>(requestHeaders);
-
-                    RestTemplate restTemplate = new RestTemplate();
-
-                    restTemplate.getMessageConverters()
-                                .add(new MappingJackson2HttpMessageConverter());
-
-
-
-
-
-                    try {
-                        Log.e("FeedListFragment", "Error con barra de progreso 3");
-                        HttpEntity<FeedDRResponse> response
-                                = restTemplate
-                                .exchange(urls[0], HttpMethod.GET,
-                                          requestEntity,
-                                          FeedDRResponse.class);
-
-                        FeedDRResponse result = response.getBody();
-                        Feed[] feeds = result.getResults();
-                        System.out.println(
-                                "Array size: " + feeds.length);
-
-
-                        return feeds;
-                    } catch (RestClientException springException) {
-                        System.out.println(
-                                "Mirando la excepcion de Spring");
-                        System.out.println(springException);
-                        return new Feed[0];
+                        ListView listFeeds = (ListView) mBaseView.findViewById(R.id.listFeeds);
+                        FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(mActivity.getApplicationContext(),
+                                                                                 new ArrayList<Feed>(feedList));
+                        listFeeds.setAdapter(feedArrayAdapter);
                     }
+                } else {
+                    // error response, no access to resource?
+                    Log.e("ERROR FEED LIST", "error in response");
                 }
             }
 
-            protected void onPostExecute(Feed[] feeds) {
-                System.out.println(
-                        "Mirando en onPostExecute 2" + feeds +
-                                "Tantos feed");
-                ArrayList<Feed> feedArrayList = new ArrayList<>(
-                        Arrays.asList(feeds));
-
-                ListView listFeeds = (ListView) mBaseView
-                        .findViewById(
-                        R.id.listFeeds);
-                FeedArrayAdapter feedArrayAdapter
-                        = new FeedArrayAdapter(
-                        mActivity.getApplicationContext(),
-                        feedArrayList);
-
-                mProgressBar.setVisibility(ProgressBar
-                                                  .INVISIBLE);
-                listFeeds.setAdapter(feedArrayAdapter);
+            @Override
+            public void onFailure(Call<FeedDRResponse> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                Log.e("Error GetFeeds RETROFIT", t.getMessage());
             }
-        }*/
-
-
-        String url = Constants.getHostByEnviroment() + "/feeds";
-
-       // new RetrieveFeeds().execute(url);
+        });
     }
 
     public void setupListFeeds() {
@@ -249,8 +190,11 @@ public class FeedListFragment extends Fragment {
                         Feed feed = (Feed) listFeeds.getAdapter()
                                                     .getItem(
                                                             position);
-                        intent.putExtra(FEED,
+                        intent.putExtra(FEED_LINK,
                                         feed.getLink().toString());
+                        intent.putExtra(FEED_PK, feed.getPk());
+                        intent.putExtra(FEED_API, feed);
+
                         startActivity(intent);
                     }
                 });
@@ -310,7 +254,7 @@ public class FeedListFragment extends Fragment {
 
                 // Remove progressBar
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                testRequest();
+                getFeedFromAPI();
             }
 
         }

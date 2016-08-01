@@ -6,33 +6,33 @@ import java.net.URL;
  * Created by abrahan on 19/03/16.
  */
 public class DRResponse {
-    private Long count;
+    private long count;
 
-    private URL next;
+    private String next;
 
-    private URL previous;
+    private String previous;
 
-    public Long getCount() {
+    public long getCount() {
         return count;
     }
 
-    public void setCount(Long count) {
+    public void setCount(long count) {
         this.count = count;
     }
 
-    public URL getNext() {
+    public String getNext() {
         return next;
     }
 
-    public void setNext(URL next) {
+    public void setNext(String next) {
         this.next = next;
     }
 
-    public URL getPrevious() {
+    public String getPrevious() {
         return previous;
     }
 
-    public void setPrevious(URL previous) {
+    public void setPrevious(String previous) {
         this.previous = previous;
     }
 }

@@ -19,7 +19,7 @@ import me.abrahanfer.geniusfeed.models.FeedItemRead;
  * Created by abrahanfer on 30/09/15.
  */
 public class FeedArrayAdapter extends ArrayAdapter<Feed> {
-    public FeedArrayAdapter(Context context ,ArrayList<Feed>
+    public FeedArrayAdapter(Context context , ArrayList<Feed>
             feeds){
         super(context, 0, feeds);
     }

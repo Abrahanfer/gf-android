@@ -1,4 +1,4 @@
-package me.abrahanfer.geniusfeed.utils;
+package me.abrahanfer.geniusfeed.utils.network.bodyclass;
 
 /**
  * Created by abrahan on 19/07/16.

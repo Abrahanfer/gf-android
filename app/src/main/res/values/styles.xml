@@ -8,6 +8,13 @@
         <item name="colorAccent">#448AFF</item>
     </style>
 
+    <style name="ThemeEditText" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">@color/color_text</item>
+        <item name="colorControlActivated">@color/color_text</item>
+        <item name="colorControlHighlight">@color/color_text</item>
+        <item name="android:textColorHint">@color/color_text</item>
+    </style>
+
     <style name="CircularProgress" parent="Theme.AppCompat.Light">
         <item name="colorAccent">#448AFF</item>
     </style>

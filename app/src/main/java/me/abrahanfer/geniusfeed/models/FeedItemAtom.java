@@ -43,6 +43,7 @@ public class FeedItemAtom extends FeedItem implements Parcelable{
         atomEntryURL = entry.links.get(0).toString();
         type = entry.content.type;
         value = entry.content.value;
+        super.setItem_id(entry.id.toString());
     }
 
     private FeedItemAtom(Parcel in) {
@@ -64,7 +65,7 @@ public class FeedItemAtom extends FeedItem implements Parcelable{
     @Override
     public void writeToParcel(Parcel out, int flags) {
         super.writeToParcel(out, flags);
-        out.writeString(atomEntryURL.toString());
+        out.writeString(atomEntryURL);
         out.writeString(type);
         out.writeString(value);
     }
