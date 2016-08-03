@@ -38,5 +38,5 @@ public interface GeniusFeedService {
 
     // Mark as read a feed item read
     @PATCH("/feed_item_reads/{pk}/")
-    Call<FeedItemRead> partialUpdateFeedItemRead(@Path("pk") String pk, @Body FIReadUpdateBody fiReadUpdateBody);
+    Call<FeedItemRead> partialUpdateFeedItemRead(@Path("pk") long pk, @Body FIReadUpdateBody fiReadUpdateBody);
 }

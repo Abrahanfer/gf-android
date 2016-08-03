@@ -15,4 +15,30 @@
     <string name="list_feed_menu_item">List Feeds</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="html_wrap" translatable="false">
+            <![CDATA[
+            <html>
+                <head>
+                    <style type="text/css">
+                        body {
+                            font-size: 100%%;
+                            color: #333;
+                            background-color: #fff;
+                        }
+                        a {
+                            color: #eee;
+                        }
+                        a:hover {
+                            color: #06c;
+                        }
+                        img {display: inline; height: auto; max-width: 100%%;}
+                        pre {white-space: pre-wrap;}
+                    </style>
+                </head>
+                <body>%1$s</body>
+                </html>
+            ]]>
+    </string>
+
 </resources>

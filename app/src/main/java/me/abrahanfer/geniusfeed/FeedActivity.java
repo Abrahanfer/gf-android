@@ -83,13 +83,15 @@ public class FeedActivity extends AppCompatActivity {
             ".FEED_ITEM";
     public final static String FEED_ITEM_TYPE = "me.abrahanfer.geniusfeed" +
             ".FeedItemType";
+    public final static String FEED_ITEM_READ = "me.abrahanfer.geniusfeed" +
+            ".FeedItemRead";
     final static public String EARL_TAG = "EarlFeedUtil";
     final static public String FEED_ACTIVITY_TAG = "FeedActivity";
     private com.einmalfel.earl.Feed mFeed;
     private URL feedLink;
     private String mFeedPk;
     private ProgressBar mProgressBar;
-    private List<FeedItem> mSourceItems;
+    private List<FeedItemRead> mSourceItems;
     private Feed mFeedAPI;
     private ListView mListFeedItems;
 
@@ -118,11 +120,15 @@ public class FeedActivity extends AppCompatActivity {
         toolbar.setTitle("Prueba");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Set up progressBar
-        mProgressBar = (ProgressBar) findViewById(R.id.pbLoading);
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
-        getFeedItemsFromFeed(feedLink);
+
+        if (feedLink != null) {
+            // Set up progressBar
+            mProgressBar = (ProgressBar) findViewById(R.id.pbLoading);
+            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
+            getFeedItemsFromFeed(feedLink);
+        }
     }
 
     @Override
@@ -149,11 +155,11 @@ public class FeedActivity extends AppCompatActivity {
 
     public void getFeedItemsFromFeed(final URL feedLink){
         class RetrieveFeedItems extends AsyncTask<URL, Void,
-                ArrayList<FeedItem> > {
+                ArrayList<FeedItemRead> > {
             private Exception exception;
 
             @Override
-            protected ArrayList<FeedItem> doInBackground(URL... url) {
+            protected ArrayList<FeedItemRead> doInBackground(URL... url) {
                 InputStream inputStream = null;
                 com.einmalfel.earl.Feed feed = null;
                 Log.i(EARL_TAG, "Mirando link" + url);
@@ -161,7 +167,7 @@ public class FeedActivity extends AppCompatActivity {
                     inputStream = feedLink.openConnection().getInputStream();
                 }catch (IOException exception) {
                     Log.d(EARL_TAG, "Exception IO");
-                    return new ArrayList<FeedItem>();
+                    return new ArrayList<FeedItemRead>();
                 }
                 try {
                     feed = EarlParser.parseOrThrow(inputStream, 0);
@@ -175,13 +181,14 @@ public class FeedActivity extends AppCompatActivity {
 
                 Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
                 mFeed = feed;
-                ArrayList<FeedItem> feedItems = new ArrayList<>();
+                ArrayList<FeedItemRead> feedItems = new ArrayList<>();
                 if (RSSFeed.class.isInstance(feed)) {
                     RSSFeed rssFeed = (RSSFeed) feed;
                     for (RSSItem rssItem : rssFeed.items) {
                         String title = rssItem.getTitle();
                         Log.i(EARL_TAG, "RSS title: " + (title == null ? "N/A" : title));
-                        feedItems.add(new FeedItemRSS(rssItem));
+                        FeedItemRead feedItemRead = new FeedItemRead(false, false, new FeedItemRSS(rssItem));
+                        feedItems.add(feedItemRead);
                     }
                 }else {
                     if (AtomFeed.class.isInstance(feed)){
@@ -189,7 +196,8 @@ public class FeedActivity extends AppCompatActivity {
                         for (AtomEntry atomEntry: atomFeed.entries) {
                             String title = atomEntry.getTitle();
                             Log.i(EARL_TAG, "Atom title: " + (title == null ? "N/A" : title));
-                            feedItems.add(new FeedItemAtom(atomEntry));
+                            FeedItemRead feedItemRead = new FeedItemRead(false, false, new FeedItemAtom(atomEntry));
+                            feedItems.add(feedItemRead);
                         }
                     }
                 }
@@ -197,23 +205,23 @@ public class FeedActivity extends AppCompatActivity {
                 return feedItems;
             }
 
-            protected void onPostExecute(ArrayList<FeedItem> feedItems){
+            protected void onPostExecute(ArrayList<FeedItemRead> feedItemReads){
                 TextView textView =(TextView) findViewById(R.id.feedTextView);
                 if (mFeed != null) {
                     textView.setText(mFeed.getTitle());
                 }
 
                 // Sort FeedItem objects by publication date
-                Collections.sort(feedItems, new
-                        Comparator<FeedItem>()   {
+                Collections.sort(feedItemReads, new
+                        Comparator<FeedItemRead>()   {
                             @Override
-                            public int compare(FeedItem feedItem1,
-                                               FeedItem feedItem2)
+                            public int compare(FeedItemRead feedItemRead1,
+                                               FeedItemRead feedItemRead2)
                             {
 
-                                return  feedItem1
+                                return  feedItemRead1.getFeed_item()
                                         .getPublicationDate()
-                                        .compareTo(feedItem2
+                                        .compareTo(feedItemRead2.getFeed_item()
                                                    .getPublicationDate()) * -1;
                             }
                         });
@@ -221,7 +229,7 @@ public class FeedActivity extends AppCompatActivity {
                 ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
                 FeedItemsArrayAdapter feedItemsArrayAdapter = new
                         FeedItemsArrayAdapter(getApplicationContext(),
-                                         feedItems);
+                                         feedItemReads);
 
                 listFeedItems.setAdapter(feedItemsArrayAdapter);
                 Log.d(FEED_ACTIVITY_TAG, "Get all feed items " +
@@ -229,13 +237,13 @@ public class FeedActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 // setupListFeeds();
                 // Call to get list fo feedItemRead from API
-                getFeedItemReadList(new ArrayList<FeedItem>(), 1);
+                getFeedItemReadList(new ArrayList<FeedItemRead>(), 1);
             }
         }
 
         new RetrieveFeedItems().execute(feedLink);
     }
-    public void getFeedItemReadList(final List<FeedItem> feedItemList, final int page) {
+    public void getFeedItemReadList(final List<FeedItemRead> feedItemList, final int page) {
         final String token = Authentication.getCredentials().getToken();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -254,17 +262,22 @@ public class FeedActivity extends AppCompatActivity {
                     // TODO Sync feeditemreads from API with new items of Feed Source
                     for(Iterator<FeedItemRead> iterator = feedItemReadList.iterator(); iterator.hasNext();) {
                         FeedItemRead item = iterator.next();
-                        feedItemList.add(item.getFeed_item());
+                        feedItemList.add(item);
                     }
 
                     if(response.body().getNext() != null) {
                         getFeedItemReadList(feedItemList, page + 1);
                     }else{
-                        List<FeedItem> itemsToPost = new ArrayList<FeedItem>();
-                        for(Iterator<FeedItem> iterator = mSourceItems.iterator(); iterator.hasNext();) {
-                            FeedItem item = iterator.next();
+                        List<FeedItemRead> itemsToPost = new ArrayList<FeedItemRead>();
+                        for(Iterator<FeedItemRead> iterator = mSourceItems.iterator(); iterator.hasNext();) {
+                            FeedItemRead item = iterator.next();
                             if(!feedItemList.contains(item)) {
                                 itemsToPost.add(item);
+                            }else{
+                                int index = feedItemList.indexOf(item);
+                                item.setPk(feedItemList.get(index).getPk());
+                                item.setRead(feedItemList.get(index).getRead());
+                                item.setFav(feedItemList.get(index).getFav());
                             }
                         }
                         postAllNewItemsAsNonRead(itemsToPost);
@@ -299,12 +312,15 @@ public class FeedActivity extends AppCompatActivity {
                         Log.d(FEED_ACTIVITY_TAG, "Feed Item click" + position);
                         Intent intent = new Intent(getApplicationContext(), FeedItemActivity
                                 .class);
-                        FeedItem feedItem =(FeedItem) listFeeds
+                        FeedItemRead feedItemRead =(FeedItemRead) listFeeds
                                 .getAdapter()
                                 .getItem(position);
+                        feedItemRead.getFeed_item().setFeed(mFeedAPI);
                         intent.putExtra(FEED_ITEM_TYPE,
-                                        FeedItemAtom.class.isInstance(feedItem) ? "Atom" : "RSS");
-                        intent.putExtra(FEED_ITEM, feedItem);
+                                        FeedItemAtom.class.isInstance(feedItemRead.getFeed_item()) ? "Atom" : "RSS");
+                        intent.putExtra(FEED_ITEM, feedItemRead.getFeed_item());
+                        intent.putExtra(FEED_ITEM_READ, feedItemRead);
+
 
                         startActivity(intent);
                     }
@@ -312,37 +328,64 @@ public class FeedActivity extends AppCompatActivity {
         );
     }
 
-    public void postAllNewItemsAsNonRead(List<FeedItem> feedItems) {
+    public void postAllNewItemsAsNonRead(List<FeedItemRead> feedItems) {
         final String token = Authentication.getCredentials().getToken();
 
        GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
         if (feedItems.size() > 0) {
-            FeedItem firstToPost = feedItems.get(0);
+            FeedItemRead firstToPost = feedItems.get(0);
             feedItems.remove(0);
             postOneFeedItemRead(service,firstToPost,feedItems);
         }else{
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
             // Set listview as visible
             mListFeedItems.setVisibility(ListView.VISIBLE);
+
+            // Sort FeedItem objects by publication date
+            ArrayList<FeedItemRead> feedItemReads = (ArrayList<FeedItemRead>) mSourceItems;
+            Collections.sort(feedItemReads, new
+                    Comparator<FeedItemRead>()   {
+                        @Override
+                        public int compare(FeedItemRead feedItemRead1,
+                                           FeedItemRead feedItemRead2)
+                        {
+
+                            return  feedItemRead1.getFeed_item()
+                                                 .getPublicationDate()
+                                                 .compareTo(feedItemRead2.getFeed_item()
+                                                                         .getPublicationDate()) * -1;
+                        }
+                    });
+
+            ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
+            FeedItemsArrayAdapter feedItemsArrayAdapter = new
+                    FeedItemsArrayAdapter(getApplicationContext(),
+                                          feedItemReads);
         }
     }
 
-    private void postOneFeedItemRead(final GeniusFeedService service, FeedItem item, final List<FeedItem> feedItemsToPost) {
+    private void postOneFeedItemRead(final GeniusFeedService service, FeedItemRead item, final List<FeedItemRead>
+            feedItemsToPost) {
 
-        item.setFeed(mFeedAPI);
-        FeedItemRead newFeedItemRead = new FeedItemRead(false, false, item);
-        Call<FeedItemRead> call = service.createFeedItemRead(newFeedItemRead);
+        item.getFeed_item().setFeed(mFeedAPI);
+        Call<FeedItemRead> call = service.createFeedItemRead(item);
 
         call.enqueue(new Callback<FeedItemRead>() {
             @Override
             public void onResponse(Call<FeedItemRead> call, Response<FeedItemRead> response) {
                 if(response.isSuccessful()){
-                    Log.e("GOOD respondes", "Mirando las respuesta " + response.toString());
+                    for(Iterator<FeedItemRead> iterator = mSourceItems.iterator(); iterator.hasNext();) {
+                        FeedItemRead item = iterator.next();
+                        FeedItemRead newItem = response.body();
+                        if (item.equals(newItem)) {
+                            item.setPk(newItem.getPk());
+                        }
+                    }
                 }else{
                     //bad code response
                 }
                 if(feedItemsToPost.size() > 0) {
-                    FeedItem feedItem = feedItemsToPost.get(0);
+                    FeedItemRead feedItem = feedItemsToPost.get(0);
                     feedItemsToPost.remove(0);
                     postOneFeedItemRead(service, feedItem, feedItemsToPost);
                 }else{

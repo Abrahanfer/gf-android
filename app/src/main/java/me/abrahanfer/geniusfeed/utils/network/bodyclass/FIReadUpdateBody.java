@@ -24,7 +24,7 @@ public class FIReadUpdateBody {
         this.read = read;
     }
 
-    FIReadUpdateBody(Boolean read, Boolean fav) {
+    public FIReadUpdateBody(Boolean read, Boolean fav) {
         this.read = read;
         this.fav = fav;
     }

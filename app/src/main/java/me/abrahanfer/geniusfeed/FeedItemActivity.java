@@ -1,11 +1,17 @@
 package me.abrahanfer.geniusfeed;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.annotation.AttrRes;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,35 +34,96 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
+import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemAtom;
 import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
+import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
+import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.FIReadUpdateBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FeedItemActivity extends AppCompatActivity {
 
     private String feedItemType;
+    private String mFeedParentURL;
+    private String mFeedParentPK;
+    private FeedItemRead mFeedItemRead;
+    private Feed mFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_item);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("Prueba 2");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         feedItemType = getIntent()
                 .getStringExtra(FeedActivity.FEED_ITEM_TYPE);
+
+        mFeedItemRead = getIntent()
+                .getParcelableExtra(FeedActivity.FEED_ITEM_READ);
+
+        mFeedItemRead.setRead(true);
+        final String token = Authentication.getCredentials().getToken();
+        GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
+
+        Call<FeedItemRead> call = service.partialUpdateFeedItemRead(mFeedItemRead.getPk(), new
+                FIReadUpdateBody(mFeedItemRead.getRead(), mFeedItemRead.getFav()));
+
+
+        call.enqueue(new Callback<FeedItemRead>() {
+            @Override
+            public void onResponse(Call<FeedItemRead> call, Response<FeedItemRead> response) {
+                if(response.isSuccessful()) {
+                    Log.d("SUCCESS RESPONSE", response.body().toString());
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FeedItemRead> call, Throwable t) {
+                Log.e("FAILURE RESPONSE", t.toString());
+            }
+        });
+
         if(feedItemType.equalsIgnoreCase("Atom")){
-            FeedItemAtom feedItemAtom = getIntent()
-                    .getParcelableExtra(FeedActivity.FEED_ITEM);
+            FeedItemAtom feedItemAtom = (FeedItemAtom) mFeedItemRead.getFeed_item();
+            mFeedParentURL = feedItemAtom.getFeed().getLink().toString();
+            mFeedParentPK = feedItemAtom.getFeed().getPk();
+            mFeed = feedItemAtom.getFeed();
            if(feedItemAtom.getType().equalsIgnoreCase("html")) {
-                TextView textView = (TextView) findViewById(R.id.feedItemTextView);
-                textView.setText(Html.fromHtml(feedItemAtom.getValue()));
+                /*TextView textView = (TextView) findViewById(R.id.feedItemTextView);
+                textView.setText(Html.fromHtml(feedItemAtom.getValue()));*/
+               WebView webView = (WebView) findViewById(R.id.feedItemWebView);
+               webView.setVisibility(WebView.VISIBLE);
+               webView.loadDataWithBaseURL(null, wrapHtml(webView.getContext(), feedItemAtom.getValue()),
+                                           "text/html", "UTF-8", null);
             }
         }else{
             if(feedItemType.equalsIgnoreCase("RSS")){
                 FeedItemRSS feedItemRSS = getIntent()
                         .getParcelableExtra(FeedActivity.FEED_ITEM);
-                TextView textView = (TextView) findViewById(R.id.feedItemTextView);
-                textView.setText(Html.fromHtml(feedItemRSS.getDescription()));
+                mFeedParentURL = feedItemRSS.getFeed().getLink().toString();
+                mFeedParentPK = feedItemRSS.getFeed().getPk();
+                mFeed = feedItemRSS.getFeed();
+                /*TextView textView = (TextView) findViewById(R.id.feedItemTextView);
+                textView.setText(Html.fromHtml(feedItemRSS.getDescription()));*/
+                WebView webView = (WebView) findViewById(R.id.feedItemWebView);
+                webView.setVisibility(WebView.VISIBLE);
+                webView.loadDataWithBaseURL(null, wrapHtml(webView.getContext(), feedItemRSS.getDescription()),
+                                            "text/html", "UTF-8", null);
                 Log.e("Mirando esto", "Enclosures " + feedItemRSS.getEnclosureLength().toString());
                 if(feedItemRSS.getEnclosureLength().intValue() > 0){
                     ImageView imageView = (ImageView) findViewById(R.id.feedItemImageView);
@@ -70,13 +137,16 @@ public class FeedItemActivity extends AppCompatActivity {
                     }catch (IOException e){
                         Log.e("FEED_ITEM_ACTIVITY", "IOException");
                     }
-
-
                 }
             }
         }
 
     }
+
+    private String wrapHtml(Context context, String html) {
+        return context.getString(R.string.html_wrap, html);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -94,6 +164,17 @@ public class FeedItemActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == android.R.id.home) {
+            Intent upIntent = NavUtils.getParentActivityIntent(this);
+            upIntent.putExtra(FeedListFragment.FEED_PK, mFeedParentPK);
+            upIntent.putExtra(FeedListFragment.FEED_LINK, mFeedParentURL);
+            // set Feed as extra FeedListFragment.FEED_API
+            upIntent.putExtra(FeedListFragment.FEED_API, mFeed);
+            NavUtils.navigateUpTo(this, upIntent);
+
             return true;
         }
 
