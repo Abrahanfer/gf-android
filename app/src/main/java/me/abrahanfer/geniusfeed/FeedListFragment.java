@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,7 @@ import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
+import me.abrahanfer.geniusfeed.utils.DividerItemDecoration;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
@@ -48,6 +51,8 @@ public class FeedListFragment extends Fragment {
     private View mBaseView;
     private Activity mActivity;
     private ProgressBar mProgressBar;
+
+    private ArrayList<Feed> mFeedList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,24 +104,32 @@ public class FeedListFragment extends Fragment {
                     ArrayList<Feed> feedArrayList = new ArrayList<>(
                             response.body().getResults());
 
+                    mFeedList = feedArrayList;
                     if (response.body().getNext() != null){
-                        getFeedFromAPIPagination(feedArrayList, 2);
+                        getFeedFromAPIPagination(2);
                     }else{
                         // tasks available
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                        // TODO All ok
 
-                        ListView listFeeds = (ListView) mBaseView
-                                .findViewById(
-                                        R.id.listFeeds);
+                        RecyclerView feedList = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
+                        feedList.setHasFixedSize(true);
+
+                        // use a linear layout manager
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
+                        feedList.setLayoutManager(layoutManager);
+
+                        RecyclerView.ItemDecoration itemDecoration = new
+                                DividerItemDecoration(mBaseView.getContext(), DividerItemDecoration.VERTICAL_LIST);
+                        feedList.addItemDecoration(itemDecoration);
+
                         FeedArrayAdapter feedArrayAdapter
-                                = new FeedArrayAdapter(
-                                mActivity.getApplicationContext(),
-                                feedArrayList);
+                                = new FeedArrayAdapter(feedArrayList);
 
                         mProgressBar.setVisibility(ProgressBar
                                                            .INVISIBLE);
-                        listFeeds.setAdapter(feedArrayAdapter);
+                        //listFeeds.setAdapter(feedArrayAdapter);
+
+                        feedList.setAdapter(feedArrayAdapter);
                     }
 
                 } else {
@@ -133,7 +146,7 @@ public class FeedListFragment extends Fragment {
         });
     }
 
-    public void getFeedFromAPIPagination(final List<Feed> feedList, final int page) {
+    public void getFeedFromAPIPagination( final int page) {
         String token = Authentication.getCredentials().getToken();
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
@@ -145,18 +158,24 @@ public class FeedListFragment extends Fragment {
                 if (response.isSuccessful()) {
                     ArrayList<Feed> feedArrayList = new ArrayList<>(
                             response.body().getResults());
-                    feedList.addAll(feedArrayList);
+                    mFeedList.addAll(feedArrayList);
 
                     if (response.body().getNext() != null){
-                        getFeedFromAPIPagination(feedList, page + 1);
+                        getFeedFromAPIPagination(page + 1);
                     }else{
 
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-                        ListView listFeeds = (ListView) mBaseView.findViewById(R.id.listFeeds);
-                        FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(mActivity.getApplicationContext(),
-                                                                                 new ArrayList<Feed>(feedList));
-                        listFeeds.setAdapter(feedArrayAdapter);
+                        RecyclerView feedListView = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
+                        feedListView.setHasFixedSize(true);
+
+                        // use a linear layout manager
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
+                        feedListView.setLayoutManager(layoutManager);
+
+
+                        FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(new ArrayList<Feed>(mFeedList));
+                        feedListView.setAdapter(feedArrayAdapter);
                     }
                 } else {
                     // error response, no access to resource?
@@ -173,10 +192,33 @@ public class FeedListFragment extends Fragment {
     }
 
     public void setupListFeeds() {
-        final ListView listFeeds = (ListView) mBaseView.findViewById(
-                R.id.listFeeds);
 
-        listFeeds.setOnItemClickListener(
+        RecyclerView feedListView = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
+
+        ItemClickSupport.addTo(feedListView).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Intent intent = new Intent(
+                                mActivity.getApplicationContext(),
+                                FeedActivity.class);
+
+                        Feed feed = mFeedList.get(position);
+                        Log.d("Position", "POsition = " + position);
+                        intent.putExtra(FEED_LINK,
+                                        feed.getLink().toString());
+                        intent.putExtra(FEED_PK, feed.getPk());
+                        intent.putExtra(FEED_API, feed);
+
+                        startActivity(intent);
+                    }
+                }
+        );
+
+
+        /*final RecyclerView feedList = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
+
+        feedList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent,
@@ -197,7 +239,7 @@ public class FeedListFragment extends Fragment {
 
                         startActivity(intent);
                     }
-                });
+                });*/
     }
 
     public void setupAuthenticationFromDB() {

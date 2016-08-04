@@ -3,11 +3,15 @@
     <item name="blue_text_view_border" type="color">#2ab6e5</item>
     <item name="gradient_start" type="color">#2ab6e5</item>
     <item name="gradient_end" type="color">#1c7999</item>
-    <item name="color_primary" type="color">#3F51B5</item>
-    <item name="color_primary_dark" type="color">#303F9F</item>
-    <item name="color_primary_light" type="color">#C5CAE9</item>
+    <!-- azul #3F51B5 -->
+    <item name="color_primary" type="color">#9c27b0</item>
+    <!-- dark azul #303F9F -->
+    <item name="color_primary_dark" type="color">#7b1fa2</item>
+    <item name="color_primary_light" type="color">#e1bee7</item>
+    <item name="color_accent" type="color">#ff5722</item>
     <item name="color_text" type="color">#ffffff</item>
     <item name="color_text_primary" type="color">#212121</item>
     <item name="color_text_secondary" type="color">#727272</item>
-    <item name="color_divider_dolor" type="color">#B6B6B6</item>
+    <item name="color_divider_dolor" type="color">#BDBDBD</item>
+    <item name="color_red" type="color">#f44336</item>
 </resources>

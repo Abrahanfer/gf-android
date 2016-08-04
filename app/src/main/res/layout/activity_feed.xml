@@ -20,24 +20,33 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_below="@+id/toolBar"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_below="@+id/toolBar">
-
-
-        <TextView
-            android:id="@+id/feedTextView"
-            android:text=""
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <ListView android:id="@+id/listFeedItems"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_below="@+id/toolBar">
 
-    </LinearLayout>
-</RelativeLayout>
+
+            <TextView
+                android:id="@+id/feedTextView"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <ListView android:id="@+id/listFeedItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+
+    <!-- A RecyclerView with some commonly used attributes -->
+    <!--<android.support.v7.widget.RecyclerView
+        android:id="@+id/feed_items_list"
+        android:scrollbars="vertical"
+        android:layout_below="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    -->
+    </RelativeLayout>

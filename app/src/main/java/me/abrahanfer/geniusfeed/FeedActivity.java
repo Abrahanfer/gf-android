@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -96,6 +97,7 @@ public class FeedActivity extends AppCompatActivity {
     private List<FeedItemRead> mSourceItems;
     private Feed mFeedAPI;
     private ListView mListFeedItems;
+    private RecyclerView mFeedList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
