@@ -30,7 +30,6 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/feeds_list"
         android:scrollbars="vertical"
-        android:layout_below="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="8dp"/>

@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -64,6 +65,8 @@ import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
+import me.abrahanfer.geniusfeed.utils.DividerItemDecoration;
+import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.FeedItemsArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
@@ -96,7 +99,7 @@ public class FeedActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private List<FeedItemRead> mSourceItems;
     private Feed mFeedAPI;
-    private ListView mListFeedItems;
+    private RecyclerView mListFeedItems;
     private RecyclerView mFeedList;
 
     @Override
@@ -206,7 +209,7 @@ public class FeedActivity extends AppCompatActivity {
                     }
                 }
                 mSourceItems = feedItems;
-                return feedItems;
+                return (ArrayList<FeedItemRead>) mSourceItems;
             }
 
             protected void onPostExecute(ArrayList<FeedItemRead> feedItemReads){
@@ -230,12 +233,36 @@ public class FeedActivity extends AppCompatActivity {
                             }
                         });
 
-                ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
+               /* ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
                 FeedItemsArrayAdapter feedItemsArrayAdapter = new
                         FeedItemsArrayAdapter(getApplicationContext(),
                                          feedItemReads);
 
-                listFeedItems.setAdapter(feedItemsArrayAdapter);
+
+
+                listFeedItems.setAdapter(feedItemsArrayAdapter);*/
+
+                RecyclerView feedItemsList = (RecyclerView) findViewById(R.id.feed_items_list);
+                feedItemsList.setHasFixedSize(true);
+
+                // use a linear layout manager
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getBaseContext());
+                feedItemsList.setLayoutManager(layoutManager);
+
+                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getBaseContext(),
+                                                                                       DividerItemDecoration.VERTICAL_LIST);
+                feedItemsList.addItemDecoration(itemDecoration);
+
+                FeedItemsArrayAdapter feedItemsArrayAdapter
+                        = new FeedItemsArrayAdapter(feedItemReads);
+
+                mProgressBar.setVisibility(ProgressBar
+                                                   .INVISIBLE);
+                //listFeeds.setAdapter(feedArrayAdapter);
+
+                feedItemsList.setAdapter(feedItemsArrayAdapter);
+
+
                 Log.d(FEED_ACTIVITY_TAG, "Get all feed items " +
                         "completed");
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -252,7 +279,7 @@ public class FeedActivity extends AppCompatActivity {
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         // Set listview as invisible
-        mListFeedItems =(ListView) findViewById(R.id.listFeedItems);
+        mListFeedItems =(RecyclerView) findViewById(R.id.feed_items_list);
         mListFeedItems.setVisibility(ListView.INVISIBLE);
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
@@ -263,7 +290,7 @@ public class FeedActivity extends AppCompatActivity {
             public void onResponse(Call<FeedItemReadDRResponse> call, Response<FeedItemReadDRResponse> response) {
                 if (response.isSuccessful()) {
                     List<FeedItemRead> feedItemReadList =  response.body().getResults();
-                    // TODO Sync feeditemreads from API with new items of Feed Source
+                    // Sync feeditemreads from API with new items of Feed Source
                     for(Iterator<FeedItemRead> iterator = feedItemReadList.iterator(); iterator.hasNext();) {
                         FeedItemRead item = iterator.next();
                         feedItemList.add(item);
@@ -285,6 +312,7 @@ public class FeedActivity extends AppCompatActivity {
                             }
                         }
                         postAllNewItemsAsNonRead(itemsToPost);
+
                         setupListFeeds();
                     }
                 }else{
@@ -303,7 +331,7 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public void setupListFeeds(){
-        final ListView listFeeds = (ListView) findViewById(R.id.listFeedItems);
+       /* final ListView listFeeds = (ListView) findViewById(R.id.listFeedItems);
 
 
 
@@ -319,6 +347,27 @@ public class FeedActivity extends AppCompatActivity {
                         FeedItemRead feedItemRead =(FeedItemRead) listFeeds
                                 .getAdapter()
                                 .getItem(position);
+                        feedItemRead.getFeed_item().setFeed(mFeedAPI);
+                        intent.putExtra(FEED_ITEM_TYPE,
+                                        FeedItemAtom.class.isInstance(feedItemRead.getFeed_item()) ? "Atom" : "RSS");
+                        intent.putExtra(FEED_ITEM, feedItemRead.getFeed_item());
+                        intent.putExtra(FEED_ITEM_READ, feedItemRead);
+
+
+                        startActivity(intent);
+                    }
+                }
+        );*/
+
+        RecyclerView feedItemsListView = (RecyclerView) findViewById(R.id.feed_items_list);
+
+        ItemClickSupport.addTo(feedItemsListView).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Intent intent = new Intent(getApplicationContext(), FeedItemActivity
+                                .class);
+                        FeedItemRead feedItemRead = mSourceItems.get(position);
                         feedItemRead.getFeed_item().setFeed(mFeedAPI);
                         intent.putExtra(FEED_ITEM_TYPE,
                                         FeedItemAtom.class.isInstance(feedItemRead.getFeed_item()) ? "Atom" : "RSS");
@@ -345,29 +394,11 @@ public class FeedActivity extends AppCompatActivity {
             // Set listview as visible
             mListFeedItems.setVisibility(ListView.VISIBLE);
 
-            // Sort FeedItem objects by publication date
-            /*ArrayList<FeedItemRead> feedItemReads = (ArrayList<FeedItemRead>) mSourceItems;
-            Collections.sort(feedItemReads, new
-                    Comparator<FeedItemRead>()   {
-                        @Override
-                        public int compare(FeedItemRead feedItemRead1,
-                                           FeedItemRead feedItemRead2)
-                        {
+            /*ListView listFeedItems = (ListView) findViewById(R.id.listFeedItems);
+            ((ArrayAdapter)listFeedItems.getAdapter()).notifyDataSetChanged();*/
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.feed_items_list);
+            recyclerView.getAdapter().notifyDataSetChanged();
 
-                            return  feedItemRead1.getFeed_item()
-                                                 .getPublicationDate()
-                                                 .compareTo(feedItemRead2.getFeed_item()
-                                                                         .getPublicationDate()) * -1;
-                        }
-                    });
-
-
-            FeedItemsArrayAdapter feedItemsArrayAdapter = new
-                    FeedItemsArrayAdapter(getApplicationContext(),
-                                          feedItemReads);*/
-
-            ListView listFeedItems = (ListView) findViewById(R.id.listFeedItems);
-            ((ArrayAdapter)listFeedItems.getAdapter()).notifyDataSetChanged();
         }
     }
 

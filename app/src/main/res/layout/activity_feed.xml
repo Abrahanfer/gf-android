@@ -20,25 +20,28 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_below="@+id/toolBar"/>
-        <LinearLayout
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_below="@+id/toolBar">
+
+        <TextView
+            android:id="@+id/feedTextView"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/feed_items_list"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_below="@+id/toolBar">
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"/>
 
-
-            <TextView
-                android:id="@+id/feedTextView"
-                android:text=""
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ListView android:id="@+id/listFeedItems"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
+    </LinearLayout>
 
 
     <!-- A RecyclerView with some commonly used attributes -->
