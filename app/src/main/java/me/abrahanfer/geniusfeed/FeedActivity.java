@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -342,7 +344,7 @@ public class FeedActivity extends AppCompatActivity {
             mListFeedItems.setVisibility(ListView.VISIBLE);
 
             // Sort FeedItem objects by publication date
-            ArrayList<FeedItemRead> feedItemReads = (ArrayList<FeedItemRead>) mSourceItems;
+            /*ArrayList<FeedItemRead> feedItemReads = (ArrayList<FeedItemRead>) mSourceItems;
             Collections.sort(feedItemReads, new
                     Comparator<FeedItemRead>()   {
                         @Override
@@ -357,10 +359,13 @@ public class FeedActivity extends AppCompatActivity {
                         }
                     });
 
-            ListView listFeedItems =(ListView) findViewById(R.id.listFeedItems);
+
             FeedItemsArrayAdapter feedItemsArrayAdapter = new
                     FeedItemsArrayAdapter(getApplicationContext(),
-                                          feedItemReads);
+                                          feedItemReads);*/
+
+            ListView listFeedItems = (ListView) findViewById(R.id.listFeedItems);
+            ((ArrayAdapter)listFeedItems.getAdapter()).notifyDataSetChanged();
         }
     }
 

@@ -28,7 +28,7 @@ public class FeedItemsArrayAdapter extends ArrayAdapter<FeedItemRead> {
     public View getView(int position, View convertView, ViewGroup parent){
         FeedItemRead feedItemRead = getItem(position);
 
-        if (convertView == null){
+        //if (convertView == null){
             if(feedItemRead.getRead()) {
                 Log.e("Entra alguno aqui?", "Mirando el log");
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.feed_item, parent, false);
@@ -36,7 +36,7 @@ public class FeedItemsArrayAdapter extends ArrayAdapter<FeedItemRead> {
                 Log.e("Entra alguno aqui? 2", "Mirando el log");
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.feed_item_unread,parent,false);
             }
-        }
+        //}
 
         TextView titleText =(TextView) convertView.findViewById(R.id
                                                                         .textFeedItemTitle);
