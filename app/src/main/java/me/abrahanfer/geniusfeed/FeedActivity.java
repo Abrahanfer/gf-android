@@ -141,7 +141,7 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_feed, menu);
+        getMenuInflater().inflate(R.menu.toolbar_actions, menu);
         return true;
     }
 
@@ -249,8 +249,10 @@ public class FeedActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getBaseContext());
                 feedItemsList.setLayoutManager(layoutManager);
 
-                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getBaseContext(),
-                                                                                       DividerItemDecoration.VERTICAL_LIST);
+                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(feedItemsList.getContext(),
+                                                                                       DividerItemDecoration
+                                                                                               .VERTICAL_LIST);
+
                 feedItemsList.addItemDecoration(itemDecoration);
 
                 FeedItemsArrayAdapter feedItemsArrayAdapter

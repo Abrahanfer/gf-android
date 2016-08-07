@@ -14,4 +14,6 @@
     <item name="color_text_secondary" type="color">#727272</item>
     <item name="color_divider_dolor" type="color">#BDBDBD</item>
     <item name="color_red" type="color">#f44336</item>
+    <item name="color_clear" type="color">#0DFFFFFF</item>
+    <item name="color_green" type="color">#4CAF50</item>
 </resources>

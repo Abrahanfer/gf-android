@@ -32,7 +32,10 @@
             android:id="@+id/feedTextView"
             android:text=""
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/color_text_primary"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/feed_items_list"
