@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -40,6 +43,7 @@ import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.Authentication;
+import me.abrahanfer.geniusfeed.utils.network.FeedSourceGetter;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
@@ -72,6 +76,24 @@ public class MainActivity extends AppCompatActivity {
         View headerLayout = mNvDrawer.getHeaderView(0);
 
         selectDrawerItem(mNvDrawer.getMenu().getItem(0));
+        FeedSourceGetter feedSourceGetter;
+        try {
+            feedSourceGetter = new FeedSourceGetter(new URL("http://planet.emacsen.org/"));
+            feedSourceGetter.getSource(new FeedSourceGetter.FeedSourceGetterListener() {
+                @Override
+                public void onSuccess(URL feedSourceURL) {
+                    Log.d("SUCCESS", "Get feed Source");
+                }
+
+                @Override
+                public void onError() {
+                    Log.e("ERROR", "Get feed Source");
+                }
+            });
+        }catch (MalformedURLException e){
+            Log.e("ERROR", "Get feed Source 2");
+        }
+
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
