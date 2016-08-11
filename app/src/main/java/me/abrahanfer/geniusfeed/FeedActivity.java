@@ -161,8 +161,8 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public void getFeedItemsFromFeed(final URL feedLink){
-        class RetrieveFeedItems extends AsyncTask<URL, Void,
-                ArrayList<FeedItemRead> > {
+            class RetrieveFeedItems extends AsyncTask<URL, Void,
+                    ArrayList<FeedItemRead> > {
             private Exception exception;
 
             @Override

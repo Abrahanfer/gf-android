@@ -2,12 +2,17 @@ package me.abrahanfer.geniusfeed.utils.network;
 
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
+import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.FIReadUpdateBody;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.FeedBody;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.LoginBundle;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.Token;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -22,7 +27,6 @@ public interface GeniusFeedService {
     // User and login endpoints
     @POST("/auth/login/")
     Call<Token> getLoginToken(@Body LoginBundle loginBundle);
-
 
     // Feeds Endpoints
     @GET("/feeds/")
@@ -39,4 +43,12 @@ public interface GeniusFeedService {
     // Mark as read a feed item read
     @PATCH("/feed_item_reads/{pk}/")
     Call<FeedItemRead> partialUpdateFeedItemRead(@Path("pk") long pk, @Body FIReadUpdateBody fiReadUpdateBody);
+
+    // Create new Feed Source
+    @POST("/feeds/")
+    Call<Feed> createFeedSource(@Body FeedBody feedBody);
+
+    // Delete Feed Source
+    @DELETE("/feeds/{pk}/")
+    Call<ResponseBody> deleteFeedSource(@Path("pk") long pk);
 }

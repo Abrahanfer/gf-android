@@ -1,12 +1,15 @@
 package me.abrahanfer.geniusfeed;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -60,6 +63,15 @@ public class FeedListFragment extends Fragment {
         // Inflate the layout for this fragment
         mBaseView = inflater.inflate(R.layout.feed_list_fragment,
                                 container, false);
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) mBaseView.findViewById(R.id.add_feed_button);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("Mriando el feedback", "<---------");
+                showDialog();
+            }
+        });
 
         return mBaseView;
     }
@@ -302,7 +314,21 @@ public class FeedListFragment extends Fragment {
         }
 
         new GetReadableDatabase().execute();
+    }
 
+    public void showDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
 
+        // Create and show the dialog.
+        AddFeedDialogFragment newFragment = AddFeedDialogFragment.newInstance();
+        newFragment.show(ft, "dialog");
     }
 }

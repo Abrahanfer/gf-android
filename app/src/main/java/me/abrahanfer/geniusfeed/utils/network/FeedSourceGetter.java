@@ -88,15 +88,30 @@ public class FeedSourceGetter {
         for (Element linkTag : linkTags) {
             if(linkTag.attr("type").equals("application/atom+xml") || linkTag.attr("type").equals
                     ("application/rss+xml")) {
-                String baseUrl = URLSource.toString();
+                // Check absolute or relative url
+                String feedSourceStringUrl = linkTag.attr("href");
+                URL feedSourceURL;
                 try {
-                    callback.onSuccess(new URL(baseUrl + linkTag.attr("href")));
-                } catch (MalformedURLException e) {
-                    callback.onError();
+                    feedSourceURL = new URL(feedSourceStringUrl);
+                    callback.onSuccess(feedSourceURL);
+                }catch (MalformedURLException exception) {
+                    // Maybe relative URL
+                    String baseUrl = URLSource.toString();
+                    String slashAux = "/";
+                    if(baseUrl.endsWith(slashAux))
+                        slashAux = "";
+                    try {
+                        callback.onSuccess(new URL(baseUrl + slashAux + feedSourceStringUrl));
+                    } catch (MalformedURLException e) {
+                        callback.onError();
+                    }
                 }
+
                 return;
             }
         }
         callback.onError();
     }
+
+
 }

@@ -76,24 +76,6 @@ public class MainActivity extends AppCompatActivity {
         View headerLayout = mNvDrawer.getHeaderView(0);
 
         selectDrawerItem(mNvDrawer.getMenu().getItem(0));
-        FeedSourceGetter feedSourceGetter;
-        try {
-            feedSourceGetter = new FeedSourceGetter(new URL("http://planet.emacsen.org/"));
-            feedSourceGetter.getSource(new FeedSourceGetter.FeedSourceGetterListener() {
-                @Override
-                public void onSuccess(URL feedSourceURL) {
-                    Log.d("SUCCESS", "Get feed Source");
-                }
-
-                @Override
-                public void onError() {
-                    Log.e("ERROR", "Get feed Source");
-                }
-            });
-        }catch (MalformedURLException e){
-            Log.e("ERROR", "Get feed Source 2");
-        }
-
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

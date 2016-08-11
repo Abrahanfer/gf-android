@@ -73,7 +73,24 @@ public class FeedItemRSS extends FeedItem{
         super(rssItem);
         super.setPublicationDate(rssItem.getPublicationDate());
         rssFeedItemURL = rssItem.link.toString();
-        super.setItem_id(rssItem.guid.toString());
+        if(rssItem.guid != null) {
+            super.setItem_id(rssItem.guid.toString());
+        }else {
+            /* As GUID is null we need a new guid made by
+             * pubdate/todaydate and title/description
+             */
+            Date date = new Date();
+            if(rssItem.getPublicationDate() != null) {
+                 date = rssItem.getPublicationDate();
+            }
+
+            String title = rssItem.getTitle();
+            if(title == null) {
+                title = rssItem.getLink();
+            }
+
+            super.setItem_id(title + date.toString());
+        }
         description = rssItem.getDescription();
         if(rssItem.getEnclosures().size() > 0) {
             RSSEnclosure enclosure = (RSSEnclosure) rssItem.getEnclosures().get(0);
