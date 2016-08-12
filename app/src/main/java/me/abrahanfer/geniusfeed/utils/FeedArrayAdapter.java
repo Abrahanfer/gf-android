@@ -66,7 +66,7 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
 
         TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedTitle);
         titleText.setText(mFeedArrayList.get(position).getTitle());
-        
+
         if(position % 2 == 0) {
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.VISIBLE);
@@ -79,26 +79,7 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long feedPk = Long.parseLong(mFeedArrayList.get(position).getPk());
 
-                String token = Authentication.getCredentials().getToken();
-                GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
-
-                Call<ResponseBody> call = service.deleteFeedSource(feedPk);
-
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.d("RESPONSE", "Feed Remove");
-                        mFeedArrayList.remove(position);
-                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.d("ERROR", "Feed fail to delete");
-                    }
-                });
             }
         });
     }

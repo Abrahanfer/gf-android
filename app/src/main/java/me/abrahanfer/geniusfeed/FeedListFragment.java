@@ -43,6 +43,7 @@ import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -102,10 +103,13 @@ public class FeedListFragment extends Fragment {
                     }
 
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        // remove from API
+                        deleteFeed(viewHolder.getAdapterPosition());
                         // remove from adapter
                         mFeedList.remove(viewHolder.getAdapterPosition());
                        // mFeedListView.getAdapter().notifyItemRemoved(viewHolder.getAdapterPosition());
                         mFeedListView.getAdapter().notifyDataSetChanged();
+
                     }
 
                     @Override
@@ -125,7 +129,7 @@ public class FeedListFragment extends Fragment {
                                         mActivity.getBaseContext().getResources(), R.drawable
                                         .ic_delete_black_36dp);
 
-                                p.setColor(Color.parseColor("#f44336"));
+                                p.setColor(Color.parseColor("#f44336")); // App RED
                                 // Draw Rect with varying right side, equal to displacement dX
                                 c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
                                            (float) itemView.getBottom(), p);
@@ -199,10 +203,6 @@ public class FeedListFragment extends Fragment {
 
                         FeedArrayAdapter feedArrayAdapter
                                 = new FeedArrayAdapter(feedArrayList);
-
-                        mProgressBar.setVisibility(ProgressBar
-                                                           .INVISIBLE);
-                        //listFeeds.setAdapter(feedArrayAdapter);
                         mFeedList = feedArrayList;
                         mFeedListView.setAdapter(feedArrayAdapter);
                     }
@@ -238,7 +238,6 @@ public class FeedListFragment extends Fragment {
                     if (response.body().getNext() != null){
                         getFeedFromAPIPagination(page + 1);
                     }else{
-
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
                         FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(new ArrayList<Feed>(mFeedList));
@@ -272,7 +271,6 @@ public class FeedListFragment extends Fragment {
                                 FeedActivity.class);
 
                         Feed feed = mFeedList.get(position);
-                        Log.d("Position", "POsition = " + position);
                         intent.putExtra(FEED_LINK,
                                         feed.getLink().toString());
                         intent.putExtra(FEED_PK, feed.getPk());
@@ -386,5 +384,27 @@ public class FeedListFragment extends Fragment {
         // Create and show the dialog.
         AddFeedDialogFragment newFragment = AddFeedDialogFragment.newInstance();
         newFragment.show(ft, "dialog");
+    }
+
+    private void deleteFeed(final int position) {
+        long feedPk = Long.parseLong(mFeedList.get(position).getPk());
+
+        String token = Authentication.getCredentials().getToken();
+        GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
+
+        Call<ResponseBody> call = service.deleteFeedSource(feedPk);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d("RESPONSE", "Feed Remove");
+                mFeedList.remove(position);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("ERROR", "Feed fail to delete");
+            }
+        });
     }
 }
