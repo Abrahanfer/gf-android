@@ -74,14 +74,6 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.INVISIBLE);
         }
-
-        ImageButton removeButton = (ImageButton) holder.mContainerView.findViewById(R.id.removeFeedButton);
-        removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
