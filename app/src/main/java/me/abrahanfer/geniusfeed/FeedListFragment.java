@@ -398,7 +398,6 @@ public class FeedListFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.d("RESPONSE", "Feed Remove");
-                mFeedList.remove(position);
             }
 
             @Override
