@@ -5,6 +5,16 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +47,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static me.abrahanfer.geniusfeed.R.attr.icon;
+
 /**
  * Created by abrahan on 2/04/16.
  */
@@ -54,6 +67,7 @@ public class FeedListFragment extends Fragment {
     private View mBaseView;
     private Activity mActivity;
     private ProgressBar mProgressBar;
+    private RecyclerView mFeedListView;
 
     private ArrayList<Feed> mFeedList = new ArrayList<>();
 
@@ -72,6 +86,66 @@ public class FeedListFragment extends Fragment {
                 showDialog();
             }
         });
+
+        mFeedListView = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
+        mFeedListView.setHasFixedSize(true);
+
+        // TODO Add Swipe gesture to items
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                                                   ItemTouchHelper.RIGHT) {
+                    public boolean onMove(RecyclerView recyclerView,
+                                          RecyclerView.ViewHolder viewHolder,
+                                          RecyclerView.ViewHolder target) {
+
+                        return false;
+                    }
+
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        // remove from adapter
+                        mFeedList.remove(viewHolder.getAdapterPosition());
+                       // mFeedListView.getAdapter().notifyItemRemoved(viewHolder.getAdapterPosition());
+                        mFeedListView.getAdapter().notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                            // Get RecyclerView item from the ViewHolder
+                            View itemView = viewHolder.itemView;
+
+                            Paint p = new Paint();
+                            Bitmap trashIcon;
+                            float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                            float width = height / 3;
+
+                            if (dX > 0) {
+                                /* Set your color for positive displacement */
+                                trashIcon = BitmapFactory.decodeResource(
+                                        mActivity.getBaseContext().getResources(), R.drawable
+                                        .ic_delete_black_36dp);
+
+                                p.setColor(Color.parseColor("#f44336"));
+                                // Draw Rect with varying right side, equal to displacement dX
+                                c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
+                                           (float) itemView.getBottom(), p);
+
+                                // Set the image icon for swipe background
+                                RectF icon_dest = new RectF((float) itemView.getLeft() + width , (float) itemView.getTop() + width, (float) itemView.getLeft()+ 2*width, (float)itemView.getBottom() - width);
+                                ColorFilter whiteFilter = new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                                p.setColorFilter(whiteFilter);
+                                c.drawBitmap(trashIcon,null,icon_dest,p);
+                            }
+
+                            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                        }
+                    }
+                });
+        itemTouchHelper.attachToRecyclerView(mFeedListView);
+
+        // use a linear layout manager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
+        mFeedListView.setLayoutManager(layoutManager);
 
         return mBaseView;
     }
@@ -123,25 +197,14 @@ public class FeedListFragment extends Fragment {
                         // tasks available
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-                        RecyclerView feedList = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
-                        feedList.setHasFixedSize(true);
-
-                        // use a linear layout manager
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
-                        feedList.setLayoutManager(layoutManager);
-
-                        RecyclerView.ItemDecoration itemDecoration = new
-                                DividerItemDecoration(mBaseView.getContext(), DividerItemDecoration.VERTICAL_LIST);
-                        feedList.addItemDecoration(itemDecoration);
-
                         FeedArrayAdapter feedArrayAdapter
                                 = new FeedArrayAdapter(feedArrayList);
 
                         mProgressBar.setVisibility(ProgressBar
                                                            .INVISIBLE);
                         //listFeeds.setAdapter(feedArrayAdapter);
-
-                        feedList.setAdapter(feedArrayAdapter);
+                        mFeedList = feedArrayList;
+                        mFeedListView.setAdapter(feedArrayAdapter);
                     }
 
                 } else {
@@ -178,16 +241,9 @@ public class FeedListFragment extends Fragment {
 
                         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-                        RecyclerView feedListView = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
-                        feedListView.setHasFixedSize(true);
-
-                        // use a linear layout manager
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
-                        feedListView.setLayoutManager(layoutManager);
-
-
                         FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(new ArrayList<Feed>(mFeedList));
-                        feedListView.setAdapter(feedArrayAdapter);
+                        mFeedList = feedArrayList;
+                        mFeedListView.setAdapter(feedArrayAdapter);
                     }
                 } else {
                     // error response, no access to resource?

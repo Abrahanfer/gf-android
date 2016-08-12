@@ -3,6 +3,9 @@ package me.abrahanfer.geniusfeed;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.einmalfel.earl.EarlParser;
@@ -68,6 +72,7 @@ public class AddFeedDialogFragment extends DialogFragment {
                    public void onClick(DialogInterface dialog, int id) {
                        EditText editText = (EditText) layout.findViewById(R.id.urlFeedSource);
                        addFeedSource(editText.getText().toString());
+
                    }
                })
                .setNegativeButton(R.string.add_feed_cancel, new DialogInterface.OnClickListener() {
@@ -81,23 +86,46 @@ public class AddFeedDialogFragment extends DialogFragment {
 
     public void addFeedSource(String stringURL) {
 
-        if(stringURL.trim().length() > 0) {
+        final MainActivity activity = (MainActivity) getActivity();
 
+
+        final Handler handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                // TODO Print alert on mainThread
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setMessage(R.string.error_creating_feed)
+                       .setCancelable(false)
+                       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int id) {
+                               // Dismiss dialog
+                               //dialog.dismiss();
+                           }
+                       });
+
+                builder.create().show();
+            }
+        };
+
+
+        // TODO Check for URL format
+        if(stringURL.trim().length() > 0 && true) {
             FeedSourceGetter feedSourceGetter;
-            try { // "http://android-developers.blogspot.com.es/"
+            try {
                 feedSourceGetter = new FeedSourceGetter(new URL(stringURL));
                 feedSourceGetter.getSource(new FeedSourceGetter.FeedSourceGetterListener() {
                     @Override
                     public void onSuccess(URL feedSourceURL) {
-                        Log.d("SUCCESS", "Get feed Source " + feedSourceURL.toString());
-                        // TODO Make request to API to create new feed
-                        Log.e("depuración", "Entramos aqui 20");
+                        // Make request to API to create new feed
                         createNewFeed(feedSourceURL);
                     }
 
                     @Override
                     public void onError() {
                         Log.e("ERROR", "Get feed Source");
+                        // Show feedback to user through handle
+                        handler.sendEmptyMessage(0);
                     }
                 });
             } catch (MalformedURLException e) {
@@ -159,17 +187,16 @@ public class AddFeedDialogFragment extends DialogFragment {
                 call.enqueue(new Callback<Feed>() {
                     @Override
                     public void onResponse(Call<Feed> call, Response<Feed> response) {
-                        Log.e("depuración", "Entramos aqui 1 " + response.code());
                         if (response.isSuccessful()) {
-                            Log.e("depuración", "Entramos aqui 2");
                             Log.d("RETROFIT RESPONSE", "Response ok " + response.body().getPk());
+                            // TODO Call to fragment to notify changes to adapter
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Feed> call, Throwable t) {
-                        // something went completely south (like no internet connection)
                         Log.e("CreateFeed RETROFIT", t.getMessage());
+                        // TODO Feedback to user for fail to communication
                     }
                 });
 

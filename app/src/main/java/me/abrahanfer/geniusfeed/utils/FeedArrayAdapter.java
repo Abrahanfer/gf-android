@@ -66,9 +66,13 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
 
         TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedTitle);
         titleText.setText(mFeedArrayList.get(position).getTitle());
+        
         if(position % 2 == 0) {
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.VISIBLE);
+        }else{
+            ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
+            image.setVisibility(ImageView.INVISIBLE);
         }
 
         ImageButton removeButton = (ImageButton) holder.mContainerView.findViewById(R.id.removeFeedButton);
