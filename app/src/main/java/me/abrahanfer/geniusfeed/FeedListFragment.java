@@ -2,6 +2,7 @@ package me.abrahanfer.geniusfeed;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,9 +18,12 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -96,7 +100,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
         mFeedListView = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
         mFeedListView.setHasFixedSize(true);
 
-        // TODO Add Swipe gesture to items
+        // Add Swipe gesture to items
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
                                                    ItemTouchHelper.RIGHT) {
@@ -406,11 +410,18 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.d("RESPONSE", "Feed Remove");
+                if (response.isSuccessful()) {
+                    CoordinatorLayout parentView = (CoordinatorLayout) getActivity().findViewById(R.id.feed_list_content);
+                    Snackbar.make(parentView, R.string.done_deleting_feed, Snackbar.LENGTH_LONG).show();
+                } else {
+                    showAlertMessageForError(0);
+                }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d("ERROR", "Feed fail to delete");
+                showAlertMessageForError(0);
             }
         });
     }
@@ -419,5 +430,20 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public void updateFeedData(Feed newFeed) {
         mFeedList.add(newFeed);
         mFeedListView.getAdapter().notifyDataSetChanged();
+    }
+
+    private void showAlertMessageForError(int errorCode) {
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.error_creating_feed)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }
