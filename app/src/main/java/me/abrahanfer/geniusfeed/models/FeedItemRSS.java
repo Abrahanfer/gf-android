@@ -74,7 +74,7 @@ public class FeedItemRSS extends FeedItem{
         super.setPublicationDate(rssItem.getPublicationDate());
         rssFeedItemURL = rssItem.link.toString();
         if(rssItem.guid != null) {
-            super.setItem_id(rssItem.guid.toString());
+            super.setItem_id(rssItem.guid.value);
         }else {
             /* As GUID is null we need a new guid made by
              * pubdate/todaydate and title/description
