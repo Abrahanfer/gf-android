@@ -7,6 +7,7 @@
 package me.abrahanfer.geniusfeed;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -161,6 +162,9 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public void getFeedItemsFromFeed(final URL feedLink){
+
+            final Activity activity = this;
+
             class RetrieveFeedItems extends AsyncTask<URL, Void,
                     ArrayList<FeedItemRead> > {
             private Exception exception;
@@ -258,6 +262,7 @@ public class FeedActivity extends AppCompatActivity {
                 FeedItemsArrayAdapter feedItemsArrayAdapter
                         = new FeedItemsArrayAdapter(feedItemReads);
 
+                feedItemsArrayAdapter.setActivity(activity);
                 mProgressBar.setVisibility(ProgressBar
                                                    .INVISIBLE);
                 //listFeeds.setAdapter(feedArrayAdapter);

@@ -6,10 +6,14 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_feed_item">FeedItemActivity</string>
     <string name="title_activity_feed">FeedActivity</string>
+    <!-- Login activity -->
     <string name="login_username">Username</string>
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_password">Password</string>
+    <string name="error_login_communication">An error happens when loggin.</string>
+
+
     <string name="open_drawer_menu">Open Menu</string>
     <string name="close_drawer_menu">Close Menu</string>
     <string name="list_feed_menu_item">List Feeds</string>
@@ -51,6 +55,9 @@
     <!-- Delete Feed -->
     <string name="error_deleting_feed">An error happens creating the feed.</string>
     <string name="done_deleting_feed">The feed has been delete.</string>
+
+    <!-- Feed Activity -->
+    <string name="error_updating_feed_item">Ann error happends updating this entry.</string>
 
     <!-- Hint strings -->
     <string name="url_feed_source_hint">Feed Url</string>

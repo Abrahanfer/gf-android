@@ -1,7 +1,10 @@
 package me.abrahanfer.geniusfeed.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.Image;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +38,15 @@ import retrofit2.Response;
 public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAdapter.ViewHolder> {
 
     private ArrayList<FeedItemRead> mFeedItemReadList;
+    protected Activity activity;
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View mContainerView;
@@ -120,7 +132,6 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
             public void onClick(View v) {
                 favButton.setSelected(!favButton.isSelected());
 
-
                 if (favButton.isSelected()) {
                     // Mark as favourite feedItemRead
                     feedItemRead.setFav(true);
@@ -177,14 +188,30 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                 if(response.isSuccessful()) {
                     Log.d("SUCCESS RESPONSE", response.body().toString());
                 } else {
-
+                    showAlertDialogWithError(0);
                 }
             }
 
             @Override
             public void onFailure(Call<FeedItemRead> call, Throwable t) {
                 Log.e("FAILURE RESPONSE", t.toString());
+                showAlertDialogWithError(0);
             }
         });
+    }
+
+    private void showAlertDialogWithError(int errorCode) {
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage(R.string.error_updating_feed_item)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }

@@ -2,10 +2,12 @@ package me.abrahanfer.geniusfeed;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -96,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         Authentication authentication = new Authentication(username);
         Authentication.setCredentials(authentication);
 
-        // TODO Make request to get token from API
+        // Make request to get token from API
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         // set your desired log level
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -113,13 +115,12 @@ public class LoginActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
-        Log.e("LOGIN_ACTIVITY", "loginactivity 1");
+        
         GeniusFeedService service = retrofit.create(GeniusFeedService.class);
         Call<Token> call = service.getLoginToken(new LoginBundle(username, password));
         call.enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
-                Log.e("LOGIN_ACTIVITY", "loginactivity 2" + response.raw().toString());
                 if (response.isSuccessful()) {
                     // tasks available
 
@@ -133,14 +134,14 @@ public class LoginActivity extends AppCompatActivity {
                     saveCredentialsToDB();
                 } else {
                     // error response, no access to resource?
-                    Log.e("LOGIN_ACTIVITY", "loginactivity 3");
+                    showAlertDialogWithError(0);
                 }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 // something went completely south (like no internet connection)
-                Log.e("Error Login RETROFIT", t.getMessage());
+                showAlertDialogWithError(0);
             }
         });
     /*class GetTokenRequest extends AsyncTask<String, Void, String> {
@@ -285,5 +286,20 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         new WriteUserCrendetialsToDB().execute();
+    }
+
+    private void showAlertDialogWithError(int errorCode) {
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.error_login_communication)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }
