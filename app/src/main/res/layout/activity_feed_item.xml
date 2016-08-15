@@ -1,27 +1,52 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="me.abrahanfer.geniusfeed.FeedItemActivity">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    tools:context="me.abrahanfer.geniusfeed.FeedItemActivity">
 
-    <include
-        layout="@layout/toolbar"
-        android:id="@+id/toolBar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize">
+
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_below="@+id/toolBar"
-                android:padding="10dp"
+                android:background="@color/color_text"
+                android:layout_below="@+id/toolbar"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:fillViewport="false">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         xmlns:tools="http://schemas.android.com/tools"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:background="@color/color_text"
                         tools:context="me.abrahanfer.geniusfeed.FeedItemActivity">
 
             <TextView android:id="@+id/feedItemTextView"
@@ -33,16 +58,28 @@
             <WebView android:id="@+id/feedItemWebView"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
-                     android:padding="16dp"
                      android:visibility="gone"/>
 
             <ImageView android:id="@+id/feedItemImageView"
-                       android:layout_below="@+id/feedItemTextView"
+                       android:layout_toEndOf="@+id/feedItemWebView"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:visibility="gone"
                        android:padding="16dp"/>
-        </RelativeLayout>
-    </ScrollView>
 
-</RelativeLayout>
+            <Button
+                android:id="@+id/viewOnSource"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/feedItemWebView"
+                android:layout_alignEnd="@+id/feedItemWebView"
+                android:text="@string/view_on_source"
+                android:background="@color/color_accent"
+                android:padding="8dp"
+                style="@style/buttonRaisedAccentStyle"
+                android:visibility="gone"
+                android:elevation="4dp"/>
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

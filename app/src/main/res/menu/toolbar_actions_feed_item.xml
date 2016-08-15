@@ -3,8 +3,8 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Search action button -->
     <item
-        android:id="@+id/searchAction"
-        android:icon="@drawable/ic_search_white_24dp"
-        android:title="Search"
+        android:id="@+id/favoriteAction"
+        android:title="Fav"
+        android:icon="@drawable/fav_icon_24"
         app:showAsAction="ifRoom"/>
 </menu>

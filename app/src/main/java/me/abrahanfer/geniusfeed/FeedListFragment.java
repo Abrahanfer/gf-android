@@ -50,10 +50,15 @@ import retrofit2.Response;
 
 import static me.abrahanfer.geniusfeed.R.attr.icon;
 
+
+interface FeedListUpdater {
+    void updateFeedData(Feed newFeed);
+}
+
 /**
  * Created by abrahan on 2/04/16.
  */
-public class FeedListFragment extends Fragment {
+public class FeedListFragment extends Fragment implements FeedListUpdater {
     public final static String FEED = "me.abrahanfer.geniusfeed" +
             ".FEED";
     public final static String LOGIN_CREDENTIALS =
@@ -383,6 +388,9 @@ public class FeedListFragment extends Fragment {
 
         // Create and show the dialog.
         AddFeedDialogFragment newFragment = AddFeedDialogFragment.newInstance();
+        // Setting helper to update values after operation
+        newFragment.setUpdateHelper(this);
+
         newFragment.show(ft, "dialog");
     }
 
@@ -405,5 +413,11 @@ public class FeedListFragment extends Fragment {
                 Log.d("ERROR", "Feed fail to delete");
             }
         });
+    }
+
+    @Override
+    public void updateFeedData(Feed newFeed) {
+        mFeedList.add(newFeed);
+        mFeedListView.getAdapter().notifyDataSetChanged();
     }
 }

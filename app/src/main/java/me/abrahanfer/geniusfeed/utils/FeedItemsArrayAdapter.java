@@ -12,7 +12,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import me.abrahanfer.geniusfeed.FeedActivity;
 import me.abrahanfer.geniusfeed.R;
@@ -131,9 +134,14 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
         });
 
 
-        TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedItemTitle);
+        TextView titleText = (TextView) holder.mContainerView.findViewById(R.id.textFeedItemTitle);
         titleText.setText(mFeedItemReadList.get(position).getFeed_item().getTitle());
 
+        TextView pubDateText = (TextView) holder.mContainerView.findViewById(R.id.textFeedItemPubDate);
+        Date pubDate = mFeedItemReadList.get(position).getFeed_item().getPublicationDate();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        if(pubDate != null)
+           pubDateText.setText(dateFormat.format(pubDate));
 
         if (feedItemRead.getRead()) {
             readButton.setSelected(true);

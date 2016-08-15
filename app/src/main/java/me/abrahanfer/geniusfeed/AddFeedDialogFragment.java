@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,15 @@ import static me.abrahanfer.geniusfeed.FeedActivity.EARL_TAG;
 public class AddFeedDialogFragment extends DialogFragment {
 
     private com.einmalfel.earl.Feed mFeedInfo;
+    private FeedListUpdater mUpdateHelper;
+
+    public FeedListUpdater getUpdateHelper() {
+        return mUpdateHelper;
+    }
+
+    public void setUpdateHelper(FeedListUpdater updateHelper) {
+        this.mUpdateHelper = updateHelper;
+    }
 
     static AddFeedDialogFragment newInstance() {
         AddFeedDialogFragment dialog = new AddFeedDialogFragment();
@@ -92,10 +102,17 @@ public class AddFeedDialogFragment extends DialogFragment {
         final Handler handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message message) {
-                // TODO Print alert on mainThread
 
+                String alertMessage;
+                if(message.what == 0){
+                    alertMessage = getString(R.string.error_creating_feed);
+                } else {
+                    alertMessage = getString(R.string.error_url_malformed);
+                }
+
+                // Print alert on mainThread
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setMessage(R.string.error_creating_feed)
+                builder.setMessage(alertMessage)
                        .setCancelable(false)
                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                            public void onClick(DialogInterface dialog, int id) {
@@ -109,7 +126,8 @@ public class AddFeedDialogFragment extends DialogFragment {
         };
 
 
-        // TODO Check for URL format
+
+        // Check for URL format
         if(stringURL.trim().length() > 0 && true) {
             FeedSourceGetter feedSourceGetter;
             try {
@@ -130,6 +148,7 @@ public class AddFeedDialogFragment extends DialogFragment {
                 });
             } catch (MalformedURLException e) {
                 Log.e("ERROR", "Get feed Source 2");
+                handler.sendEmptyMessage(1);
             }
         }
     }
@@ -142,32 +161,25 @@ public class AddFeedDialogFragment extends DialogFragment {
 
             @Override
             protected com.einmalfel.earl.Feed doInBackground(Void... params) {
-                Log.e("depuración", "Entramos aqui 10 ");
                 InputStream inputStream = null;
                 com.einmalfel.earl.Feed feed = null;
-                Log.e("depuración", "Entramos aqui 12 ");
                 try {
                     inputStream = feedSourceURL.openConnection().getInputStream();
-                }catch (IOException exception) {
+                } catch(IOException exception) {
                     Log.d(EARL_TAG, "Exception IO");
-                    Log.e("depuración", "Entramos aqui 12 ");
                     return feed;
                 }
-                Log.e("depuración", "Entramos aqui 13 ");
+
                 try {
                     feed = EarlParser.parseOrThrow(inputStream, 0);
-                    Log.e("depuración", "Entramos aqui 14 ");
-                }catch (XmlPullParserException xmlExcepcion){
+                } catch(XmlPullParserException xmlExcepcion){
                     Log.d(EARL_TAG, "Exception XML Pasrser");
-                }catch (IOException ioException){
+                } catch(IOException ioException){
                     Log.d(EARL_TAG, "Exception IO");
-                }catch (DataFormatException dataException) {
+                } catch(DataFormatException dataException) {
                     Log.d(EARL_TAG, "Exception data format");
                 }
 
-                Log.e("depuración", "Entramos aqui 15 ");
-                Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
-                Log.e("depuración", "Entramos aqui 16 ");
                 mFeedInfo = feed;
                 return feed;
             }
@@ -175,7 +187,10 @@ public class AddFeedDialogFragment extends DialogFragment {
             protected void onPostExecute(com.einmalfel.earl.Feed feed) {
                 Log.i(EARL_TAG, "Mirando titulo del nuevo Feed " + feed.getTitle());
 
-
+                if (feed == null) {
+                    showAlertMessageForError(0);
+                    return;
+                }
 
                 String feedTitle = feed.getTitle();
 
@@ -188,20 +203,38 @@ public class AddFeedDialogFragment extends DialogFragment {
                     @Override
                     public void onResponse(Call<Feed> call, Response<Feed> response) {
                         if (response.isSuccessful()) {
-                            Log.d("RETROFIT RESPONSE", "Response ok " + response.body().getPk());
-                            // TODO Call to fragment to notify changes to adapter
+                            // Call to fragment to notify changes to adapter
+                            mUpdateHelper.updateFeedData(response.body());
+                        } else {
+                            // Feedback to user for fail on server
+                            showAlertMessageForError(0);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Feed> call, Throwable t) {
-                        Log.e("CreateFeed RETROFIT", t.getMessage());
-                        // TODO Feedback to user for fail to communication
+                        // Feedback to user for fail to communication
+                        showAlertMessageForError(0);
                     }
                 });
 
             }
         }
         new RetrieveFeedInfo().execute();
+    }
+
+    private void showAlertMessageForError(int errorCode) {
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.error_creating_feed)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }

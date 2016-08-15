@@ -18,5 +18,25 @@
     <style name="CircularProgress" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/color_accent</item>
     </style>
+    
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
+        <item name="android:textColorPrimary">@color/color_text</item>
+        <!-- actionMenuTextColor is the color of the text of action (menu) items  -->
+        <item name="actionMenuTextColor">@color/color_text</item>
+        <!-- Tints the input fields like checkboxes and text fields -->
+        <item name="colorAccent">@color/color_accent</item>
+
+        <!-- Applies to views in their normal state. -->
+        <item name="android:colorControlNormal">@color/color_text</item>
+        <!-- Applies to views in their activated state (i.e checked or switches) -->
+        <item name="android:colorControlActivated">@color/color_text</item>
+        <item name="android:colorControlHighlight">@color/color_text</item>
+    </style>
+
+    <style name="buttonRaisedAccentStyle">
+        <item name="android:textColor">@color/raised_button_accent_back</item>
+    </style>
 
 </resources>

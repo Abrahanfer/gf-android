@@ -32,7 +32,21 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         android:textSize="14sp"
-        android:textColor="@color/color_text_primary"/>
+        android:textColor="@color/feed_item_title_text_color"/>
+
+    <TextView
+        android:id="@+id/textFeedItemPubDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textFeedItemTitle"
+        android:layout_toStartOf="@+id/favouriteButton"
+        android:layout_toEndOf="@+id/feedAvatarRead"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:textSize="10sp"
+        android:textColor="@color/feed_item_pub_date_text_color"
+        />
 
     <ImageButton
         android:id="@+id/favouriteButton"

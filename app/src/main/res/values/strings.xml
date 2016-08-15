@@ -27,7 +27,7 @@
                             background-color: #fff;
                         }
                         a {
-                            color: #eee;
+                            color: #ff5722;
                         }
                         a:hover {
                             color: #06c;
@@ -45,8 +45,12 @@
     <string name="add_feed_confirm">Add Feed</string>
     <string name="add_feed_cancel">Cancel</string>
     <string name="error_creating_feed">An error happens creating the feed.</string>
+    <string name="error_url_malformed">The URL is malformed.</string>
     <string name="ok">Ok</string>
 
     <!-- Hint strings -->
     <string name="url_feed_source_hint">Feed Url</string>
+
+    <!-- Feed Item view Buttons -->
+    <string name="view_on_source">View on Source</string>
 </resources>
