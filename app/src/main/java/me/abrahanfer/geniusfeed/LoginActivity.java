@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,9 +15,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -42,6 +46,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.color_primary_dark));
 
         // Set up progressBar
         mProgressBar = (ProgressBar) findViewById(R.id.pbLoading);
@@ -95,6 +104,21 @@ public class LoginActivity extends AppCompatActivity {
 
     public void requestToken(String username, String password) {
 
+
+        // Turn to invisible all login view components
+        final EditText usernameEdit = (EditText) findViewById(R.id.editTextUsername);
+        final EditText passwordEdit = (EditText) findViewById(R.id.editTextPassword);
+
+        final Button buttonLogin = (Button) findViewById(R.id.buttonLogin);
+        final Button buttonSignUp = (Button) findViewById(R.id.buttonSignUp);
+
+        usernameEdit.setVisibility(EditText.INVISIBLE);
+        passwordEdit.setVisibility(EditText.INVISIBLE);
+        buttonLogin.setVisibility(Button.INVISIBLE);
+        buttonSignUp.setVisibility(Button.INVISIBLE);
+
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
         Authentication authentication = new Authentication(username);
         Authentication.setCredentials(authentication);
 
@@ -115,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
-        
+
         GeniusFeedService service = retrofit.create(GeniusFeedService.class);
         Call<Token> call = service.getLoginToken(new LoginBundle(username, password));
         call.enqueue(new Callback<Token>() {
@@ -127,12 +151,21 @@ public class LoginActivity extends AppCompatActivity {
                     String token = response.body().getAuth_token();
                     Log.d("Login Token ", token);
                     mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                    usernameEdit.setVisibility(EditText.VISIBLE);
+                    passwordEdit.setVisibility(EditText.VISIBLE);
+                    buttonLogin.setVisibility(Button.VISIBLE);
+                    buttonSignUp.setVisibility(Button.VISIBLE);
                     Authentication authentication = Authentication.getCredentials();
 
                     authentication.setToken(token);
 
                     saveCredentialsToDB();
                 } else {
+                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                    usernameEdit.setVisibility(EditText.VISIBLE);
+                    passwordEdit.setVisibility(EditText.VISIBLE);
+                    buttonLogin.setVisibility(Button.VISIBLE);
+                    buttonSignUp.setVisibility(Button.VISIBLE);
                     // error response, no access to resource?
                     showAlertDialogWithError(0);
                 }
@@ -141,6 +174,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 // something went completely south (like no internet connection)
+                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                usernameEdit.setVisibility(EditText.VISIBLE);
+                passwordEdit.setVisibility(EditText.VISIBLE);
+                buttonLogin.setVisibility(Button.VISIBLE);
+                buttonSignUp.setVisibility(Button.VISIBLE);
                 showAlertDialogWithError(0);
             }
         });
@@ -214,12 +252,12 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEdit = (EditText) findViewById(R.id.editTextPassword);
 
         final Button buttonLogin = (Button) findViewById(R.id.buttonLogin);
+        final Button buttonSignUp = (Button) findViewById(R.id.buttonSignUp);
 
-        usernameLabel.setVisibility(TextView.INVISIBLE);
         usernameEdit.setVisibility(EditText.INVISIBLE);
-        passwordLabel.setVisibility(TextView.INVISIBLE);
         passwordEdit.setVisibility(EditText.INVISIBLE);
         buttonLogin.setVisibility(Button.INVISIBLE);
+        buttonSignUp.setVisibility(Button.INVISIBLE);
 
         // ProgressBar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -274,11 +312,11 @@ public class LoginActivity extends AppCompatActivity {
                 // Return to normal state
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-                usernameLabel.setVisibility(TextView.VISIBLE);
+
                 usernameEdit.setVisibility(EditText.VISIBLE);
-                passwordLabel.setVisibility(TextView.VISIBLE);
                 passwordEdit.setVisibility(EditText.VISIBLE);
                 buttonLogin.setVisibility(Button.VISIBLE);
+                buttonSignUp.setVisibility(Button.VISIBLE);
                 // Load Intent
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);

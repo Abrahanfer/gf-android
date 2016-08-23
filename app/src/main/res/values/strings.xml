@@ -7,11 +7,13 @@
     <string name="title_activity_feed_item">FeedItemActivity</string>
     <string name="title_activity_feed">FeedActivity</string>
     <!-- Login activity -->
+    <string name="main_title">Geniusfeed</string>
     <string name="login_username">Username</string>
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_password">Password</string>
     <string name="error_login_communication">An error happens when loggin.</string>
+    <string name="signin_button_title">Sign In</string>
 
 
     <string name="open_drawer_menu">Open Menu</string>

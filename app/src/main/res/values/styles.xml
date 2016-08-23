@@ -39,4 +39,12 @@
         <item name="android:textColor">@color/raised_button_accent_back</item>
     </style>
 
+    <style name="buttonRaisedPrimaryStyle">
+        <item name="android:textColor">@color/raised_button_primary_back</item>
+    </style>
+
+    <style name="buttonRaisedColorTextStyle">
+        <item name="android:textColor">@color/raised_button_color_text_back</item>
+    </style>
+
 </resources>

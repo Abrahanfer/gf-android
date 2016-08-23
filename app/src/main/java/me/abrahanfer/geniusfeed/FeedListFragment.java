@@ -435,7 +435,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     private void showAlertMessageForError(int errorCode) {
         // Print alert on mainThread
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.error_creating_feed)
+        builder.setMessage(R.string.error_deleting_feed)
                .setCancelable(false)
                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
