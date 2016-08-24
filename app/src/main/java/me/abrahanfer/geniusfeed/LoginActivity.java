@@ -108,8 +108,6 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("Mirando el fragment", "Un fragmento nulo " + fragment);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                        .replace(R.id.frameLayoutLoginSignIn, (Fragment) fragment)

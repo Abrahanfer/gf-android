@@ -327,7 +327,6 @@ public class LoginFragment extends Fragment {
 
     @OnClick(R.id.buttonSignUp)
     public void goToSignUpView() {
-        Log.d("OnCLick", "Carajo");
         LoginActivity loginActivity = (LoginActivity) mActivity;
         loginActivity.changeToSignUpFragment();
     }

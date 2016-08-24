@@ -7,6 +7,7 @@ import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.FIReadUpdateBody;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.FeedBody;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.LoginBundle;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.RegisterBundle;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.Token;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -27,6 +28,10 @@ public interface GeniusFeedService {
     // User and login endpoints
     @POST("/auth/login/")
     Call<Token> getLoginToken(@Body LoginBundle loginBundle);
+
+    // Register endpoint
+    @POST("/auth/register/")
+    Call<ResponseBody> createNewUser(@Body RegisterBundle registerBundle);
 
     // Feeds Endpoints
     @GET("/feeds/")
