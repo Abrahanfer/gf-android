@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_primary">
+
+    <!-- Progress bar -->
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:theme="@style/CircularProgress"
+        android:alpha="1"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:fontFamily="sans-serif-ligth"
+        android:textSize="40sp"
+        android:paddingTop="100dp"
+        android:text="@string/main_title"
+        android:textColor="@color/textviewstatelist"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/screenTitle"
+        android:id="@+id/editTextEmail"
+        android:textColor="@color/textviewstatelist"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:minWidth="200dp"
+        android:inputType="textWebEmailAddress"
+        android:hint="@string/login_username_hint" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextPassword"
+        android:textColor="@color/textviewstatelist"
+        android:layout_below="@+id/editTextEmail"
+        android:layout_centerHorizontal="false"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="10dp"
+        android:minWidth="200dp"
+        android:inputType="textPassword"
+        android:hint="@string/login_password_hint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextRepeatPassword"
+        android:textColor="@color/textviewstatelist"
+        android:layout_below="@+id/editTextPassword"
+        android:layout_centerHorizontal="false"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="10dp"
+        android:minWidth="200dp"
+        android:inputType="textPassword"
+        android:hint="@string/repeat_login_password_hint" />
+
+    <Button
+        android:id="@+id/buttonSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/color_text"
+        android:text="@string/signup_button_title"
+        android:textSize="20sp"
+        android:layout_below="@+id/editTextRepeatPassword"
+        android:layout_alignStart="@+id/editTextPassword"
+        android:layout_alignEnd="@+id/editTextPassword"
+        android:minWidth="200dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="35dp"
+        style="@style/buttonRaisedPrimaryStyle"
+        android:clickable="true"/>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:text="@string/login_button_title"
+        android:textSize="20sp"
+        android:layout_alignStart="@+id/editTextPassword"
+        android:layout_alignEnd="@+id/editTextPassword"
+        android:backgroundTint="@color/color_clear"
+        android:textColor="@color/raised_button_color_text_back"
+        style="?borderlessButtonStyle"
+        android:clickable="true"
+        />
+
+</RelativeLayout>
