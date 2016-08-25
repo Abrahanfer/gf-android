@@ -96,7 +96,8 @@ public class LoginFragment extends Fragment {
                 password != null && password.trim().length() > 0) {
             requestToken(username,password);
         } else {
-            // TODO toast bad credentials
+            // Bad format login
+            showAlertDialogWithError(1);
         }
 
     }
@@ -104,12 +105,7 @@ public class LoginFragment extends Fragment {
     public void requestToken(String username, String password) {
 
         // Turn to invisible all login view components
-        mEditTextUsername.setVisibility(EditText.INVISIBLE);
-        mEditTextPassword.setVisibility(EditText.INVISIBLE);
-        mButtonLogin.setVisibility(Button.INVISIBLE);
-        mButtonSignUp.setVisibility(Button.INVISIBLE);
-
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        showProgressBar();
 
         Authentication authentication = new Authentication(username);
         Authentication.setCredentials(authentication);
@@ -138,26 +134,16 @@ public class LoginFragment extends Fragment {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
                 if (response.isSuccessful()) {
-                    // tasks available
-
+                    // Save token to DB
                     String token = response.body().getAuth_token();
                     Log.d("Login Token ", token);
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    mEditTextUsername.setVisibility(EditText.VISIBLE);
-                    mEditTextPassword.setVisibility(EditText.VISIBLE);
-                    mButtonLogin.setVisibility(Button.VISIBLE);
-                    mButtonSignUp.setVisibility(Button.VISIBLE);
                     Authentication authentication = Authentication.getCredentials();
 
                     authentication.setToken(token);
 
                     saveCredentialsToDB();
                 } else {
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    mEditTextUsername.setVisibility(EditText.VISIBLE);
-                    mEditTextPassword.setVisibility(EditText.VISIBLE);
-                    mButtonLogin.setVisibility(Button.VISIBLE);
-                    mButtonSignUp.setVisibility(Button.VISIBLE);
+                    dismissProgressBar();
                     // error response, no access to resource?
                     showAlertDialogWithError(0);
                 }
@@ -166,85 +152,13 @@ public class LoginFragment extends Fragment {
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 // something went completely south (like no internet connection)
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                mEditTextUsername.setVisibility(EditText.VISIBLE);
-                mEditTextPassword.setVisibility(EditText.VISIBLE);
-                mButtonLogin.setVisibility(Button.VISIBLE);
-                mButtonSignUp.setVisibility(Button.VISIBLE);
+                dismissProgressBar();
                 showAlertDialogWithError(0);
             }
         });
-    /*class GetTokenRequest extends AsyncTask<String, Void, String> {
-        private Exception exception;
-
-        @Override
-        protected String doInBackground(String... values) {
-            Authentication authentication = new Authentication(values[0]);
-            Authentication.setCredentials(authentication);
-
-            // Create the request body as a MultiValueMap
-            MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-            JSONObject bodyJson = new JSONObject();
-            // TODO Put key in constants
-            try {
-                bodyJson.put("username", values[0]);
-                bodyJson.put("password", values[1]);
-            }catch (JSONException jsonException){
-                // TODO Process error on login
-                System.out.println("Mirando la excepcion de JSON");
-                System.out.println(jsonException);
-                return null;
-            }
-
-            // set headers
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(bodyJson,headers);
-            RestTemplate restTemplate = new RestTemplate();
-
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            try {
-                Log.e("LoginActivity", "Getting token");
-                String urlToken = Constants.getHostByEnviroment() + Constants.AUTH_TOKEN;
-
-                HttpEntity<DRTokenResponse> response = restTemplate
-                        .exchange(urlToken, HttpMethod.POST, requestEntity, DRTokenResponse.class);
-
-                DRTokenResponse result = response.getBody();
-                String token = result.getToken();
-
-                return token;
-            } catch (RestClientException springException) {
-                // TODO Process error on login
-                System.out.println("Mirando la excepcion de Spring");
-                System.out.println(springException);
-                return null;
-            }
-        }
-
-        protected void onPostExecute(String token) {
-            System.out.println("Mirando el token" + token);
-
-            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-            Authentication authentication = Authentication.getCredentials();
-            authentication.setToken(token);
-
-            saveCredentialsToDB();
-            }
-        }*/
-
-        //new GetTokenRequest().execute(username,password);
     }
 
     public void saveCredentialsToDB() {
-        // Turn to invisible all login view components
-        mEditTextUsername.setVisibility(EditText.INVISIBLE);
-        mEditTextPassword.setVisibility(EditText.INVISIBLE);
-        mButtonLogin.setVisibility(Button.INVISIBLE);
-        mButtonSignUp.setVisibility(Button.INVISIBLE);
-
-        // ProgressBar
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         // Get DBHelper
         final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
@@ -292,18 +206,11 @@ public class LoginFragment extends Fragment {
                                            //GeniusFeedContract.User.COLUMN_NAME_USER_ID,
                                            values);
 
-
-                // Return to normal state
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-
-                mEditTextUsername.setVisibility(EditText.VISIBLE);
-                mEditTextPassword.setVisibility(EditText.VISIBLE);
-                mButtonLogin.setVisibility(Button.VISIBLE);
-                mButtonSignUp.setVisibility(Button.VISIBLE);
                 // Load Intent
                 Intent intent = new Intent(mActivity.getApplicationContext(), MainActivity.class);
                 startActivity(intent);
+                // Return to normal state
+                dismissProgressBar();
             }
         }
 
@@ -311,9 +218,22 @@ public class LoginFragment extends Fragment {
     }
 
     private void showAlertDialogWithError(int errorCode) {
-        // Print alert on mainThread
+        int errorMessage;
+
+        switch (errorCode) {
+            case 0:
+                // Print alert on mainThread
+                errorMessage = R.string.error_login_communication;
+                break;
+            case 1:
+                errorMessage = R.string.error_login_bad_credentials;
+                break;
+            default:
+                errorMessage = R.string.error_login_communication;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        builder.setMessage(R.string.error_login_communication)
+        builder.setMessage(errorMessage)
                .setCancelable(false)
                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
@@ -329,5 +249,25 @@ public class LoginFragment extends Fragment {
     public void goToSignUpView() {
         LoginActivity loginActivity = (LoginActivity) mActivity;
         loginActivity.changeToSignUpFragment();
+    }
+
+    private void showProgressBar() {
+        // Turn to invisible all login view components
+        mEditTextUsername.setVisibility(EditText.INVISIBLE);
+        mEditTextPassword.setVisibility(EditText.INVISIBLE);
+        mButtonLogin.setVisibility(Button.INVISIBLE);
+        mButtonSignUp.setVisibility(Button.INVISIBLE);
+
+        // ProgressBar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    private void dismissProgressBar() {
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+        mEditTextUsername.setVisibility(EditText.VISIBLE);
+        mEditTextPassword.setVisibility(EditText.VISIBLE);
+        mButtonLogin.setVisibility(Button.VISIBLE);
+        mButtonSignUp.setVisibility(Button.VISIBLE);
     }
 }

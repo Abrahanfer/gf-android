@@ -13,12 +13,14 @@
     <string name="login_password_hint">password</string>
     <string name="repeat_login_password_hint">repeat password</string>
     <string name="login_password">Password</string>
-    <string name="error_login_communication">An error happens when loggin.</string>
+    <string name="error_login_communication">An error happens when login.</string>
+    <string name="error_login_bad_credentials">The username or password is not valid.</string>
     <string name="login_button_title">Login</string>
     <string name="signup_button_title">Sign Up</string>
     <!-- Sign Up fragment -->
     <string name="email_error_validation">Invalid email</string>
-
+    <string name="password_error_validation">Invalid password, min 6 char alphanumeric</string>
+    <string name="repeat_password_error_validation">Invalid password</string>
 
     <string name="open_drawer_menu">Open Menu</string>
     <string name="close_drawer_menu">Close Menu</string>
