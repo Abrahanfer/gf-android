@@ -163,7 +163,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void showAddCategoriesDialog(List<Category> categories, com.einmalfel.earl.Feed feedInfo) {
+    public void showAddCategoriesDialog(List<Category> categories, com.einmalfel.earl.Feed feedInfo, FeedListUpdater
+            updateHelper) {
         //FragmentTransaction ft = getFragmentManager().beginTransaction();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
@@ -175,15 +176,24 @@ public class MainActivity extends AppCompatActivity {
         // Create and show the dialog.
         AddCategoriesDialog newFragment = AddCategoriesDialog.newInstance();
         // Setting helper to update values after operation
-        newFragment.setCategories(categories);
+        Category cat1 = new Category("category1");
+        Category cat2 = new Category("category2");
+
+        List<Category> categoriesAux = new ArrayList<Category>();
+        categoriesAux.add(cat1);
+        categoriesAux.add(cat2);
+
+        newFragment.setCategories(categoriesAux);
         newFragment.setFeedInfo(feedInfo);
+        newFragment.setUpdateHelper(updateHelper);
 
         newFragment.show(ft, "dialog");
     }
 
     public void showProgressDialog() {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(R.string.searching_feed_msg);
+        mProgressDialog = new ProgressDialog(this,R.style.ProgressDialog);
+        String messageForDialog = getResources().getString(R.string.searching_feed_msg) + "...";
+        mProgressDialog.setMessage(messageForDialog);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 

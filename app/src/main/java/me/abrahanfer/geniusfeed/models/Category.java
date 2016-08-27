@@ -54,4 +54,18 @@ public class Category implements Parcelable {
             }
         };
     }
+
+    // Override equal method
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Category))return false;
+        Category otherCategory = (Category) other;
+        if (otherCategory.getName().equals(this.getName())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

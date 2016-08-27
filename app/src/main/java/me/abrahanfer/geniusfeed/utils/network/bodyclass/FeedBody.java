@@ -13,14 +13,14 @@ public class FeedBody {
 
     public String title;
     public URL link;
-    private List<Category> categories;
+    private List<Category> category_set;
 
-    public List<Category> getCategories() {
-        return categories;
+    public List<Category> getCategory_set() {
+        return category_set;
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
+    public void setCategory_set(List<Category> category_set) {
+        this.category_set = category_set;
     }
 
     public String getTitle() {
@@ -39,9 +39,9 @@ public class FeedBody {
         this.link = link;
     }
 
-    public FeedBody(String title, URL link, List<Category> categories) {
+    public FeedBody(String title, URL link, List<Category> category_set) {
         this.title = title;
         this.link = link;
-        this.categories = categories;
+        this.category_set = category_set;
     }
 }

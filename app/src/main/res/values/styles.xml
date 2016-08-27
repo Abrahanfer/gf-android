@@ -47,4 +47,10 @@
         <item name="android:textColor">@color/raised_button_color_text_back</item>
     </style>
 
+    <style name="ProgressDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="android:textColor">@color/progress_dialog_text_color</item>
+        <item name="android:textColorPrimary">@color/progress_dialog_text_color</item>
+        <item name="android:textColorSecondary">@color/progress_dialog_text_color</item>
+    </style>
 </resources>

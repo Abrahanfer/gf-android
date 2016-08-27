@@ -1,33 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:custom="http://schemas.android.com/apk/res-auto"
-                android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-    <AutoCompleteTextView
+    <LinearLayout
+        android:id="@+id/linearAutocomplete"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"/>
+        android:layout_height="wrap_content">
+
+        <AutoCompleteTextView
+            android:id="@+id/autocompleteView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="8dp"/>
+
+        <ImageButton
+            android:id="@+id/addCategoryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_clear"
+            android:clickable="true"
+            android:src="@drawable/ic_add_circle_outline_black_36dp"
+            android:tint="@color/color_accent"/>
+
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linearAutocomplete">
+
         <TextView
+            android:id="@+id/tagsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/categories_added_msg"/>
-        <org.apmem.tools.layouts.FlowLayout
+
+        <com.cunoraz.tagview.TagView
+            android:id="@+id/tagView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <me.abrahanfer.geniusfeed.views.TagView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                custom:showButton="true"/>
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tagsTitle"
+            android:layout_margin="10dp" />
 
-        </org.apmem.tools.layouts.FlowLayout>
     </RelativeLayout>
-
-
-
-</LinearLayout>
+</RelativeLayout>

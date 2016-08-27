@@ -118,11 +118,10 @@ public class AddFeedDialogFragment extends DialogFragment {
             @Override
             public void handleMessage(Message message) {
                 MainActivity act = (MainActivity) mActivity;
+                act.stopProgressDialog();
                 act.showAlertMessages(message.what);
             }
         };
-
-
 
         // Check for URL format
         if(stringURL.trim().length() > 0 && true) {
@@ -135,7 +134,6 @@ public class AddFeedDialogFragment extends DialogFragment {
                     @Override
                     public void onSuccess(URL feedSourceURL) {
                         // Make request to API to create new feed
-
                         createNewFeed(feedSourceURL);
                     }
 
@@ -225,31 +223,8 @@ public class AddFeedDialogFragment extends DialogFragment {
                 // Add step to show Dialog fragment to add more categories or remove the defaults
                 MainActivity act = (MainActivity) mActivity;
                 act.stopProgressDialog();
-                act.showAddCategoriesDialog(categories, feed);
-
-                // TODO Finally add feed with categories
-
-               /* Call<Feed> call = service.createFeedSource(new FeedBody(feedTitle, feedSourceURL, null));
-
-                call.enqueue(new Callback<Feed>() {
-                    @Override
-                    public void onResponse(Call<Feed> call, Response<Feed> response) {
-                        if (response.isSuccessful()) {
-                            // Call to fragment to notify changes to adapter
-                            mUpdateHelper.updateFeedData(response.body());
-                        } else {
-                            // Feedback to user for fail on server
-                            showAlertMessageForError(0);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Feed> call, Throwable t) {
-                        // Feedback to user for fail to communication
-                        showAlertMessageForError(0);
-                    }
-                });*/
-
+                act.showAddCategoriesDialog(categories, feed, mUpdateHelper);
+                dismiss();
             }
         }
         new RetrieveFeedInfo().execute();
