@@ -1,6 +1,7 @@
 package me.abrahanfer.geniusfeed.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,11 +12,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cunoraz.tagview.Tag;
+import com.cunoraz.tagview.TagView;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.abrahanfer.geniusfeed.R;
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
@@ -74,6 +80,23 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.INVISIBLE);
         }
+
+        TagView tagView = (TagView) holder.mContainerView.findViewById(R.id.tagsFeedCategories);
+        List<Tag> tags = new ArrayList<Tag>();
+        for(Category category : mFeedArrayList.get(position).getCategory_set()) {
+            Tag tag = new Tag(category.getName());
+
+            tag.layoutBorderColor = Color.parseColor("#9c27b0"); // R.color.color_primary;
+            tag.layoutColor = Color.parseColor("#9c27b0");// R.color.color_primary;
+            tag.layoutColorPress = Color.parseColor("#e1bee7");//R.color.color_primary_light;
+            tag.tagTextColor = Color.parseColor("#ffffff");// R.color.color_text;
+            tag.isDeletable = false;
+            tag.radius = 1;
+
+            tags.add(tag);
+        }
+
+        tagView.addTags(tags);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

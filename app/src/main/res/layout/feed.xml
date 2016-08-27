@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_text">
+        android:background="?android:attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/feedAvatar"
@@ -29,20 +29,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/feedAvatar"
-            android:layout_centerVertical="true"
+            android:layout_centerVertical="false"
             android:layout_marginStart="16dp"
             android:textSize="16sp"
             android:textColor="@color/feed_item_title_text_color"/>
 
-        <TextView
-            android:id="@+id/textFeedCategories"
+        <com.cunoraz.tagview.TagView
+            android:id="@+id/tagsFeedCategories"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_toEndOf="@+id/feedAvatar"
             android:layout_below="@+id/textFeedTitle"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="16dp"
-            android:textSize="9sp"
-            android:textColor="@color/feed_item_pub_date_text_color"/>
+            android:layout_margin="16dp"/>
 
 
         <ImageButton

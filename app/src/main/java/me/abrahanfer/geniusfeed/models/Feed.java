@@ -20,7 +20,9 @@ public class Feed implements Parcelable {
     private String pk;
     private String title;
     private URL link;
-    private List<Category> categories;
+    private List<Category> category_set;
+
+
 
     public Feed() {}
 
@@ -57,6 +59,14 @@ public class Feed implements Parcelable {
 
     public void setLink(URL link) {
         this.link = link;
+    }
+
+    public List<Category> getCategory_set() {
+        return category_set;
+    }
+
+    public void setCategory_set(List<Category> category_set) {
+        this.category_set = category_set;
     }
 
     // 99.9% of the time you can just ignore this
