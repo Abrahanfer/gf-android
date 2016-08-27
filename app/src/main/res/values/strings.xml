@@ -72,4 +72,12 @@
 
     <!-- Feed Item view Buttons -->
     <string name="view_on_source">View on Source</string>
+
+    <!-- Add categories dialog fragment -->
+    <string name="categories_added_msg">Categories added</string>
+    <string name="add_categories_button">Add categories</string>
+    <string name="cancel_add_categories">Cancel</string>
+    <!-- ProgressDialog messages -->
+    <string name="searching_feed_msg">Searching feed data</string>
+
 </resources>

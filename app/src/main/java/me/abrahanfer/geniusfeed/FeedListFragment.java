@@ -38,6 +38,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.utils.Authentication;
@@ -289,32 +290,6 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
                     }
                 }
         );
-
-
-        /*final RecyclerView feedList = (RecyclerView) mBaseView.findViewById(R.id.feeds_list);
-
-        feedList.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent,
-                                            View view, int position,
-                                            long id) {
-                        System.out.println("Feed click" + position);
-                        Intent intent = new Intent(
-                                mActivity.getApplicationContext(),
-                                FeedActivity.class);
-
-                        Feed feed = (Feed) listFeeds.getAdapter()
-                                                    .getItem(
-                                                            position);
-                        intent.putExtra(FEED_LINK,
-                                        feed.getLink().toString());
-                        intent.putExtra(FEED_PK, feed.getPk());
-                        intent.putExtra(FEED_API, feed);
-
-                        startActivity(intent);
-                    }
-                });*/
     }
 
     public void setupAuthenticationFromDB() {

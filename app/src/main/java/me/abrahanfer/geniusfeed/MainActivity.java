@@ -1,6 +1,8 @@
 package me.abrahanfer.geniusfeed;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -8,11 +10,13 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.internal.view.SupportMenuItem;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 
 import org.springframework.http.HttpAuthentication;
@@ -36,7 +41,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -49,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private NavigationView mNvDrawer;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,4 +161,66 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void showAddCategoriesDialog(List<Category> categories, com.einmalfel.earl.Feed feedInfo) {
+        //FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        AddCategoriesDialog newFragment = AddCategoriesDialog.newInstance();
+        // Setting helper to update values after operation
+        newFragment.setCategories(categories);
+        newFragment.setFeedInfo(feedInfo);
+
+        newFragment.show(ft, "dialog");
+    }
+
+    public void showProgressDialog() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(R.string.searching_feed_msg);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        mProgressDialog.show();
+    }
+
+    public void stopProgressDialog() {
+        mProgressDialog.dismiss();
+    }
+
+    public void showAlertMessages(int errorCode) {
+        int alertMessage;
+
+        switch (errorCode) {
+            case 0:
+                alertMessage = R.string.error_creating_feed;
+                break;
+            case 1:
+                alertMessage = R.string.error_url_malformed;
+                break;
+            default:
+                alertMessage = R.string.error_creating_feed;
+        }
+
+
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
+    }
+
 }

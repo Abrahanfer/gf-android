@@ -1,5 +1,6 @@
 package me.abrahanfer.geniusfeed;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -8,7 +9,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +21,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.einmalfel.earl.AtomCategory;
+import com.einmalfel.earl.AtomFeed;
 import com.einmalfel.earl.EarlParser;
+import com.einmalfel.earl.RSSCategory;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -27,8 +33,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.DataFormatException;
 
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -51,6 +59,7 @@ public class AddFeedDialogFragment extends DialogFragment {
 
     private com.einmalfel.earl.Feed mFeedInfo;
     private FeedListUpdater mUpdateHelper;
+    private Activity mActivity;
 
     public FeedListUpdater getUpdateHelper() {
         return mUpdateHelper;
@@ -94,6 +103,12 @@ public class AddFeedDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mActivity = getActivity();
+    }
+
     public void addFeedSource(String stringURL) {
 
         final MainActivity activity = (MainActivity) getActivity();
@@ -102,26 +117,8 @@ public class AddFeedDialogFragment extends DialogFragment {
         final Handler handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message message) {
-
-                String alertMessage;
-                if(message.what == 0){
-                    alertMessage = getString(R.string.error_creating_feed);
-                } else {
-                    alertMessage = getString(R.string.error_url_malformed);
-                }
-
-                // Print alert on mainThread
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setMessage(alertMessage)
-                       .setCancelable(false)
-                       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int id) {
-                               // Dismiss dialog
-                               //dialog.dismiss();
-                           }
-                       });
-
-                builder.create().show();
+                MainActivity act = (MainActivity) mActivity;
+                act.showAlertMessages(message.what);
             }
         };
 
@@ -132,10 +129,13 @@ public class AddFeedDialogFragment extends DialogFragment {
             FeedSourceGetter feedSourceGetter;
             try {
                 feedSourceGetter = new FeedSourceGetter(new URL(stringURL));
+                MainActivity act = (MainActivity) mActivity;
+                act.showProgressDialog();
                 feedSourceGetter.getSource(new FeedSourceGetter.FeedSourceGetterListener() {
                     @Override
                     public void onSuccess(URL feedSourceURL) {
                         // Make request to API to create new feed
+
                         createNewFeed(feedSourceURL);
                     }
 
@@ -196,8 +196,40 @@ public class AddFeedDialogFragment extends DialogFragment {
 
                 String token = Authentication.getCredentials().getToken();
                 GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
+                List<String> categoriesNames = new ArrayList<String>();
+                if(feed.getClass() == com.einmalfel.earl.AtomFeed.class) {
+                    com.einmalfel.earl.AtomFeed atomFeed = (com.einmalfel.earl.AtomFeed) feed;
+                   Log.e("Categories", "ATOM Mirando cat "  + atomFeed.categories);
+                    List<AtomCategory> categoriesList = atomFeed.categories;
 
-                Call<Feed> call = service.createFeedSource(new FeedBody(feedTitle, feedSourceURL));
+                    for (AtomCategory cat : categoriesList) {
+                        String name = cat.label != null ? cat.label : cat.term;
+                        categoriesNames.add(name);
+                    }
+                } else if (feed.getClass() == com.einmalfel.earl.RSSFeed.class) {
+                    com.einmalfel.earl.RSSFeed rssFeed = (com.einmalfel.earl.RSSFeed) feed;
+                    Log.e("Categories", "RSS Mirando cat "  + rssFeed.categories);
+                    List<RSSCategory> categoriesList = rssFeed.categories;
+
+                    for (RSSCategory cat : categoriesList) {
+                        categoriesNames.add(cat.value);
+                    }
+                }
+
+                // Create categories from spec feed file
+                List<Category> categories = new ArrayList<Category>();
+                for (String name : categoriesNames) {
+                    categories.add(new Category(name));
+                }
+
+                // Add step to show Dialog fragment to add more categories or remove the defaults
+                MainActivity act = (MainActivity) mActivity;
+                act.stopProgressDialog();
+                act.showAddCategoriesDialog(categories, feed);
+
+                // TODO Finally add feed with categories
+
+               /* Call<Feed> call = service.createFeedSource(new FeedBody(feedTitle, feedSourceURL, null));
 
                 call.enqueue(new Callback<Feed>() {
                     @Override
@@ -216,7 +248,7 @@ public class AddFeedDialogFragment extends DialogFragment {
                         // Feedback to user for fail to communication
                         showAlertMessageForError(0);
                     }
-                });
+                });*/
 
             }
         }

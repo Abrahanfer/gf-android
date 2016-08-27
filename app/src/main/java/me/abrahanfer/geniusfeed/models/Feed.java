@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by abrahan on 29/09/15.
@@ -19,6 +20,7 @@ public class Feed implements Parcelable {
     private String pk;
     private String title;
     private URL link;
+    private List<Category> categories;
 
     public Feed() {}
 
