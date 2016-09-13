@@ -55,6 +55,7 @@ public class FeedSourceGetter {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String contentType = response.header("Content-Type");
+                    Log.d("Content-type", contentType);
                     String[] parts = contentType.split(";");
                     // Check content type
                     switch (parts[0]) {
@@ -70,7 +71,9 @@ public class FeedSourceGetter {
                             break;
                         case "application/rss+xml":
                         case "application/atom+xml":
+                        case "application/xml":
                             // Correct content-type, return URL
+
                             callback.onSuccess(URLSource);
                             break;
                         default:

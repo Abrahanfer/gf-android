@@ -2,6 +2,7 @@ package me.abrahanfer.geniusfeed.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -108,8 +109,8 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
         tagView.addTags(tags);
 
         View markTimeframeView =(View) holder.mContainerView.findViewById(R.id.color_mark_timeframe);
+        markTimeframeView.setBackgroundColor(getColorForTimeframe(holder));
         markTimeframeView.setVisibility(enableTimeFrameMark ? View.VISIBLE : View.GONE);
-
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -128,5 +129,11 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
         }
 
         return false;
+    }
+
+    private int getColorForTimeframe(ViewHolder holder) {
+        // TODO Select color based in timeframe and userpreferences
+        return ContextCompat.getColor(holder.mContainerView.getContext(), R.color
+                .color_red);
     }
 }

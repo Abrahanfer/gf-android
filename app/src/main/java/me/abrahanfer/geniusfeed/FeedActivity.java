@@ -210,7 +210,7 @@ public class FeedActivity extends AppCompatActivity {
                     Log.d(EARL_TAG, "Exception data format");
                 }
 
-                Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
+               // Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
                 mFeed = feed;
                 ArrayList<FeedItemRead> feedItems = new ArrayList<>();
                 if (RSSFeed.class.isInstance(feed)) {

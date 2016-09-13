@@ -144,9 +144,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
                         deleteFeed(viewHolder.getAdapterPosition());
                         // remove from adapter
                         mFeedList.remove(viewHolder.getAdapterPosition());
-                       // mFeedListView.getAdapter().notifyItemRemoved(viewHolder.getAdapterPosition());
-                        mFeedListView.getAdapter().notifyDataSetChanged();
-
+                        mFeedListView.getAdapter().notifyItemRemoved(viewHolder.getAdapterPosition());
+                        //mFeedListView.getAdapter().notifyDataSetChanged();
                     }
 
                     @Override
@@ -221,6 +220,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public void getFeedFromAPI() {
         // ProgressBar
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mFeedListView.setVisibility(RecyclerView.INVISIBLE);
         String username;
         String token;
 
@@ -431,6 +431,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
                 if (response.isSuccessful()) {
                     CoordinatorLayout parentView = (CoordinatorLayout) getActivity().findViewById(R.id.feed_list_content);
                     Snackbar.make(parentView, R.string.done_deleting_feed, Snackbar.LENGTH_LONG).show();
+                    getFeedFromAPI();
                 } else {
                     showAlertMessageForError(0);
                 }
@@ -448,6 +449,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public void updateFeedData(Feed newFeed) {
         mFeedList.add(newFeed);
         mFeedListView.getAdapter().notifyDataSetChanged();
+        getFeedFromAPI();
     }
 
     private void showAlertMessageForError(int errorCode) {
