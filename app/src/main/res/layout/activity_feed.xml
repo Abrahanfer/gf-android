@@ -36,12 +36,17 @@
             android:gravity="center_horizontal"
             android:textColor="@color/color_text_primary"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/feed_items_list"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/feed_activity_swipe_refresh"
             android:layout_height="match_parent"
-            android:paddingTop="8dp"/>
+            android:layout_width="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/feed_items_list"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="8dp"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

@@ -23,6 +23,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
@@ -88,7 +92,12 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     private RecyclerView mFeedListView;
     private Map<String, List<FeedItemRead>> mFeedItemsReadByFeed;
 
+    private Unbinder unbinder;
+
     private ArrayList<Feed> mFeedList = new ArrayList<>();
+
+    @BindView(R.id.feed_list_swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public Boolean getTimeframeFeeds() {
         return timeframeFeeds;
@@ -104,6 +113,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
         // Inflate the layout for this fragment
         mBaseView = inflater.inflate(R.layout.feed_list_fragment,
                                 container, false);
+
+        unbinder = ButterKnife.bind(this, mBaseView);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) mBaseView.findViewById(R.id.add_feed_button);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -177,6 +188,16 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mBaseView.getContext());
         mFeedListView.setLayoutManager(layoutManager);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mFeedListView.setVisibility(RecyclerView.INVISIBLE);
+                getFeedFromAPI();
+            }
+        });
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary,R.color.color_accent);
+
         return mBaseView;
     }
 
@@ -189,6 +210,12 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
         setupListFeeds();
         setupAuthenticationFromDB();
         //testRequest();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public void getFeedFromAPI() {
@@ -439,7 +466,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     }
 
     private void downloadAllFeedData(List<Feed> feeds) {
-        // TODO Download all feed item read
+        // Download all feed item read
         mFeedItemsReadByFeed = new HashMap<String, List<FeedItemRead>>();
         if(feeds.size() > 0) {
             getFeedItemReadList(new ArrayList<FeedItemRead>(), 1, feeds.get(0).getPk());
@@ -474,6 +501,11 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
                         if(nextFeed != null)
                             getFeedItemReadList(new ArrayList<FeedItemRead>(), 1, nextFeed.getPk());
                         else {
+                            // Stopping progress bar from swipe
+                            if (swipeRefreshLayout != null) {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                            mFeedListView.setVisibility(RecyclerView.VISIBLE);
                             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                             FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(new ArrayList<Feed>(mFeedList),
                                                                                      mFeedItemsReadByFeed);

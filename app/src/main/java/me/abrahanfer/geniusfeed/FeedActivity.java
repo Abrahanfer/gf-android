@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,6 +60,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -105,13 +108,15 @@ public class FeedActivity extends AppCompatActivity {
     private Feed mFeedAPI;
     private RecyclerView mListFeedItems;
     private RecyclerView mFeedList;
+    @BindView(R.id.feed_activity_swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_feed);
+
+        ButterKnife.bind(this);
 
         mFeedPk = getIntent().getStringExtra(FeedListFragment.FEED_PK);
         mFeedAPI = getIntent().getParcelableExtra(FeedListFragment.FEED_API);
@@ -132,6 +137,16 @@ public class FeedActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (feedLink != null) {
+                    // Using progressbar from SwipeToRefresh
+                    getFeedItemsFromFeed(feedLink);
+                }
+            }
+        });
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary,R.color.color_accent);
 
         if (feedLink != null) {
             // Set up progressBar
@@ -380,6 +395,8 @@ public class FeedActivity extends AppCompatActivity {
 
             /*ListView listFeedItems = (ListView) findViewById(R.id.listFeedItems);
             ((ArrayAdapter)listFeedItems.getAdapter()).notifyDataSetChanged();*/
+            swipeRefreshLayout.setRefreshing(false);
+
             RecyclerView recyclerView = (RecyclerView) findViewById(R.id.feed_items_list);
             recyclerView.getAdapter().notifyDataSetChanged();
 
