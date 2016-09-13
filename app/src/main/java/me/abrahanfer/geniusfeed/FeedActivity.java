@@ -8,10 +8,12 @@ package me.abrahanfer.geniusfeed;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -71,6 +73,7 @@ import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.FeedItemsArrayAdapter;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
+import me.abrahanfer.geniusfeed.utils.network.bodyclass.FIReadUpdateBody;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.Token;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -142,7 +145,7 @@ public class FeedActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.toolbar_actions, menu);
+        getMenuInflater().inflate(R.menu.toolbar_feed_actions, menu);
         return true;
     }
 
@@ -154,7 +157,9 @@ public class FeedActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.markAsReadAllAction) {
+            // Call method to mark as read all items
+            markAllAsRead();
             return true;
         }
 
@@ -337,35 +342,7 @@ public class FeedActivity extends AppCompatActivity {
         });
     }
 
-    public void setupListFeeds(){
-       /* final ListView listFeeds = (ListView) findViewById(R.id.listFeedItems);
-
-
-
-        Log.e("Mirando Feed Activity", "ListView activity " + listFeeds);
-        listFeeds.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        Log.d(FEED_ACTIVITY_TAG, "Feed Item click" + position);
-                        Intent intent = new Intent(getApplicationContext(), FeedItemActivity
-                                .class);
-                        FeedItemRead feedItemRead =(FeedItemRead) listFeeds
-                                .getAdapter()
-                                .getItem(position);
-                        feedItemRead.getFeed_item().setFeed(mFeedAPI);
-                        intent.putExtra(FEED_ITEM_TYPE,
-                                        FeedItemAtom.class.isInstance(feedItemRead.getFeed_item()) ? "Atom" : "RSS");
-                        intent.putExtra(FEED_ITEM, feedItemRead.getFeed_item());
-                        intent.putExtra(FEED_ITEM_READ, feedItemRead);
-
-
-                        startActivity(intent);
-                    }
-                }
-        );*/
-
+    public void setupListFeeds() {
         RecyclerView feedItemsListView = (RecyclerView) findViewById(R.id.feed_items_list);
 
         ItemClickSupport.addTo(feedItemsListView).setOnItemClickListener(
@@ -447,5 +424,104 @@ public class FeedActivity extends AppCompatActivity {
                 mListFeedItems.setVisibility(ListView.VISIBLE);
             }
         });
+    }
+
+    private void showProgressBar() {
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mListFeedItems.setVisibility(RecyclerView.INVISIBLE);
+    }
+
+    private void hideProgressBar() {
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        mListFeedItems.setVisibility(RecyclerView.VISIBLE);
+    }
+
+    private void updateNotificationToRecycleView() {
+        mListFeedItems.getAdapter().notifyDataSetChanged();
+    }
+
+    private void markAllAsRead() {
+        showProgressBar();
+        if (mSourceItems.size()  > 0) {
+            markAsReadItemAtIndex(mSourceItems, 0);
+        } else {
+          // TODO Feedback error
+        }
+    }
+
+    private void markAsReadItemAtIndex(final List<FeedItemRead> items, final int index) {
+        if (index < items.size()) {
+            FeedItemRead feedItemRead = items.get(index);
+            if (!feedItemRead.getRead()) {
+                feedItemRead.setRead(true);
+                final String token = Authentication.getCredentials().getToken();
+                GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
+
+                Call<FeedItemRead> call = service.partialUpdateFeedItemRead(feedItemRead.getPk(), new FIReadUpdateBody(
+                        feedItemRead.getRead(), feedItemRead.getFav()));
+
+
+                call.enqueue(new Callback<FeedItemRead>() {
+                    @Override
+                    public void onResponse(Call<FeedItemRead> call, Response<FeedItemRead> response) {
+                        if (response.isSuccessful()) {
+                            Log.d("SUCCESS RESPONSE", response.body().toString());
+                            // Go on with recursive function
+                            markAsReadItemAtIndex(items, index + 1);
+                        } else {
+                            // Hide progress bar & update recycler view
+                            updateNotificationToRecycleView();
+                            hideProgressBar();
+                            // Handle error and get feedback to user
+                            showAlertMessages(0);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<FeedItemRead> call, Throwable t) {
+                        Log.e("FAILURE RESPONSE", t.toString());
+                        // Hide progress bar & update recycler view
+                        updateNotificationToRecycleView();
+                        hideProgressBar();
+                        // Handle error and get feedback to user
+                        showAlertMessages(0);
+                    }
+                });
+            } else {
+                // Jump to next item
+                markAsReadItemAtIndex(items, index + 1);
+            }
+        } else {
+            // Handle stop condition
+            // Update recycler view
+            updateNotificationToRecycleView();
+            hideProgressBar();
+        }
+    }
+
+    public void showAlertMessages(int errorCode) {
+        int alertMessage;
+
+        switch (errorCode) {
+            case 0:
+                alertMessage = R.string.error_updating_all_items;
+                break;
+            default:
+                alertMessage = R.string.error_updating_all_items;
+        }
+
+
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }

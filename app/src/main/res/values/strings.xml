@@ -22,9 +22,11 @@
     <string name="password_error_validation">Invalid password, min 6 char alphanumeric</string>
     <string name="repeat_password_error_validation">Invalid password</string>
 
+    <!-- Menu strings -->
     <string name="open_drawer_menu">Open Menu</string>
     <string name="close_drawer_menu">Close Menu</string>
-    <string name="list_feed_menu_item">List Feeds</string>
+    <string name="list_feed_menu_item_timeframe">Home feed list</string>
+    <string name="list_feed_menu_item">All feeds</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
@@ -65,7 +67,8 @@
     <string name="done_deleting_feed">The feed has been delete.</string>
 
     <!-- Feed Activity -->
-    <string name="error_updating_feed_item">Ann error happends updating this entry.</string>
+    <string name="error_updating_feed_item">An error happens updating this entry.</string>
+    <string name="error_updating_all_items">An error happends updating all feed items.</string>
 
     <!-- Hint strings -->
     <string name="url_feed_source_hint">Feed Url</string>

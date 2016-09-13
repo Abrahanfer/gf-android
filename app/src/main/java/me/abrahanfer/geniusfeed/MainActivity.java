@@ -101,10 +101,17 @@ public class MainActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
+        Boolean mainTimeFrameFeeds = true;
         Class fragmentClass;
         switch (menuItem.getItemId()) {
+            // Show only this timeframes feeds
+            case R.id.nav_feed_list_timeframe:
+                fragmentClass = FeedListFragment.class;
+                break;
+            // Show All Feeds
             case R.id.nav_feed_list:
                 fragmentClass = FeedListFragment.class;
+                mainTimeFrameFeeds = false;
                 break;
             case R.id.nav_login:
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -116,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
+            ((FeedListFragment) fragment).setTimeframeFeeds(mainTimeFrameFeeds);
         } catch (Exception e) {
             e.printStackTrace();
         }

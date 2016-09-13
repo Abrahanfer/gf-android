@@ -18,7 +18,9 @@ import com.cunoraz.tagview.TagView;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.abrahanfer.geniusfeed.R;
 import me.abrahanfer.geniusfeed.models.Category;
@@ -38,6 +40,12 @@ import retrofit2.Response;
 public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.ViewHolder> {
 
     private ArrayList<Feed> mFeedArrayList;
+    private Map<String, List<FeedItemRead>> mFeedArrayData;
+    private Boolean enableTimeFrameMark = false;
+
+    public void setEnableTimeFrameMark(Boolean enableTimeFrameMark) {
+        this.enableTimeFrameMark = enableTimeFrameMark;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View mContainerView;
@@ -49,8 +57,9 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public FeedArrayAdapter(ArrayList<Feed> feedArrayList) {
+    public FeedArrayAdapter(ArrayList<Feed> feedArrayList, Map<String, List<FeedItemRead>> feedArrayData) {
         mFeedArrayList = feedArrayList;
+        mFeedArrayData = feedArrayData;
     }
 
     // Create new views (invoked by the layout manager)
@@ -73,7 +82,7 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
         TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedTitle);
         titleText.setText(mFeedArrayList.get(position).getTitle());
 
-        if(position % 2 == 0) {
+        if(hadFeedItemUnread(mFeedArrayList.get(position))) {
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.VISIBLE);
         }else{
@@ -97,11 +106,27 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
         }
 
         tagView.addTags(tags);
+
+        View markTimeframeView =(View) holder.mContainerView.findViewById(R.id.color_mark_timeframe);
+        markTimeframeView.setVisibility(enableTimeFrameMark ? View.VISIBLE : View.GONE);
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mFeedArrayList.size();
+    }
+
+    private Boolean hadFeedItemUnread(Feed feed) {
+        List<FeedItemRead> feedItemReads = mFeedArrayData.get(feed.getPk());
+
+        for (FeedItemRead feedItemRead : feedItemReads) {
+            if (!feedItemRead.getRead()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

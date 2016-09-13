@@ -37,6 +37,10 @@ public interface GeniusFeedService {
     @GET("/feeds/")
     Call<FeedDRResponse> getFeeds(@Query("page") int page);
 
+    // Get Feeds by timeframe
+    @GET("/feeds/feed_current_time/")
+    Call<FeedDRResponse> getFeedsBytTimeframe(@Query("page") int page);
+
     // Get Feeds Items Read from Feed
     @GET("/feed_item_reads/")
     Call<FeedItemReadDRResponse> getFeedItemReads(@Query("feed") String pk, @Query("page") int page);

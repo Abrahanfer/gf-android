@@ -56,6 +56,14 @@
             android:background="@color/color_clear"
             android:tint="@color/color_text_secondary"
             android:visibility="gone"/>
+
+        <View
+            android:id="@+id/color_mark_timeframe"
+            android:layout_width="30dp"
+            android:layout_height="5dp"
+            android:layout_alignParentEnd="true"
+            android:background="@color/color_red"
+            android:visibility="visible"/>
     </RelativeLayout>
 
 </RelativeLayout>

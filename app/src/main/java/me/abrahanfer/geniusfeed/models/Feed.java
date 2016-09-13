@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by abrahan on 29/09/15.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Feed implements Parcelable {
     final static public String FEED_MODEL_TAG = "FeedModel";
 
@@ -35,6 +35,8 @@ public class Feed implements Parcelable {
             Log.e(FEED_MODEL_TAG, "Exception launched");
             e.printStackTrace();
         }
+        category_set = new ArrayList<Category>();
+        in.readList(category_set, Category.class.getClassLoader());
     }
 
     public String getPk() {
@@ -81,6 +83,7 @@ public class Feed implements Parcelable {
         out.writeString(pk);
         out.writeString(title);
         out.writeString(link.toString());
+        out.writeList(category_set);
     }
 
     // this is used to regenerate your object.
