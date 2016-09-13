@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
@@ -84,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
         View headerLayout = mNvDrawer.getHeaderView(0);
 
         selectDrawerItem(mNvDrawer.getMenu().getItem(0));
+
+        // Realm configuration
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(realmConfig);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

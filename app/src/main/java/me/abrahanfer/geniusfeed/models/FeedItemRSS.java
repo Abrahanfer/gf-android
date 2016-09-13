@@ -13,10 +13,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by abrahan on 19/03/16.
  */
-public class FeedItemRSS extends FeedItem{
+public class FeedItemRSS extends FeedItem implements Parcelable {
     final static public String FEED_ITEM_RSS_MODEL_TAG = "FeedItemAtomModel";
 
     private String rssFeedItemURL;
@@ -76,7 +79,7 @@ public class FeedItemRSS extends FeedItem{
         if(rssItem.guid != null) {
             super.setItem_id(rssItem.guid.value);
         }else {
-            /* As GUID is null we need a new guid made by
+            /* As GUID is null we need a new GUID made by
              * pubdate/todaydate and title/description
              */
             Date date = new Date();

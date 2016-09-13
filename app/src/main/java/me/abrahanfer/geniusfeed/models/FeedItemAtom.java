@@ -10,9 +10,13 @@ import com.einmalfel.earl.AtomEntry;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by abrahan on 19/03/16.
  */
+
 public class FeedItemAtom extends FeedItem implements Parcelable{
     final static public String FEED_ITEM_ATOM_MODEL_TAG = "FeedItemAtomModel";
 

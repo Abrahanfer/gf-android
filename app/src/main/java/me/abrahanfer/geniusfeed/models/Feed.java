@@ -11,6 +11,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by abrahan on 29/09/15.
  */

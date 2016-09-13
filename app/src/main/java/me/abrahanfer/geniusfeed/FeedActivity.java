@@ -120,6 +120,7 @@ public class FeedActivity extends AppCompatActivity {
 
         mFeedPk = getIntent().getStringExtra(FeedListFragment.FEED_PK);
         mFeedAPI = getIntent().getParcelableExtra(FeedListFragment.FEED_API);
+        Log.e("FEEDAPI", "Algo " + mFeedAPI.getPk());
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(FeedListFragment.FEED_LINK));
@@ -240,6 +241,10 @@ public class FeedActivity extends AppCompatActivity {
                 TextView textView =(TextView) findViewById(R.id.feedTextView);
                 if (mFeed != null) {
                     textView.setText(mFeed.getTitle());
+
+                    for(FeedItemRead feedItemRead : feedItemReads) {
+                        feedItemRead.getFeed_item().setFeed(mFeedAPI);
+                    }
                 }
 
                 // Sort FeedItem objects by publication date

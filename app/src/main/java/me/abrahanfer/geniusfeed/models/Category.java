@@ -3,10 +3,13 @@ package me.abrahanfer.geniusfeed.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by abrahan on 25/08/16.
  */
-
 public class Category implements Parcelable {
     private String name;
 
@@ -16,6 +19,11 @@ public class Category implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    // Add default public constructor for Realm
+    public Category() {
+
     }
 
     public Category(String name) {

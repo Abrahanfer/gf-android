@@ -7,6 +7,10 @@ import android.text.BoringLayout;
 import java.net.URL;
 import java.util.Date;
 
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by abrahanfer on 29/09/15.
  */
@@ -70,6 +74,11 @@ public class FeedItemRead implements Parcelable {
 
     public void setPk(long pk) {
         this.pk = pk;
+    }
+
+    // Add default public constructor for Realm
+    public FeedItemRead() {
+
     }
 
     public FeedItemRead(Boolean read, Boolean fav, FeedItem feed_item) {

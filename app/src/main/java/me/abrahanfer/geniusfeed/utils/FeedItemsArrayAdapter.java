@@ -20,11 +20,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import io.realm.Realm;
+import io.realm.RealmModel;
+import io.realm.RealmResults;
 import me.abrahanfer.geniusfeed.FeedActivity;
 import me.abrahanfer.geniusfeed.R;
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.models.realmModels.CategoryRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedItemReadRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedItemRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedRealm;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
 import me.abrahanfer.geniusfeed.utils.network.NetworkServiceBuilder;
 import me.abrahanfer.geniusfeed.utils.network.bodyclass.FIReadUpdateBody;
@@ -174,7 +182,7 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
         return mFeedItemReadList.size();
     }
 
-    public void updateFeedItemRead(FeedItemRead feedItemRead) {
+    public void updateFeedItemRead(final FeedItemRead feedItemRead) {
         final String token = Authentication.getCredentials().getToken();
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
@@ -187,6 +195,8 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
             public void onResponse(Call<FeedItemRead> call, Response<FeedItemRead> response) {
                 if(response.isSuccessful()) {
                     Log.d("SUCCESS RESPONSE", response.body().toString());
+                    // TODO Save in local
+                    saveFavFeedItemRead(feedItemRead);
                 } else {
                     showAlertDialogWithError(0);
                 }
@@ -198,6 +208,120 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                 showAlertDialogWithError(0);
             }
         });
+    }
+
+    private void saveFavFeedItemRead(final FeedItemRead feedItemRead) {
+        FeedItem feedItem = feedItemRead.getFeed_item();
+        final Feed feed = feedItem.getFeed();
+
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                      .findAll();
+        if (feedItemResults.size() > 0) {
+            saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
+        } else {
+            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                              .findAll();
+            if (feedResults.size() > 0) {
+                saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
+            } else {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        FeedRealm feedRealm = realm.createObject(FeedRealm.class);
+                        feedRealm.setPk(feed.getPk());
+                        feedRealm.setLinkURL(feed.getLink().toString());
+                        feedRealm.setTitle(feed.getTitle());
+
+                        for(Category category : feed.getCategory_set()) {
+                            RealmResults<CategoryRealm> categoryResults = realm.where(CategoryRealm.class).equalTo
+                                    ("name",
+                                                                                                                  category
+                                                                                                                          .getName())
+
+                                                                              .findAll();
+                            CategoryRealm categoryRealm;
+                            if (categoryResults.size() == 0) {
+                                categoryRealm = realm.createObject(CategoryRealm.class);
+                                categoryRealm.setName(category.getName());
+                            } else {
+                                categoryRealm = categoryResults.get(0);
+                            }
+
+                            feedRealm.getCategory_set().add(categoryRealm);
+                        }
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+                        Realm realm = Realm.getDefaultInstance();
+                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                                  .findAll();
+                        saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
+                    }
+                });
+            }
+        }
+    }
+
+    private void saveFavFeedItemReadForFeed(final FeedItemRead feedItemRead, final FeedRealm feedRealm) {
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                FeedItemRealm feedItemRealm = realm.createObject(FeedItemRealm.class);
+                feedItemRealm.setPk(feedItem.getPk());
+                feedItemRealm.setTitle(feedItem.getTitle());
+                feedItemRealm.setLink(feedItem.getLink());
+                feedItemRealm.setPublicationDate(feedItem.getPublicationDate());
+                feedItemRealm.setItem_id(feedItem.getItem_id());
+
+                Feed feed = feedItemRead.getFeed_item().getFeed();
+                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                                  .findAll();
+
+                feedItemRealm.setFeed(feedResults.get(0));
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                Realm realm = Realm.getDefaultInstance();
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                                  .findAll();
+                saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
+            }
+        });
+    }
+
+    private void saveFavFeedItemReadForFeedItem(final FeedItemRead feedItemRead, final FeedItemRealm feedItemRealm) {
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                FeedItemReadRealm feedItemReadRealm = realm.createObject(FeedItemReadRealm.class);
+                feedItemReadRealm.setPk(feedItemRead.getPk());
+                feedItemReadRealm.setFav(feedItemRead.getFav());
+                feedItemReadRealm.setRead(feedItemRead.getRead());
+                feedItemReadRealm.setUpdate_date(feedItemRead.getUpdate_date());
+                feedItemReadRealm.setUser(feedItemRead.getUser());
+
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                                  .findAll();
+                feedItemReadRealm.setFeed_item(feedItemResults.get(0));
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                Log.e("REALM!!!", "ALL OK!!!! SAVE COMPLETE!!!");
+            }
+        });
+
     }
 
     private void showAlertDialogWithError(int errorCode) {
