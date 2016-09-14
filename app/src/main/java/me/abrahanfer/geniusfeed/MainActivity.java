@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -41,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Register BroadcastReceiver to monitoring network status
+        registerReceiver(
+                new ConnectivityEventsReceiver(),
+                new IntentFilter(
+                        ConnectivityManager.CONNECTIVITY_ACTION));
 
         // Set a Toolbar to replace the ActionBar.
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
