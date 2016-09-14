@@ -33,7 +33,7 @@ import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.utils.network.ConnectivityEventsReceiver;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private NavigationView mNvDrawer;
@@ -211,6 +211,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 1:
                 alertMessage = R.string.error_url_malformed;
+                break;
+            case 5:
+                alertMessage = R.string.network_disconnected;
                 break;
             default:
                 alertMessage = R.string.error_creating_feed;

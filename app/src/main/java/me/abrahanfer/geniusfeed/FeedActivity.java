@@ -91,7 +91,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Class to handle activity to show items from feed
  */
-public class FeedActivity extends AppCompatActivity {
+public class FeedActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
     public final static String FEED_ITEM = "me.abrahanfer.geniusfeed" +
             ".FEED_ITEM";
     public final static String FEED_ITEM_TYPE = "me.abrahanfer.geniusfeed" +
@@ -527,6 +527,9 @@ public class FeedActivity extends AppCompatActivity {
         switch (errorCode) {
             case 0:
                 alertMessage = R.string.error_updating_all_items;
+                break;
+            case 5:
+                alertMessage = R.string.network_disconnected;
                 break;
             default:
                 alertMessage = R.string.error_updating_all_items;

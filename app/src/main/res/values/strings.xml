@@ -83,7 +83,11 @@
     <string name="categories_added_msg">Categories added</string>
     <string name="add_categories_button">Add categories</string>
     <string name="cancel_add_categories">Cancel</string>
+
     <!-- ProgressDialog messages -->
     <string name="searching_feed_msg">Searching feed data</string>
+
+    <!-- Network status interface alert msg -->
+    <string name="network_disconnected">The network has been disconnected. Only fav items can be accessed.</string>
 
 </resources>

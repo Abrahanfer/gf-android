@@ -1,10 +1,12 @@
 package me.abrahanfer.geniusfeed;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -17,7 +19,7 @@ import me.abrahanfer.geniusfeed.models.FeedItem;
  * Created by abrahan on 14/09/16.
  */
 
-public class FavFeedItemActivity extends AppCompatActivity {
+public class FavFeedItemActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
 
     private FeedItem feedItem;
     private String content;
@@ -68,5 +70,29 @@ public class FavFeedItemActivity extends AppCompatActivity {
         return context.getString(R.string.html_wrap, html);
     }
 
+    public void showAlertMessages(int errorCode) {
+        int alertMessage;
 
+        switch (errorCode) {
+            case 5:
+                alertMessage = R.string.network_disconnected;
+                break;
+            default:
+                alertMessage = R.string.network_disconnected;
+        }
+
+
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
+    }
 }

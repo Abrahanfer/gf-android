@@ -1,6 +1,7 @@
 package me.abrahanfer.geniusfeed;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.AttrRes;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -66,7 +68,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FeedItemActivity extends AppCompatActivity {
+public class FeedItemActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
 
     private String feedItemType;
     private String mFeedParentURL;
@@ -414,5 +416,31 @@ public class FeedItemActivity extends AppCompatActivity {
                 errorCallback.onError();
             }
         });
+    }
+
+    public void showAlertMessages(int errorCode) {
+        int alertMessage;
+
+        switch (errorCode) {
+            case 5:
+                alertMessage = R.string.network_disconnected;
+                break;
+            default:
+                alertMessage = R.string.network_disconnected;
+        }
+
+
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }

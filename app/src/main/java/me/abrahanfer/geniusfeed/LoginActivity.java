@@ -40,7 +40,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
 
     private ProgressBar mProgressBar;
 
@@ -129,5 +129,31 @@ public class LoginActivity extends AppCompatActivity {
         fragmentManager.beginTransaction()
                        .replace(R.id.frameLayoutLoginSignIn, fragment)
                        .commit();
+    }
+
+    public void showAlertMessages(int errorCode) {
+        int alertMessage;
+
+        switch (errorCode) {
+            case 5:
+                alertMessage = R.string.network_disconnected;
+                break;
+            default:
+                alertMessage = R.string.network_disconnected;
+        }
+
+
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 }
