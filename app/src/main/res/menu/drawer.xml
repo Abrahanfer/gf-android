@@ -7,14 +7,18 @@
             android:checked="false"
             android:title="@string/list_feed_menu_item_timeframe" />
 
+        <item
+            android:id="@+id/nav_feed_list"
+            android:checked="false"
+            android:title="@string/list_feed_menu_item" />
 
-    <item
-        android:id="@+id/nav_feed_list"
-        android:checked="false"
-        android:title="@string/list_feed_menu_item" />
+        <item
+            android:id="@+id/nav_fav_feed_list"
+            android:checked="false"
+            android:title="@string/list_fav_feed_menu_item" />
 
-     <item android:id="@+id/nav_login"
-           android:checked="false"
-           android:title="Login"/>
+         <item android:id="@+id/nav_login"
+               android:checked="false"
+               android:title="Login"/>
     </group>
 </menu>

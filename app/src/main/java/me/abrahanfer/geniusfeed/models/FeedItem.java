@@ -14,6 +14,7 @@ import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.RealmClass;
 import me.abrahanfer.geniusfeed.FeedActivity;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedItemRealm;
 
 /**
  * Created by abrahan on 29/09/15.
@@ -35,6 +36,15 @@ public class FeedItem implements Parcelable {
 
         Log.d(FeedActivity.EARL_TAG, "Mirando las enclosures" +
                 item.getEnclosures());
+    }
+
+    public FeedItem(FeedItemRealm feedItemRealm) {
+        pk = feedItemRealm.getPk();
+        title = feedItemRealm.getTitle();
+        link = feedItemRealm.getLink();
+        publicationDate = feedItemRealm.getPublicationDate();
+        item_id = feedItemRealm.getItem_id();
+        feed = null;
     }
 
     protected FeedItem(Parcel in) {

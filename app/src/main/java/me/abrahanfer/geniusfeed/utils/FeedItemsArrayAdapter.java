@@ -28,6 +28,8 @@ import me.abrahanfer.geniusfeed.R;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.Feed;
 import me.abrahanfer.geniusfeed.models.FeedItem;
+import me.abrahanfer.geniusfeed.models.FeedItemAtom;
+import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
 import me.abrahanfer.geniusfeed.models.realmModels.CategoryRealm;
 import me.abrahanfer.geniusfeed.models.realmModels.FeedItemReadRealm;
@@ -144,6 +146,8 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                     // Mark as favourite feedItemRead
                     feedItemRead.setFav(true);
                     updateFeedItemRead(feedItemRead);
+                    // Save in local
+                    saveFavFeedItemRead(feedItemRead);
                 } else {
                     // Mark as not favourite feedItemRead
                     feedItemRead.setFav(false);
@@ -195,8 +199,6 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
             public void onResponse(Call<FeedItemRead> call, Response<FeedItemRead> response) {
                 if(response.isSuccessful()) {
                     Log.d("SUCCESS RESPONSE", response.body().toString());
-                    // TODO Save in local
-                    saveFavFeedItemRead(feedItemRead);
                 } else {
                     showAlertDialogWithError(0);
                 }
@@ -278,6 +280,15 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                 feedItemRealm.setLink(feedItem.getLink());
                 feedItemRealm.setPublicationDate(feedItem.getPublicationDate());
                 feedItemRealm.setItem_id(feedItem.getItem_id());
+
+                // Save content too
+                if (FeedItemAtom.class.isInstance(feedItem)) {
+                    FeedItemAtom feedItemAtom = (FeedItemAtom) feedItem;
+                    feedItemRealm.setContent(feedItemAtom.getValue());
+                } else {
+                    FeedItemRSS feedItemRSS = (FeedItemRSS) feedItem;
+                    feedItemRealm.setContent(feedItemRSS.getDescription());
+                }
 
                 Feed feed = feedItemRead.getFeed_item().getFeed();
                 RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())

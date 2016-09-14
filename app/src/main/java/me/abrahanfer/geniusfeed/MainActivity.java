@@ -23,36 +23,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 
-
-import org.springframework.http.HttpAuthentication;
-import org.springframework.http.HttpBasicAuthentication;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
-import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedDRResponse;
-import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
-import me.abrahanfer.geniusfeed.models.Feed;
-import me.abrahanfer.geniusfeed.models.FeedItemRead;
-import me.abrahanfer.geniusfeed.utils.FeedArrayAdapter;
-import me.abrahanfer.geniusfeed.utils.Authentication;
-import me.abrahanfer.geniusfeed.utils.network.FeedSourceGetter;
+import me.abrahanfer.geniusfeed.utils.network.ConnectivityEventsReceiver;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
@@ -108,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Boolean mainTimeFrameFeeds = true;
+        Boolean favFragment = false;
         Class fragmentClass;
         switch (menuItem.getItemId()) {
             // Show only this timeframes feeds
@@ -119,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = FeedListFragment.class;
                 mainTimeFrameFeeds = false;
                 break;
+            // Show fav feed items
+            case R.id.nav_fav_feed_list:
+                fragmentClass = FavFeedItemListFragment.class;
+                favFragment = true;
+                break;
             case R.id.nav_login:
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
@@ -129,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
-            ((FeedListFragment) fragment).setTimeframeFeeds(mainTimeFrameFeeds);
+            if (!favFragment)
+                ((FeedListFragment) fragment).setTimeframeFeeds(mainTimeFrameFeeds);
         } catch (Exception e) {
             e.printStackTrace();
         }

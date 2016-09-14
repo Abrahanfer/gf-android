@@ -44,11 +44,19 @@ import java.sql.BatchUpdateException;
 import java.util.Iterator;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.models.DRResponseModels.FeedItemReadDRResponse;
 import me.abrahanfer.geniusfeed.models.Feed;
+import me.abrahanfer.geniusfeed.models.FeedItem;
 import me.abrahanfer.geniusfeed.models.FeedItemAtom;
 import me.abrahanfer.geniusfeed.models.FeedItemRSS;
 import me.abrahanfer.geniusfeed.models.FeedItemRead;
+import me.abrahanfer.geniusfeed.models.realmModels.CategoryRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedItemReadRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedItemRealm;
+import me.abrahanfer.geniusfeed.models.realmModels.FeedRealm;
 import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.Constants;
 import me.abrahanfer.geniusfeed.utils.network.GeniusFeedService;
@@ -243,6 +251,7 @@ public class FeedItemActivity extends AppCompatActivity {
                     mFeedItemRead.setFav(!mFeedItemRead.getFav());
                     if (mFeedItemRead.getFav()){
                         item.setIcon(R.drawable.ic_favorite_white_24dp);
+                        saveFavFeedItemRead(mFeedItemRead);
                     } else {
                         item.setIcon(R.drawable.ic_favorite_border_white_24dp);
                     }
@@ -256,55 +265,128 @@ public class FeedItemActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void getFeedItemRead(String pkFeedItem){
-            class RetrieveFeedItem extends AsyncTask<String, Void,
-                    FeedItemRead> {
-                // RequestQueue queue = Volley.newRequestQueue(this);
-                private Exception exception;
+    private void saveFavFeedItemRead(final FeedItemRead feedItemRead) {
+        FeedItem feedItem = feedItemRead.getFeed_item();
+        final Feed feed = feedItem.getFeed();
 
-                @Override
-                protected FeedItemRead doInBackground(String...urls) {
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                          .findAll();
+        if (feedItemResults.size() > 0) {
+            saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
+        } else {
+            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                      .findAll();
+            if (feedResults.size() > 0) {
+                saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
+            } else {
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        FeedRealm feedRealm = realm.createObject(FeedRealm.class);
+                        feedRealm.setPk(feed.getPk());
+                        feedRealm.setLinkURL(feed.getLink().toString());
+                        feedRealm.setTitle(feed.getTitle());
 
-                    // Adding header for Basic HTTP Authentication
-                    HttpAuthentication authHeader = new HttpBasicAuthentication
-                            ("test-user-1", "test1");
-                    HttpHeaders requestHeaders = new HttpHeaders();
-                    requestHeaders.setAuthorization(authHeader);
-                    HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-                    // Testing Spring Framework
-                    RestTemplate restTemplate = new RestTemplate();
+                        for(Category category : feed.getCategory_set()) {
+                            RealmResults<CategoryRealm> categoryResults = realm.where(CategoryRealm.class).equalTo
+                                    ("name",
+                                     category
+                                             .getName())
 
-                    restTemplate.getMessageConverters().
+                                                                               .findAll();
+                            CategoryRealm categoryRealm;
+                            if (categoryResults.size() == 0) {
+                                categoryRealm = realm.createObject(CategoryRealm.class);
+                                categoryRealm.setName(category.getName());
+                            } else {
+                                categoryRealm = categoryResults.get(0);
+                            }
 
-                            add(new MappingJackson2HttpMessageConverter()
-
-                            );
-
-                    HttpEntity<FeedItemRead> response = restTemplate
-                            .exchange(urls[0], HttpMethod.GET, requestEntity,
-                                    FeedItemRead.class);
-
-
-
-                    FeedItemRead feedItemRead =  response.getBody();
-
-                    System.out.println("GOOD REQUEST!!!");
-
-                    return feedItemRead;
-                }
-
-                protected void onPostExecute(FeedItemRead feedItemRead){
-
-                }
+                            feedRealm.getCategory_set().add(categoryRealm);
+                        }
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+                        Realm realm = Realm.getDefaultInstance();
+                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                                  .findAll();
+                        saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
+                    }
+                });
             }
-
-            String url = Constants.getHostByEnviroment() +
-                    "/feed_item_reads/" +
-                    pkFeedItem +
-                    ".json";
-
-            new RetrieveFeedItem().execute(url);
         }
+    }
+
+    private void saveFavFeedItemReadForFeed(final FeedItemRead feedItemRead, final FeedRealm feedRealm) {
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                FeedItemRealm feedItemRealm = realm.createObject(FeedItemRealm.class);
+                feedItemRealm.setPk(feedItem.getPk());
+                feedItemRealm.setTitle(feedItem.getTitle());
+                feedItemRealm.setLink(feedItem.getLink());
+                feedItemRealm.setPublicationDate(feedItem.getPublicationDate());
+                feedItemRealm.setItem_id(feedItem.getItem_id());
+
+                // Save content too
+                if (FeedItemAtom.class.isInstance(feedItem)) {
+                    FeedItemAtom feedItemAtom = (FeedItemAtom) feedItem;
+                    feedItemRealm.setContent(feedItemAtom.getValue());
+                } else {
+                    FeedItemRSS feedItemRSS = (FeedItemRSS) feedItem;
+                    feedItemRealm.setContent(feedItemRSS.getDescription());
+                }
+
+                Feed feed = feedItemRead.getFeed_item().getFeed();
+                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                                                          .findAll();
+
+                feedItemRealm.setFeed(feedResults.get(0));
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                Realm realm = Realm.getDefaultInstance();
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                                  .findAll();
+                saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
+            }
+        });
+    }
+
+    private void saveFavFeedItemReadForFeedItem(final FeedItemRead feedItemRead, final FeedItemRealm feedItemRealm) {
+        // GetRealm instance
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                FeedItemReadRealm feedItemReadRealm = realm.createObject(FeedItemReadRealm.class);
+                feedItemReadRealm.setPk(feedItemRead.getPk());
+                feedItemReadRealm.setFav(feedItemRead.getFav());
+                feedItemReadRealm.setRead(feedItemRead.getRead());
+                feedItemReadRealm.setUpdate_date(feedItemRead.getUpdate_date());
+                feedItemReadRealm.setUser(feedItemRead.getUser());
+
+                FeedItem feedItem = feedItemRead.getFeed_item();
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                                                                  .findAll();
+                feedItemReadRealm.setFeed_item(feedItemResults.get(0));
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                Log.e("REALM!!!", "ALL OK!!!! SAVE COMPLETE!!!");
+            }
+        });
+
+    }
 
     private void putChangesForFeedItemRead(final FeedItemReadErrorCallback errorCallback) {
         final String token = Authentication.getCredentials().getToken();

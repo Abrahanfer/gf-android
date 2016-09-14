@@ -32,7 +32,13 @@
             android:name=".FeedItemActivity"
             android:label="@string/title_activity_feed_item"
             android:parentActivityName=".FeedActivity" >
-        </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        </activity>
+        <activity
+            android:name=".FavFeedItemActivity"
+            android:label="@string/title_activity_fav_feed_item"
+            android:parentActivityName=".MainActivity" >
+        </activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"

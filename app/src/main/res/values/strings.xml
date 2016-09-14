@@ -3,9 +3,11 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <!-- Activity title -->
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_feed_item">FeedItemActivity</string>
     <string name="title_activity_feed">FeedActivity</string>
+    <string name="title_activity_fav_feed_item">FavFeedItemActivity</string>
     <!-- Login fragment -->
     <string name="main_title">Geniusfeed</string>
     <string name="login_username">Username</string>
@@ -29,6 +31,7 @@
     <string name="list_feed_menu_item">All feeds</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="list_fav_feed_menu_item">Fav feed items</string>
 
     <string name="html_wrap" translatable="false">
             <![CDATA[
