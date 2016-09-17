@@ -3,11 +3,13 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
     <!-- Activity title -->
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_feed_item">FeedItemActivity</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_fav_feed_item">FavFeedItemActivity</string>
+
     <!-- Login fragment -->
     <string name="main_title">Geniusfeed</string>
     <string name="login_username">Username</string>
@@ -19,6 +21,7 @@
     <string name="error_login_bad_credentials">The username or password is not valid.</string>
     <string name="login_button_title">Login</string>
     <string name="signup_button_title">Sign Up</string>
+
     <!-- Sign Up fragment -->
     <string name="email_error_validation">Invalid email</string>
     <string name="password_error_validation">Invalid password, min 6 char alphanumeric</string>
@@ -32,6 +35,7 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="list_fav_feed_menu_item">Fav feed items</string>
+    <string name="recommended_feeds_menu_item">Recommended for you</string>
 
     <string name="html_wrap" translatable="false">
             <![CDATA[
@@ -89,5 +93,8 @@
 
     <!-- Network status interface alert msg -->
     <string name="network_disconnected">The network has been disconnected. Only fav items can be accessed.</string>
+
+    <!-- Recommended Feeds alert msg -->
+    <string name="recommended_feeds_alert_msg">An error happens retrieving recommended feeds from server.</string>
 
 </resources>

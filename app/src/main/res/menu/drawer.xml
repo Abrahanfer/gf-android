@@ -15,10 +15,14 @@
         <item
             android:id="@+id/nav_fav_feed_list"
             android:checked="false"
-            android:title="@string/list_fav_feed_menu_item" />
+            android:title="@string/list_fav_feed_menu_item"/>
 
-         <item android:id="@+id/nav_login"
-               android:checked="false"
-               android:title="Login"/>
+        <item android:id="@+id/nav_login"
+              android:checked="false"
+              android:title="Login"/>
+
+        <item android:id="@+id/recommended_feeds"
+              android:checked="false"
+              android:title="@string/recommended_feeds_menu_item"/>
     </group>
 </menu>

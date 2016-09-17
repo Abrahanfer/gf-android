@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Boolean mainTimeFrameFeeds = true;
-        Boolean favFragment = false;
+        Boolean feedListFragment = true;
         Class fragmentClass;
         switch (menuItem.getItemId()) {
             // Show only this timeframes feeds
@@ -108,7 +108,12 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
             // Show fav feed items
             case R.id.nav_fav_feed_list:
                 fragmentClass = FavFeedItemListFragment.class;
-                favFragment = true;
+                feedListFragment = false;
+                break;
+            // Show fav feed items
+            case R.id.recommended_feeds:
+                fragmentClass = RecommendedFeedsFragment.class;
+                feedListFragment = false;
                 break;
             case R.id.nav_login:
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -120,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
-            if (!favFragment)
+            if (feedListFragment)
                 ((FeedListFragment) fragment).setTimeframeFeeds(mainTimeFrameFeeds);
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,6 +216,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
                 break;
             case 1:
                 alertMessage = R.string.error_url_malformed;
+                break;
+            case 3:
+                alertMessage = R.string.recommended_feeds_alert_msg;
                 break;
             case 5:
                 alertMessage = R.string.network_disconnected;
