@@ -15,11 +15,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.internal.view.SupportMenuItem;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +35,7 @@ import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.utils.network.ConnectivityEventsReceiver;
 
-public class MainActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface {
+public class MainActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface, SearchView.OnQueryTextListener {
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private NavigationView mNvDrawer;
@@ -160,7 +162,23 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.toolbar_actions, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.searchAction);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
         return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        // Here is where we are going to implement the filter logic
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
     }
 
     @Override

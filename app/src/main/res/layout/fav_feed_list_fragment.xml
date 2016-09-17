@@ -4,7 +4,7 @@
     android:id="@+id/fav_feed_list_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fav_feed_item_list"

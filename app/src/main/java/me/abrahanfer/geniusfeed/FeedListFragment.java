@@ -81,8 +81,6 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public final static String FEED_LINK = "FEED_LINK";
     public final static String FEED_PK = "FEED_PK";
     public final static String FEED_API = "FEED_API";
-    // public final static String DOMAIN = "10.0.240.29";
-    // public final static String DOMAIN = "192.168.1.55";
 
     private Boolean timeframeFeeds = false;
 
