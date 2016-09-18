@@ -103,11 +103,10 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
     private com.einmalfel.earl.Feed mFeed;
     private URL feedLink;
     private String mFeedPk;
-    private ProgressBar mProgressBar;
+    @BindView(R.id.pbLoading) ProgressBar mProgressBar;
     private List<FeedItemRead> mSourceItems;
     private Feed mFeedAPI;
-    private RecyclerView mListFeedItems;
-    private RecyclerView mFeedList;
+    @BindView(R.id.feed_items_list) RecyclerView mListFeedItems;
     @BindView(R.id.feed_activity_swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -120,7 +119,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
 
         mFeedPk = getIntent().getStringExtra(FeedListFragment.FEED_PK);
         mFeedAPI = getIntent().getParcelableExtra(FeedListFragment.FEED_API);
-        Log.e("FEEDAPI", "Algo " + mFeedAPI.getPk());
+
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(FeedListFragment.FEED_LINK));
@@ -134,7 +133,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Prueba");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -150,9 +149,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
         swipeRefreshLayout.setColorSchemeResources(R.color.color_primary,R.color.color_accent);
 
         if (feedLink != null) {
-            // Set up progressBar
-            mProgressBar = (ProgressBar) findViewById(R.id.pbLoading);
-            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+            showProgressBar();
 
             getFeedItemsFromFeed(feedLink);
         }
@@ -288,8 +285,6 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
                         = new FeedItemsArrayAdapter(feedItemReads);
 
                 feedItemsArrayAdapter.setActivity(activity);
-                mProgressBar.setVisibility(ProgressBar
-                                                   .INVISIBLE);
                 //listFeeds.setAdapter(feedArrayAdapter);
 
                 feedItemsList.setAdapter(feedItemsArrayAdapter);
@@ -297,7 +292,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
 
                 Log.d(FEED_ACTIVITY_TAG, "Get all feed items " +
                         "completed");
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                hideProgressBar();
                 // setupListFeeds();
                 // Call to get list fo feedItemRead from API
                 getFeedItemReadList(new ArrayList<FeedItemRead>(), 1);
@@ -309,10 +304,8 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
     public void getFeedItemReadList(final List<FeedItemRead> feedItemList, final int page) {
         final String token = Authentication.getCredentials().getToken();
 
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        // Set listview as invisible
-        mListFeedItems =(RecyclerView) findViewById(R.id.feed_items_list);
-        mListFeedItems.setVisibility(ListView.INVISIBLE);
+        showProgressBar();
+
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
 
         Call<FeedItemReadDRResponse> call = service.getFeedItemReads(mFeedPk, page);
@@ -357,7 +350,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
             public void onFailure(Call<FeedItemReadDRResponse> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Log.e("Error Login RETROFIT", t.getMessage());
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                hideProgressBar();
             }
         });
     }
@@ -394,9 +387,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
             feedItems.remove(0);
             postOneFeedItemRead(service,firstToPost,feedItems);
         }else{
-            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-            // Set listview as visible
-            mListFeedItems.setVisibility(ListView.VISIBLE);
+            hideProgressBar();
 
             /*ListView listFeedItems = (ListView) findViewById(R.id.listFeedItems);
             ((ArrayAdapter)listFeedItems.getAdapter()).notifyDataSetChanged();*/
@@ -433,17 +424,13 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
                     feedItemsToPost.remove(0);
                     postOneFeedItemRead(service, feedItem, feedItemsToPost);
                 }else{
-                    mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                    // Set listview as visible
-                    mListFeedItems.setVisibility(ListView.VISIBLE);
+                    hideProgressBar();
                 }
             }
 
             @Override
             public void onFailure(Call<FeedItemRead> call, Throwable t) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-                // Set listview as visible
-                mListFeedItems.setVisibility(ListView.VISIBLE);
+               hideProgressBar();
             }
         });
     }

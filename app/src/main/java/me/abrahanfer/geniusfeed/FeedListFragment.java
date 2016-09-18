@@ -260,8 +260,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
 
     public void getFeedFromAPI() {
         // ProgressBar
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        mFeedListView.setVisibility(RecyclerView.INVISIBLE);
+        showProgressBar();
+
         String username;
         String token;
 
@@ -341,6 +341,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                 } else {
                     // error response, no access to resource?
                     Log.e("ERROR FEED LIST", "error in response");
+                    // TODO Feedback to user
                 }
             }
 
@@ -348,6 +349,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
             public void onFailure(Call<FeedDRResponse> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Log.e("Error GetFeeds RETROFIT", t.getMessage());
+                // TODO Feedback to user
             }
         });
     }
@@ -377,8 +379,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
     }
 
     public void setupAuthenticationFromDB() {
-        // ProgressBar
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        showProgressBar();
 
         // Get DBHelper
         final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
@@ -429,7 +430,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                 }
 
                 // Remove progressBar
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                hideProgressBar();
                 getFeedFromAPI();
             }
 
@@ -455,6 +456,39 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
         newFragment.setUpdateHelper(this);
 
         newFragment.show(ft, "dialog");
+    }
+
+    private void showProgressBar() {
+        // Show progressBar
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mFeedListView.setVisibility(RecyclerView.INVISIBLE);
+    }
+
+    private void hideProgressBar() {
+        // Stopping progress bar from swipe
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        // Remove progressBar
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        mFeedListView.setVisibility(RecyclerView.VISIBLE);
+    }
+
+
+    private void showAlertMessageForError(int errorCode) {
+        // Print alert on mainThread
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.error_deleting_feed)
+               .setCancelable(false)
+               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // Dismiss dialog
+                       //dialog.dismiss();
+                   }
+               });
+
+        builder.create().show();
     }
 
     private void deleteFeed(final int position) {
@@ -493,28 +527,13 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
         getFeedFromAPI();
     }
 
-    private void showAlertMessageForError(int errorCode) {
-        // Print alert on mainThread
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.error_deleting_feed)
-               .setCancelable(false)
-               .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                       // Dismiss dialog
-                       //dialog.dismiss();
-                   }
-               });
-
-        builder.create().show();
-    }
-
     private void downloadAllFeedData(List<Feed> feeds) {
         // Download all feed item read
         mFeedItemsReadByFeed = new HashMap<String, List<FeedItemRead>>();
         if(feeds.size() > 0) {
             getFeedItemReadList(new ArrayList<FeedItemRead>(), 1, feeds.get(0).getPk());
         } else {
-          mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+            hideProgressBar();
         }
     }
 
@@ -544,12 +563,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                         if(nextFeed != null)
                             getFeedItemReadList(new ArrayList<FeedItemRead>(), 1, nextFeed.getPk());
                         else {
-                            // Stopping progress bar from swipe
-                            if (swipeRefreshLayout != null) {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                            mFeedListView.setVisibility(RecyclerView.VISIBLE);
-                            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                            hideProgressBar();
+
                             FeedArrayAdapter feedArrayAdapter = new FeedArrayAdapter(new ArrayList<Feed>(mFeedList),
                                                                                      mFeedItemsReadByFeed);
                             if(timeframeFeeds) {
@@ -562,6 +577,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                 }else{
                     // error response, no access to resource?
                     Log.e("ERROR FEED ITEM LIST", "error in response, with bad http code");
+                    // TODO feedback to user
                 }
             }
 
@@ -569,7 +585,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
             public void onFailure(Call<FeedItemReadDRResponse> call, Throwable t) {
                 // something went completely south (like no internet connection)
                 Log.e("Error Login RETROFIT", t.getMessage());
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                // TODO feedback to user
+                hideProgressBar();
             }
         });
     }
