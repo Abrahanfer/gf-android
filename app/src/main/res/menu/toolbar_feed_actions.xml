@@ -9,12 +9,13 @@
         android:title="Mark as read"
         app:showAsAction="ifRoom"/>
 
-    <!-- Search action button -->
+    <!-- Search action button
     <item
         android:id="@+id/searchAction"
         android:icon="@drawable/ic_search_white_24dp"
         android:title="Search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom"/>
+        -->
 
 </menu>

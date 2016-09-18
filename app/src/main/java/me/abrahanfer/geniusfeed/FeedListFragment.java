@@ -27,6 +27,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,7 +74,7 @@ interface FeedListUpdater {
 /**
  * Created by abrahan on 2/04/16.
  */
-public class FeedListFragment extends Fragment implements FeedListUpdater {
+public class FeedListFragment extends Fragment implements FeedListUpdater, SearchView.OnQueryTextListener {
     public final static String FEED = "me.abrahanfer.geniusfeed" +
             ".FEED";
     public final static String LOGIN_CREDENTIALS =
@@ -202,8 +204,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = getActivity();
-        mProgressBar = (ProgressBar) mActivity.findViewById(R.id
-                                                                    .pbLoading);
+        mProgressBar = (ProgressBar) mActivity.findViewById(R.id.pbLoading);
         setupListFeeds();
         setupAuthenticationFromDB();
         //testRequest();
@@ -213,6 +214,48 @@ public class FeedListFragment extends Fragment implements FeedListUpdater {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        // Add logic to filter feeds by titles and categories
+        ArrayList<Feed> newFeedList;
+        Map<String, List<FeedItemRead>> newFeedItemsReadByFeed;
+        if (query.length() > 0) {
+            newFeedList = filterByQuery(query);
+            newFeedItemsReadByFeed = filterByNewFeeds(newFeedList);
+        } else {
+            newFeedList = mFeedList;
+            newFeedItemsReadByFeed = mFeedItemsReadByFeed;
+        }
+        FeedArrayAdapter newAdapter = new FeedArrayAdapter(newFeedList, newFeedItemsReadByFeed);
+        mFeedListView.setAdapter(newAdapter);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    private ArrayList<Feed> filterByQuery(String query) {
+        ArrayList<Feed> newFeedList = new ArrayList<>();
+        for(Feed feed : mFeedList) {
+            if (feed.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                newFeedList.add(feed);
+            }
+        }
+
+        return newFeedList;
+    }
+
+    private Map<String, List<FeedItemRead>> filterByNewFeeds(ArrayList<Feed> feeds) {
+        Map<String, List<FeedItemRead>> newFeedItemsRead = new HashMap<String, List<FeedItemRead>>();
+        for(Feed feed : feeds) {
+            newFeedItemsRead.put(feed.getPk(), mFeedItemsReadByFeed.get(feed.getPk()));
+        }
+
+        return newFeedItemsRead;
     }
 
     public void getFeedFromAPI() {

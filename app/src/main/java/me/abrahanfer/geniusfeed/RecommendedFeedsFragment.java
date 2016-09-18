@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,7 +49,7 @@ import retrofit2.Response;
  * Created by abrahan on 17/09/16.
  */
 
-public class RecommendedFeedsFragment extends Fragment {
+public class RecommendedFeedsFragment extends Fragment implements SearchView.OnQueryTextListener {
     private View mBaseView;
     private Activity mActivity;
 
@@ -153,6 +154,37 @@ public class RecommendedFeedsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        ArrayList<Feed> newFeedList = filterByQuery(query);
+
+        RecommendedFeedsArrayAdapter newAdapter = new RecommendedFeedsArrayAdapter(newFeedList);
+        recommendFeedsList.setAdapter(newAdapter);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    private ArrayList<Feed> filterByQuery(String query) {
+
+        ArrayList<Feed> newFeedList = new ArrayList<>();
+
+        if (query.length() > 0) {
+            for (Feed feed : recommendFeeds) {
+                if (feed.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                    newFeedList.add(feed);
+                }
+            }
+        } else {
+           newFeedList = recommendFeeds;
+        }
+
+        return newFeedList;
     }
 
     private void showProgressBar() {

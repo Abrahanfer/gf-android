@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
     private Toolbar mToolbar;
     private NavigationView mNvDrawer;
     private ProgressDialog mProgressDialog;
+    private Fragment mCurrentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
+        mCurrentFragment = null;
         Boolean mainTimeFrameFeeds = true;
         Boolean feedListFragment = true;
         Class fragmentClass;
@@ -126,9 +127,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         }
 
         try {
-            fragment = (Fragment) fragmentClass.newInstance();
+            mCurrentFragment = (Fragment) fragmentClass.newInstance();
             if (feedListFragment)
-                ((FeedListFragment) fragment).setTimeframeFeeds(mainTimeFrameFeeds);
+                ((FeedListFragment) mCurrentFragment).setTimeframeFeeds(mainTimeFrameFeeds);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                       .replace(R.id.flContent, fragment).commit();
+                       .replace(R.id.flContent, mCurrentFragment).commit();
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
@@ -172,13 +173,15 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
     @Override
     public boolean onQueryTextChange(String query) {
-        // Here is where we are going to implement the filter logic
-        return false;
+        // Passing query to fragment children
+        return ((SearchView.OnQueryTextListener) mCurrentFragment).onQueryTextChange(query);
+
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        // Passing query to fragment children
+        return ((SearchView.OnQueryTextListener) mCurrentFragment).onQueryTextSubmit(query);
     }
 
     @Override

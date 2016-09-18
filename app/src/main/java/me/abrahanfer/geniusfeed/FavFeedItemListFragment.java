@@ -15,15 +15,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import me.abrahanfer.geniusfeed.models.Feed;
@@ -36,7 +40,7 @@ import me.abrahanfer.geniusfeed.utils.FavFeedArrayAdapter;
  * Created by abrahan on 14/09/16.
  */
 
-public class FavFeedItemListFragment extends Fragment {
+public class FavFeedItemListFragment extends Fragment implements SearchView.OnQueryTextListener {
     private View mBaseView;
     private Activity mActivity;
     private RealmResults<FeedItemReadRealm> mFavFeedItemsResults;
@@ -139,6 +143,29 @@ public class FavFeedItemListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        RealmResults<FeedItemReadRealm> newFeedList = filterByQuery(query);
+
+        FavFeedArrayAdapter newAdapter = new FavFeedArrayAdapter(newFeedList);
+        favFeedItemList.setAdapter(newAdapter);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+
+    private RealmResults<FeedItemReadRealm> filterByQuery(String query) {
+        if (query.length() > 0) {
+            return mFavFeedItemsResults.where().contains("feed_item.title", query, Case.INSENSITIVE).findAll();
+        } else {
+            return mFavFeedItemsResults;
+        }
     }
 
     private void showFavFeedItem() {
