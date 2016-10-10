@@ -225,7 +225,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
     }
 
     public void stopProgressDialog() {
-        mProgressDialog.dismiss();
+        if(mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     public void showAlertMessages(int errorCode) {
