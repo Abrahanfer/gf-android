@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "0.4.0"
     }
     buildTypes {
         release {
@@ -24,6 +24,12 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
+    }
+
+    lintOptions {
+        checkReleaseBuilds true
+
+        abortOnError false
     }
 }
 
