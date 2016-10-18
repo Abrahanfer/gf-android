@@ -36,6 +36,8 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="list_fav_feed_menu_item">Fav feed items</string>
     <string name="recommended_feeds_menu_item">Recommended for you</string>
+    <string name="login_string">Login</string>
+    <string name="logout_string">Logout</string>
 
     <string name="html_wrap" translatable="false">
             <![CDATA[

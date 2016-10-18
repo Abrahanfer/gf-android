@@ -343,6 +343,14 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
                 }else{
                     // error response, no access to resource?
                     Log.e("ERROR FEED ITEM LIST", "error in response, with bad http code");
+
+                    // Check error status code
+                    if (response.code() == 403) {
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+
+                        return;
+                    }
                 }
             }
 

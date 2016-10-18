@@ -120,7 +120,6 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Mriando el feedback", "<---------");
                 showDialog();
             }
         });
@@ -304,6 +303,14 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                 } else {
                     // error response, no access to resource?
                     Log.e("ERROR FEED LIST", "error in response");
+
+                    // Check error status code
+                    if (response.code() == 403) {
+                        Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+
+                        return;
+                    }
                 }
             }
 

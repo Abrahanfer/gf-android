@@ -405,8 +405,16 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
                 if (response.isSuccessful()) {
                     // All ok
                 } else {
-                    // Feedback for bad code response
-                    errorCallback.onError();
+                    // Check error status code
+                    if (response.code() == 403) {
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+
+                        return;
+                    } else {
+                        // Feedback for bad code response
+                        errorCallback.onError();
+                    }
                 }
             }
 

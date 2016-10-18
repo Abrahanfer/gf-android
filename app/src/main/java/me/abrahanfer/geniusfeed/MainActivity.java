@@ -33,6 +33,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
+import me.abrahanfer.geniusfeed.utils.Authentication;
 import me.abrahanfer.geniusfeed.utils.network.ConnectivityEventsReceiver;
 
 public class MainActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface, SearchView.OnQueryTextListener {
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
         // Setup drawer view
         setupDrawerContent(mNvDrawer);
+        Log.e("Mirando menu item", "login 3");
+        changeLoginMenuItem();
 
         View headerLayout = mNvDrawer.getHeaderView(0);
 
@@ -121,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
             case R.id.nav_login:
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
+                return;
+            case R.id.nav_logout:
+                // TODO: Remove credentials from database
+
                 return;
             default:
                 fragmentClass = FeedListFragment.class;
@@ -189,9 +196,29 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                // Change login/logout menu item
+                changeLoginMenuItem();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void changeLoginMenuItem() {
+        // Check about login info
+        Authentication credentials = Authentication.getCredentials();
+        MenuItem loginMenuItem = (MenuItem) mNvDrawer.getMenu().findItem(R.id.nav_login);
+        MenuItem logoutMenuItem = (MenuItem) mNvDrawer.getMenu().findItem(R.id.nav_logout);
+        if (credentials != null) {
+            if (loginMenuItem != null)
+                loginMenuItem.setVisible(false);
+            if (logoutMenuItem != null)
+                logoutMenuItem.setVisible(true);
+        } else {
+            if (loginMenuItem != null)
+                loginMenuItem.setVisible(true);
+            if (logoutMenuItem != null)
+                logoutMenuItem.setVisible(false);
+        }
     }
 
 

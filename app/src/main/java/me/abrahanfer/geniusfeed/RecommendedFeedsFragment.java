@@ -244,9 +244,18 @@ public class RecommendedFeedsFragment extends Fragment implements SearchView.OnQ
                 } else {
                     // error response, no access to resource?
                     stopRefreshing();
-                    // Feedback error
-                    MainActivity mainActivity = (MainActivity) mActivity;
-                    mainActivity.showAlertMessages(3);
+
+                    // Check error status code
+                    if (response.code() == 403) {
+                        Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
+                        startActivity(intent);
+
+                        return;
+                    } else {
+                        // Feedback error
+                        MainActivity mainActivity = (MainActivity) mActivity;
+                        mainActivity.showAlertMessages(3);
+                    }
                 }
             }
 
