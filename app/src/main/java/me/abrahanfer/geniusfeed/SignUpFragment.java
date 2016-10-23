@@ -163,27 +163,30 @@ public class SignUpFragment extends Fragment {
         final String email = mEditTextEmail.getText().toString();
         final String username = email;
         final String password = mEditTextPassword.getText().toString();
-        Call<ResponseBody> call = service.createNewUser(new RegisterBundle(email, username, password));
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful()) {
-                    // Go On gettting token
-                    Log.d("New user created", "Ok!!!!!!");
-                    requestToken(username, password);
-                } else {
-                    // TODO Feedback to user
-                    dismissProgressBar();
+        if (username.length() > 0 && password.length() > 0) {
+            Call<ResponseBody> call = service.createNewUser(new RegisterBundle(email, username, password));
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        // Go On gettting token
+                        Log.d("New user created", "Ok!!!!!!");
+                        requestToken(username, password);
+                    } else {
+                        // TODO Feedback to user
+                        dismissProgressBar();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                dismissProgressBar();
-                //TODO feedback to user
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    dismissProgressBar();
+                    //TODO feedback to user
+                }
+            });
+        }
     }
 
     public void requestToken(String username, String password) {
