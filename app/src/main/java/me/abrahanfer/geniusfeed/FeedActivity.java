@@ -120,6 +120,8 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
         mFeedPk = getIntent().getStringExtra(FeedListFragment.FEED_PK);
         mFeedAPI = getIntent().getParcelableExtra(FeedListFragment.FEED_API);
 
+        setTitle(mFeedAPI.getTitle());
+
         try {
             feedLink = new URL(getIntent()
                     .getStringExtra(FeedListFragment.FEED_LINK));
@@ -208,7 +210,6 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
                     Log.d(EARL_TAG, "Exception data format");
                 }
 
-               // Log.i(EARL_TAG, "Processing feed: " + feed.getTitle());
                 mFeed = feed;
                 ArrayList<FeedItemRead> feedItems = new ArrayList<>();
                 if (RSSFeed.class.isInstance(feed)) {

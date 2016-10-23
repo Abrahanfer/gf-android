@@ -97,6 +97,12 @@ public class LoginActivity extends AppCompatActivity implements NetworkStatusFee
         return super.onOptionsItemSelected(item);
     }
 
+    // Change back button behaviour
+    @Override
+    public void onBackPressed() {
+        // Do nothing
+    }
+
     public void changeToSignUpFragment() {
         SignUpFragment fragment = null;
         Class fragmentClass;

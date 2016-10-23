@@ -90,8 +90,7 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
         // Set title in collapsingToolbarLayout
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle("Entry");
-
+        collapsingToolbar.setTitleEnabled(false);
         // Set toolbar as support action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,6 +102,10 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
 
         mFeedItemRead = getIntent()
                 .getParcelableExtra(FeedActivity.FEED_ITEM_READ);
+
+        FeedItem feedItem = getIntent().getParcelableExtra(FeedActivity.FEED_ITEM);
+        getSupportActionBar().setTitle(feedItem.getTitle());
+
 
         // Set as read the item
         mFeedItemRead.setRead(true);
