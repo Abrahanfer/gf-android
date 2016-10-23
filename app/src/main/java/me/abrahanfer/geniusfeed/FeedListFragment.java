@@ -538,7 +538,8 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
     @Override
     public void updateFeedData(Feed newFeed) {
         mFeedList.add(newFeed);
-        mFeedListView.getAdapter().notifyDataSetChanged();
+        if (mFeedListView.getAdapter() != null)
+            mFeedListView.getAdapter().notifyDataSetChanged();
         getFeedFromAPI();
     }
 

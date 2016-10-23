@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Geniusfeed</string>
     <string name="action_settings">Opciones</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- Activity title -->
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_feed_item">FeedItemActivity</string>
+    <string name="title_activity_feed">FeedActivity</string>
+    <string name="title_activity_fav_feed_item">FavFeedItemActivity</string>
 
     <!-- Login fragment -->
     <string name="main_title">Geniusfeed</string>
@@ -26,6 +33,8 @@
     <string name="list_feed_menu_item">Todos los feeds</string>
     <string name="list_fav_feed_menu_item">Favoritos</string>
     <string name="recommended_feeds_menu_item">Recomendados</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
     <string name="login_string">Login</string>
     <string name="logout_string">Cerrar sesión</string>
 

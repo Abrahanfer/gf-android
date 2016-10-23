@@ -193,7 +193,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
             protected ArrayList<FeedItemRead> doInBackground(URL... url) {
                 InputStream inputStream = null;
                 com.einmalfel.earl.Feed feed = null;
-                Log.i(EARL_TAG, "Mirando link" + url);
+                Log.i(EARL_TAG, "Mirando link" + feedLink);
                 try {
                     inputStream = feedLink.openConnection().getInputStream();
                 }catch (IOException exception) {
@@ -203,7 +203,7 @@ public class FeedActivity extends AppCompatActivity implements NetworkStatusFeed
                 try {
                     feed = EarlParser.parseOrThrow(inputStream, 0);
                 }catch (XmlPullParserException xmlExcepcion){
-                    Log.d(EARL_TAG, "Exception XML Pasrser");
+                    Log.d(EARL_TAG, "Exception XML Parser " + xmlExcepcion);
                 }catch (IOException ioException){
                     Log.d(EARL_TAG, "Exception IO");
                 }catch (DataFormatException dataException) {

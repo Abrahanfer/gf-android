@@ -152,7 +152,7 @@ public class AddFeedDialogFragment extends DialogFragment {
     }
 
     public void createNewFeed(final URL feedSourceURL) {
-        // TODO USe Earl to get data from feed like Title
+        // USe Earl to get data from feed like Title
         class RetrieveFeedInfo extends AsyncTask<Void, Void,
                 com.einmalfel.earl.Feed> {
 
@@ -183,7 +183,6 @@ public class AddFeedDialogFragment extends DialogFragment {
             }
 
             protected void onPostExecute(com.einmalfel.earl.Feed feed) {
-                Log.i(EARL_TAG, "Mirando titulo del nuevo Feed " + feed.getTitle());
 
                 if (feed == null) {
                     showAlertMessageForError(0);
@@ -197,7 +196,6 @@ public class AddFeedDialogFragment extends DialogFragment {
                 List<String> categoriesNames = new ArrayList<String>();
                 if(feed.getClass() == com.einmalfel.earl.AtomFeed.class) {
                     com.einmalfel.earl.AtomFeed atomFeed = (com.einmalfel.earl.AtomFeed) feed;
-                   Log.e("Categories", "ATOM Mirando cat "  + atomFeed.categories);
                     List<AtomCategory> categoriesList = atomFeed.categories;
 
                     for (AtomCategory cat : categoriesList) {
@@ -206,7 +204,6 @@ public class AddFeedDialogFragment extends DialogFragment {
                     }
                 } else if (feed.getClass() == com.einmalfel.earl.RSSFeed.class) {
                     com.einmalfel.earl.RSSFeed rssFeed = (com.einmalfel.earl.RSSFeed) feed;
-                    Log.e("Categories", "RSS Mirando cat "  + rssFeed.categories);
                     List<RSSCategory> categoriesList = rssFeed.categories;
 
                     for (RSSCategory cat : categoriesList) {
@@ -223,7 +220,7 @@ public class AddFeedDialogFragment extends DialogFragment {
                 // Add step to show Dialog fragment to add more categories or remove the defaults
                 MainActivity act = (MainActivity) mActivity;
                 act.stopProgressDialog();
-                act.showAddCategoriesDialog(categories, feed, mUpdateHelper);
+                act.showAddCategoriesDialog(categories, feed, mUpdateHelper, feedSourceURL);
                 dismiss();
             }
         }

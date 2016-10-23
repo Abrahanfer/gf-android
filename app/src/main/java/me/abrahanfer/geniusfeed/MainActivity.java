@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.net.URL;
 import java.util.List;
 
 import io.realm.Realm;
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
 
     public void showAddCategoriesDialog(List<Category> categories, com.einmalfel.earl.Feed feedInfo, FeedListUpdater
-            updateHelper) {
+            updateHelper, URL feedSourceURL) {
         //FragmentTransaction ft = getFragmentManager().beginTransaction();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         newFragment.setCategories(categories);
         newFragment.setFeedInfo(feedInfo);
         newFragment.setUpdateHelper(updateHelper);
+        newFragment.setFeedSourceURL(feedSourceURL);
 
         newFragment.show(ft, "dialog");
     }

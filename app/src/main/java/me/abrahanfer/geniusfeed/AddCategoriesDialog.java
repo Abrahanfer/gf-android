@@ -49,6 +49,8 @@ public class AddCategoriesDialog extends DialogFragment {
     private Activity mActivity;
     private Unbinder unbinder;
     private FeedListUpdater mUpdateHelper;
+
+    private URL feedSourceURL;
     @BindView(R.id.autocompleteView)
     AutoCompleteTextView autoCompleteTextView;
     @BindView(R.id.addCategoryButton)
@@ -78,6 +80,14 @@ public class AddCategoriesDialog extends DialogFragment {
 
     public void setUpdateHelper(FeedListUpdater updateHelper) {
         this.mUpdateHelper = updateHelper;
+    }
+
+    public URL getFeedSourceURL() {
+        return feedSourceURL;
+    }
+
+    public void setFeedSourceURL(URL feedSourceURL) {
+        this.feedSourceURL = feedSourceURL;
     }
 
     static AddCategoriesDialog newInstance() {
@@ -187,40 +197,36 @@ public class AddCategoriesDialog extends DialogFragment {
     }
 
     public void createFeed() {
-        // TODO Finally add feed with categories
+        // Finally add feed with categories
         String token = Authentication.getCredentials().getToken();
         GeniusFeedService service = NetworkServiceBuilder.createService(GeniusFeedService.class, token);
         URL urlLink;
-        try {
-            urlLink = new URL(feedInfo.getLink());
+        urlLink = feedSourceURL;
 
-            Call<me.abrahanfer.geniusfeed.models.Feed> call = service.createFeedSource(new FeedBody(feedInfo.getTitle(),
-                                                                                                urlLink, categories));
+        Call<me.abrahanfer.geniusfeed.models.Feed> call = service.createFeedSource(new FeedBody(feedInfo.getTitle(),
+                                                                                            urlLink, categories));
 
-            call.enqueue(new Callback<me.abrahanfer.geniusfeed.models.Feed>() {
-                @Override
-                public void onResponse(Call<me.abrahanfer.geniusfeed.models.Feed> call, Response<me.abrahanfer.geniusfeed.models.Feed> response) {
-                    if (response.isSuccessful()) {
-                        // Call to fragment to notify changes to adapter
-                        mUpdateHelper.updateFeedData(response.body());
-                    } else {
-                        // Feedback to user for fail on server
-                        MainActivity act = (MainActivity) mActivity;
-                        act.stopProgressDialog();
-                        act.showAlertMessages(0);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<me.abrahanfer.geniusfeed.models.Feed> call, Throwable t) {
-                    // Feedback to user for fail to communication
+        call.enqueue(new Callback<me.abrahanfer.geniusfeed.models.Feed>() {
+            @Override
+            public void onResponse(Call<me.abrahanfer.geniusfeed.models.Feed> call, Response<me.abrahanfer.geniusfeed.models.Feed> response) {
+                if (response.isSuccessful()) {
+                    // Call to fragment to notify changes to adapter
+                    mUpdateHelper.updateFeedData(response.body());
+                } else {
+                    // Feedback to user for fail on server
                     MainActivity act = (MainActivity) mActivity;
                     act.stopProgressDialog();
                     act.showAlertMessages(0);
                 }
-            });
-        }catch (MalformedURLException e){
+            }
 
-        }
+            @Override
+            public void onFailure(Call<me.abrahanfer.geniusfeed.models.Feed> call, Throwable t) {
+                // Feedback to user for fail to communication
+                MainActivity act = (MainActivity) mActivity;
+                act.stopProgressDialog();
+                act.showAlertMessages(0);
+            }
+        });
     }
 }
