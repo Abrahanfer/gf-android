@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
@@ -34,6 +36,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.abrahanfer.geniusfeed.models.Category;
 import me.abrahanfer.geniusfeed.utils.Authentication;
+import me.abrahanfer.geniusfeed.utils.GeniusFeedContract;
 import me.abrahanfer.geniusfeed.utils.network.ConnectivityEventsReceiver;
 
 public class MainActivity extends AppCompatActivity implements NetworkStatusFeedbackInterface, SearchView.OnQueryTextListener {
@@ -71,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
 
         // Setup drawer view
         setupDrawerContent(mNvDrawer);
-        Log.e("Mirando menu item", "login 3");
         changeLoginMenuItem();
 
         View headerLayout = mNvDrawer.getHeaderView(0);
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
                 return;
             case R.id.nav_logout:
                 // TODO: Remove credentials from database
-
+                removeLocalDataFromDB();
                 return;
             default:
                 fragmentClass = FeedListFragment.class;
@@ -272,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
             case 5:
                 alertMessage = R.string.network_disconnected;
                 break;
+            case 10:
+                alertMessage = R.string.logout_successfully;
+                break;
             default:
                 alertMessage = R.string.error_creating_feed;
         }
@@ -291,4 +296,51 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         builder.create().show();
     }
 
+
+    public void removeLocalDataFromDB() {
+
+        // Get DBHelper
+        final GeniusFeedContract.GeniusFeedDbHelper mDbHelper =
+                new GeniusFeedContract.GeniusFeedDbHelper(getApplicationContext());
+
+        class GetReadableDatabase extends AsyncTask<Void, Void, SQLiteDatabase> {
+            @Override
+            protected SQLiteDatabase doInBackground(Void... params) {
+                return mDbHelper.getWritableDatabase();
+            }
+
+            protected void onPostExecute(SQLiteDatabase dataBase) {
+
+                // Define projector
+                String[] projection = {
+                        GeniusFeedContract.User.COLUMN_NAME_USER_ID,
+                        GeniusFeedContract.User.COLUMN_NAME_USERNAME,
+                        GeniusFeedContract.User.COLUMN_NAME_TOKEN
+                };
+
+                Cursor c = dataBase.query(
+                        GeniusFeedContract.User.TABLE_NAME,
+                        projection,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "1"
+                );
+                Log.e("Problem with delete", "c.getCount " + c.getCount());
+                if (c.getCount() > 0) {
+                    dataBase.delete(GeniusFeedContract.User.TABLE_NAME, null, null);
+                    Authentication.deleteCredentials();
+                }
+
+                // Get to login view
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+
+        }
+
+        new GetReadableDatabase().execute();
+    }
 }

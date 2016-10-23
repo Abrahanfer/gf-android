@@ -50,4 +50,8 @@ public class Authentication {
 
         return Boolean.TRUE;
     }
+
+    public static void deleteCredentials() {
+        singleton = null;
+    }
 }

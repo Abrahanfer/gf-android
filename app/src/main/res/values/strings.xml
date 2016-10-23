@@ -99,4 +99,7 @@
     <!-- Recommended Feeds alert msg -->
     <string name="recommended_feeds_alert_msg">An error happens retrieving recommended feeds from server.</string>
 
+    <!-- Logout -->
+    <string name="logout_successfully">You have succesfully logout from Geniusfeed.</string>
+
 </resources>
