@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -206,6 +207,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
     }
 
     public void changeLoginMenuItem() {
+        setHeaderInfo();
+
         // Check about login info
         Authentication credentials = Authentication.getCredentials();
         MenuItem loginMenuItem = (MenuItem) mNvDrawer.getMenu().findItem(R.id.nav_login);
@@ -296,6 +299,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
         builder.create().show();
     }
 
+    public void setHeaderInfo() {
+        mNvDrawer = (NavigationView) findViewById(
+                R.id.navigationView);
+        TextView headerTextView = (TextView) mNvDrawer.findViewById(R.id.headerTextView);
+        if(Authentication.getCredentials() != null && headerTextView != null)
+            headerTextView.setText(Authentication.getCredentials().getUsername());
+    }
 
     public void removeLocalDataFromDB() {
 

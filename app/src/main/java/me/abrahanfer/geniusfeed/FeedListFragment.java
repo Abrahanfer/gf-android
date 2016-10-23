@@ -239,9 +239,16 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
 
     private ArrayList<Feed> filterByQuery(String query) {
         ArrayList<Feed> newFeedList = new ArrayList<>();
-        for(Feed feed : mFeedList) {
+        for (Feed feed : mFeedList) {
             if (feed.getTitle().toLowerCase().contains(query.toLowerCase())) {
                 newFeedList.add(feed);
+            }
+            for (Category cat : feed.getCategory_set()) {
+                if (cat.getName().toLowerCase().contains(query.toLowerCase())) {
+                    if(!newFeedList.contains(feed)) {
+                        newFeedList.add(feed);
+                    }
+                }
             }
         }
 
@@ -433,6 +440,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                         Authentication auth = new Authentication(username);
                         auth.setToken(token);
                         Authentication.setCredentials(auth);
+                        ((MainActivity)mActivity).setHeaderInfo();
                     }
                 }
 

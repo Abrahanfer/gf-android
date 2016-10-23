@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">Geniusfeed</string>
+    <string name="action_settings">Opciones</string>
+
+    <!-- Login fragment -->
+    <string name="main_title">Geniusfeed</string>
+    <string name="login_username">Usuario</string>
+    <string name="login_username_hint">usuario</string>
+    <string name="login_password_hint">contraseña</string>
+    <string name="repeat_login_password_hint">repetir contraseña</string>
+    <string name="login_password">Contraseña</string>
+    <string name="error_login_communication">Ocurrió un error al realizar el login.</string>
+    <string name="error_login_bad_credentials">El usuario o la contraseña no son válidos.</string>
+    <string name="login_button_title">Login</string>
+    <string name="signup_button_title">Registro</string>
+
+    <!-- Sign Up fragment -->
+    <string name="email_error_validation">Email invalido</string>
+    <string name="password_error_validation">Contraseña invalida, mínimo 6 carac. alfanuméricos</string>
+    <string name="repeat_password_error_validation">Contraseña invalida</string>
+
+    <!-- Menu strings -->
+    <string name="open_drawer_menu">Abrir Menu</string>
+    <string name="close_drawer_menu">Cerrar Menu</string>
+    <string name="list_feed_menu_item_timeframe">Inicio</string>
+    <string name="list_feed_menu_item">Todos los feeds</string>
+    <string name="list_fav_feed_menu_item">Favoritos</string>
+    <string name="recommended_feeds_menu_item">Recomendados</string>
+    <string name="login_string">Login</string>
+    <string name="logout_string">Cerrar sesión</string>
+
+    <!-- Add Feed Dialog -->
+    <string name="add_feed_confirm">Añadir Feed</string>
+    <string name="add_feed_cancel">Cancelar</string>
+    <string name="error_creating_feed">Ocurrió un error al crear el feed.</string>
+    <string name="error_url_malformed">La URL no tiene el formato correcto.</string>
+    <string name="ok">Ok</string>
+
+    <!-- Delete Feed -->
+    <string name="error_deleting_feed">Ocurrió un error al crear el feed.</string>
+    <string name="done_deleting_feed">El feed ha sido eliminado.</string>
+
+    <!-- Feed Activity -->
+    <string name="error_updating_feed_item">Ocurrió un error al actualizar el elemento.</string>
+    <string name="error_updating_all_items">Ocurrió un elemento al actualizar los elementos.</string>
+
+    <!-- Hint strings -->
+    <string name="url_feed_source_hint">Url del feed</string>
+
+    <!-- Feed Item view Buttons -->
+    <string name="view_on_source">Ver en origen</string>
+
+    <!-- Add categories dialog fragment -->
+    <string name="categories_added_msg">Categorías añadidas</string>
+    <string name="add_categories_button">Añadir categoría</string>
+    <string name="cancel_add_categories">Cancelar</string>
+
+    <!-- ProgressDialog messages -->
+    <string name="searching_feed_msg">Buscando datos del feed</string>
+
+    <!-- Network status interface alert msg -->
+    <string name="network_disconnected">La red ha sido desconectada. Solo puede acceder a los elementos favoritos.</string>
+
+    <!-- Recommended Feeds alert msg -->
+    <string name="recommended_feeds_alert_msg">Ocurrió un error al obtener los elementos del servidor.</string>
+
+    <!-- Logout -->
+    <string name="logout_successfully">Ha cerrado su sesión con éxito.</string>
+
+</resources>

@@ -209,7 +209,7 @@ public class RecommendedFeedsFragment extends Fragment implements SearchView.OnQ
         String username;
         String token;
 
-        // TODO Fix navigation flow with credentials and login
+        // Fix navigation flow with credentials and login
         Authentication authentication = Authentication.getCredentials();
         if (authentication == null) {
             Intent intent = new Intent(mActivity.getApplicationContext(), LoginActivity.class);
