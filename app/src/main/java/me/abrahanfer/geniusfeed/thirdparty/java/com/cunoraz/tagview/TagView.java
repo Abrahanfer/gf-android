@@ -145,8 +145,9 @@ public class TagView extends RelativeLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = getMeasuredWidth();
-        if (width <= 0)
+        if (width <= 0) {
             return;
+        }
         mWidth = width;//getMeasuredWidth();
     }
 
@@ -166,7 +167,7 @@ public class TagView extends RelativeLayout {
         //}
 
         // clear all tag
-        removeAllViews();
+        //removeAllViews();
 
         // layout padding left & layout padding right
         float total = getPaddingLeft() + getPaddingRight();
@@ -244,7 +245,11 @@ public class TagView extends RelativeLayout {
                 deletableView.setVisibility(View.GONE);
             }
 
-            LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+           /* LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
+                    .WRAP_CONTENT);
+            */
+            LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams
+                    .MATCH_PARENT);
 
             //add margin of each line
             tagParams.bottomMargin = lineMargin;
@@ -326,8 +331,8 @@ public class TagView extends RelativeLayout {
     public void addTagsOnce(List<Tag> tags) {
         if (tags == null) return;
         mTags = tags;
-        if (!tags.isEmpty())
-            drawTags();
+        //if (!tags.isEmpty())
+            //drawTags();
     }
 
 

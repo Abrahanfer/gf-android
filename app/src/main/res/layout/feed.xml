@@ -40,11 +40,26 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/feedAvatar"
             android:layout_below="@+id/textFeedTitle"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="16dp"
             android:layout_margin="16dp"/>
+
+
+        <com.wefika.flowlayout.FlowLayout
+            android:id="@+id/tagsFeedCategoriesCustom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/feedAvatar"
+            android:layout_below="@+id/textFeedTitle"
+            android:visibility="visible"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="16dp"
+            android:layout_margin="16dp">
+
+        </com.wefika.flowlayout.FlowLayout>
 
 
         <ImageButton

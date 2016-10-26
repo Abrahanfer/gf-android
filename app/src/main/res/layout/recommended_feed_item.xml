@@ -29,8 +29,8 @@
         android:textSize="16sp"
         android:textColor="@color/feed_item_title_text_color"/>
 
-    <me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView
-        android:id="@+id/tagsFeedCategories"
+    <com.wefika.flowlayout.FlowLayout
+        android:id="@+id/tagsFeedCategoriesCustom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/recommendedFeedAvatar"

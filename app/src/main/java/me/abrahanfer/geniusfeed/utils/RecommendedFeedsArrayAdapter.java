@@ -11,6 +11,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.wefika.flowlayout.FlowLayout;
+
 import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.Tag;
 import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView;
 
@@ -82,22 +84,21 @@ public class RecommendedFeedsArrayAdapter extends RecyclerView.Adapter<Recommend
         TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedTitle);
         titleText.setText(selectedFeed.getTitle());
 
-        TagView tagView = (TagView) holder.mContainerView.findViewById(R.id.tagsFeedCategories);
-        List<Tag> tags = new ArrayList<>();
+        FlowLayout flowLayout = (FlowLayout) holder.mContainerView.findViewById(R.id.tagsFeedCategoriesCustom);
+        flowLayout.removeAllViews();
         for(Category category : selectedFeed.getCategory_set()) {
-            Tag tag = new Tag(category.getName());
+            TextView textView = new TextView(holder.mContainerView.getContext());
+            textView.setText(category.getName());
+            textView.setBackgroundColor(holder.mContainerView.getResources().getColor(R.color.color_primary));
+            textView.setTextColor(holder.mContainerView.getResources().getColor(R.color.color_text));
+            FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT,
+                                                                         FlowLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(10,10,10,10);
+            textView.setPadding(10,10,10,10);
 
-            tag.layoutBorderColor = Color.parseColor("#9c27b0"); // R.color.color_primary;
-            tag.layoutColor = Color.parseColor("#9c27b0");// R.color.color_primary;
-            tag.layoutColorPress = Color.parseColor("#e1bee7");//R.color.color_primary_light;
-            tag.tagTextColor = Color.parseColor("#ffffff");// R.color.color_text;
-            tag.isDeletable = false;
-            tag.radius = 1;
-
-            tags.add(tag);
+            flowLayout.addView(textView, params);
         }
 
-        tagView.addTags(tags);
 
         // Action for touching recommended feeds add button
         final ImageButton addRecommendedFeedButton =

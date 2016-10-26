@@ -9,9 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.wefika.flowlayout.FlowLayout;
 
 import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.Tag;
 import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView;
@@ -96,21 +100,24 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
 
         TagView tagView = (TagView) holder.mContainerView.findViewById(R.id.tagsFeedCategories);
         List<Tag> tags = new ArrayList<Tag>();
+        FlowLayout flowLayout = (FlowLayout) holder.mContainerView.findViewById(R.id.tagsFeedCategoriesCustom);
+        flowLayout.removeAllViews();
         for(Category category : categories) {
-            Tag tag = new Tag(category.getName());
+            TextView textView = new TextView(holder.mContainerView.getContext());
+            textView.setText(category.getName());
+            textView.setBackgroundColor(holder.mContainerView.getResources().getColor(R.color.color_primary));
+            textView.setTextColor(holder.mContainerView.getResources().getColor(R.color.color_text));
+            FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT,
+                                                                         FlowLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(10,10,10,10);
+            textView.setPadding(10,10,10,10);
 
-            tag.layoutBorderColor = Color.parseColor("#9c27b0"); // R.color.color_primary;
-            tag.layoutColor = Color.parseColor("#9c27b0");// R.color.color_primary;
-            tag.layoutColorPress = Color.parseColor("#e1bee7");//R.color.color_primary_light;
-            tag.tagTextColor = Color.parseColor("#ffffff");// R.color.color_text;
-            tag.isDeletable = false;
-            tag.radius = 1;
-
-            tags.add(tag);
+            flowLayout.addView(textView, params);
         }
 
         Log.e("Posicion y tags", "psocion " + position + " y tags " + tags);
-        tagView.addTagsOnce(tags);
+        // tagView.addTagsOnce(tags);
+
         View markTimeframeView =(View) holder.mContainerView.findViewById(R.id.color_mark_timeframe);
         markTimeframeView.setBackgroundColor(getColorForTimeframe(holder));
         markTimeframeView.setVisibility(enableTimeFrameMark ? View.VISIBLE : View.GONE);
