@@ -38,6 +38,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -544,6 +546,14 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
     }
 
     private void downloadAllFeedData(List<Feed> feeds) {
+        // Sort feeds with alphabetic order
+        Collections.sort(mFeedList, new Comparator<Feed>() {
+            @Override
+            public int compare(Feed lhs, Feed rhs) {
+                return lhs.getTitle().compareTo(rhs.getTitle());
+            }
+        });
+
         // Download all feed item read
         mFeedItemsReadByFeed = new HashMap<String, List<FeedItemRead>>();
         if(feeds.size() > 0) {

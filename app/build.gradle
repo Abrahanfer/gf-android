@@ -56,5 +56,4 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.3.0'
     apt 'com.jakewharton:butterknife-compiler:8.3.0'
     compile 'org.apmem.tools:layouts:1.10@aar'
-    compile 'com.github.Cutta:TagView:1.2'
 }

@@ -29,7 +29,7 @@
         android:textSize="16sp"
         android:textColor="@color/feed_item_title_text_color"/>
 
-    <com.cunoraz.tagview.TagView
+    <me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView
         android:id="@+id/tagsFeedCategories"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

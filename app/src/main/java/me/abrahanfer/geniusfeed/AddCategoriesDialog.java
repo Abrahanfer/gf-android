@@ -15,7 +15,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.cunoraz.tagview.Tag;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.Tag;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView;
 import com.einmalfel.earl.Feed;
 
 import java.net.MalformedURLException;
@@ -35,8 +36,6 @@ import me.abrahanfer.geniusfeed.utils.network.bodyclass.FeedBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.cunoraz.tagview.TagView;
 
 /**
  * Created by abrahan on 27/08/16.
@@ -132,6 +131,8 @@ public class AddCategoriesDialog extends DialogFragment {
         });
 
         List<Tag> tags = new ArrayList<Tag>();
+        int maxCategories = 10;
+        int numCategories = 0;
         for(Category category : categories) {
             Tag tag = new Tag(category.getName());
 
@@ -143,6 +144,9 @@ public class AddCategoriesDialog extends DialogFragment {
             tag.radius = 1;
 
             tags.add(tag);
+            numCategories++;
+            if(numCategories == maxCategories)
+                break;
         }
 
         tagView.addTags(tags);

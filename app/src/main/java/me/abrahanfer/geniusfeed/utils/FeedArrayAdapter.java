@@ -13,8 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cunoraz.tagview.Tag;
-import com.cunoraz.tagview.TagView;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.Tag;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView;
 
 import org.w3c.dom.Text;
 
@@ -79,11 +79,14 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
     public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+        Feed feedElement = mFeedArrayList.get(position);
+        List<Category> categories = feedElement.getCategory_set();
+
 
         TextView titleText =(TextView) holder.mContainerView.findViewById(R.id.textFeedTitle);
-        titleText.setText(mFeedArrayList.get(position).getTitle());
+        titleText.setText(feedElement.getTitle());
 
-        if(hadFeedItemUnread(mFeedArrayList.get(position))) {
+        if(hadFeedItemUnread(feedElement)) {
             ImageView image = (ImageView) holder.mContainerView.findViewById(R.id.feedAvatar);
             image.setVisibility(ImageView.VISIBLE);
         }else{
@@ -93,7 +96,7 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
 
         TagView tagView = (TagView) holder.mContainerView.findViewById(R.id.tagsFeedCategories);
         List<Tag> tags = new ArrayList<Tag>();
-        for(Category category : mFeedArrayList.get(position).getCategory_set()) {
+        for(Category category : categories) {
             Tag tag = new Tag(category.getName());
 
             tag.layoutBorderColor = Color.parseColor("#9c27b0"); // R.color.color_primary;
@@ -106,8 +109,8 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
             tags.add(tag);
         }
 
-        tagView.addTags(tags);
-
+        Log.e("Posicion y tags", "psocion " + position + " y tags " + tags);
+        tagView.addTagsOnce(tags);
         View markTimeframeView =(View) holder.mContainerView.findViewById(R.id.color_mark_timeframe);
         markTimeframeView.setBackgroundColor(getColorForTimeframe(holder));
         markTimeframeView.setVisibility(enableTimeFrameMark ? View.VISIBLE : View.GONE);

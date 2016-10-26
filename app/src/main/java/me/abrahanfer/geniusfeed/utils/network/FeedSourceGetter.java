@@ -69,6 +69,7 @@ public class FeedSourceGetter {
                                 callback.onError();
                             }
                             break;
+                        case "text/xml":
                         case "application/rss+xml":
                         case "application/atom+xml":
                         case "application/xml":

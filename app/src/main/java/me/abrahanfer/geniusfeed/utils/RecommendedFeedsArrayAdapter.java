@@ -11,8 +11,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cunoraz.tagview.Tag;
-import com.cunoraz.tagview.TagView;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.Tag;
+import me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +42,7 @@ import retrofit2.Response;
 public class RecommendedFeedsArrayAdapter extends RecyclerView.Adapter<RecommendedFeedsArrayAdapter.ViewHolder> {
 
     private ArrayList<Feed> recommendedFeedsArrayList;
+    private ArrayList<Feed> recommendedFeedsAdded;
     private Activity mActivity;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -56,6 +57,7 @@ public class RecommendedFeedsArrayAdapter extends RecyclerView.Adapter<Recommend
     // Provide a suitable constructor (depends on the kind of dataset)
     public RecommendedFeedsArrayAdapter(ArrayList<Feed> feedArrayList) {
         recommendedFeedsArrayList = feedArrayList;
+        recommendedFeedsAdded = new ArrayList<>();
     }
 
     // Create new views (invoked by the layout manager)
@@ -107,9 +109,16 @@ public class RecommendedFeedsArrayAdapter extends RecyclerView.Adapter<Recommend
                     addRecommendedFeedButton.setSelected(true);
                     // Add feed to user account
                     addRecommendedFeed(selectedFeed);
+                    recommendedFeedsAdded.add(selectedFeed);
                 }
             }
         });
+
+        if (recommendedFeedsAdded.contains(selectedFeed)) {
+            addRecommendedFeedButton.setSelected(true);
+        } else {
+            addRecommendedFeedButton.setSelected(false);
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

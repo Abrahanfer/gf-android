@@ -8,7 +8,7 @@ public class Constants {
     public final static String PRODUCTION_ENV = "http://geniusfeed.abrahanfer.me";
     public final static String DEVELOPMENT_ENV = "http://192.168.1.55";
 
-    public final static String ENV = "DEV";
+    public final static String ENV = "PRO";
 
     public static String getHostByEnviroment() {
         if (Constants.ENV.equalsIgnoreCase("PRO")){
