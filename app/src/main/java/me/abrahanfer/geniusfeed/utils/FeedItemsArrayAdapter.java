@@ -214,16 +214,20 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
 
     private void saveFavFeedItemRead(final FeedItemRead feedItemRead) {
         FeedItem feedItem = feedItemRead.getFeed_item();
+
+        Log.e("Feed Item", "Feed pk" + feedItem.getPk() + "nombre" + feedItem.getTitle());
+
         final Feed feed = feedItem.getFeed();
 
         // GetRealm instance
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title", feedItem.getTitle())
                                                       .findAll();
+        Log.e("Mirando el error","FeedItemREsults " + feedItem.getPk());
         if (feedItemResults.size() > 0) {
             saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
         } else {
-            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed.getTitle())
                                                               .findAll();
             if (feedResults.size() > 0) {
                 saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
@@ -258,7 +262,8 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                     @Override
                     public void onSuccess() {
                         Realm realm = Realm.getDefaultInstance();
-                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed
+                                .getTitle())
                                                                   .findAll();
                         saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
                     }
@@ -275,7 +280,7 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
             public void execute(Realm realm) {
                 FeedItem feedItem = feedItemRead.getFeed_item();
                 FeedItemRealm feedItemRealm = realm.createObject(FeedItemRealm.class);
-                feedItemRealm.setPk(feedItem.getPk());
+                feedItemRealm.setPk(feedItem.getTitle());
                 feedItemRealm.setTitle(feedItem.getTitle());
                 feedItemRealm.setLink(feedItem.getLink());
                 feedItemRealm.setPublicationDate(feedItem.getPublicationDate());
@@ -291,7 +296,7 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                 }
 
                 Feed feed = feedItemRead.getFeed_item().getFeed();
-                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed.getTitle())
                                                                   .findAll();
 
                 feedItemRealm.setFeed(feedResults.get(0));
@@ -301,7 +306,8 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
             public void onSuccess() {
                 Realm realm = Realm.getDefaultInstance();
                 FeedItem feedItem = feedItemRead.getFeed_item();
-                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title", feedItem
+                        .getTitle())
                                                                   .findAll();
                 saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
             }
@@ -322,7 +328,8 @@ public class FeedItemsArrayAdapter extends RecyclerView.Adapter<FeedItemsArrayAd
                 feedItemReadRealm.setUser(feedItemRead.getUser());
 
                 FeedItem feedItem = feedItemRead.getFeed_item();
-                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title", feedItem
+                        .getTitle())
                                                                   .findAll();
                 feedItemReadRealm.setFeed_item(feedItemResults.get(0));
             }

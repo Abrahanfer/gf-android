@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:text="@string/categories_added_msg"/>
 
-        <com.cunoraz.tagview.TagView
+        <me.abrahanfer.geniusfeed.thirdparty.java.com.cunoraz.tagview.TagView
             android:id="@+id/tagView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -98,8 +98,6 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
             image.setVisibility(ImageView.INVISIBLE);
         }
 
-        TagView tagView = (TagView) holder.mContainerView.findViewById(R.id.tagsFeedCategories);
-        List<Tag> tags = new ArrayList<Tag>();
         FlowLayout flowLayout = (FlowLayout) holder.mContainerView.findViewById(R.id.tagsFeedCategoriesCustom);
         flowLayout.removeAllViews();
         for(Category category : categories) {
@@ -115,9 +113,6 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
             flowLayout.addView(textView, params);
         }
 
-        Log.e("Posicion y tags", "psocion " + position + " y tags " + tags);
-        // tagView.addTagsOnce(tags);
-
         View markTimeframeView =(View) holder.mContainerView.findViewById(R.id.color_mark_timeframe);
         markTimeframeView.setBackgroundColor(getColorForTimeframe(holder));
         markTimeframeView.setVisibility(enableTimeFrameMark ? View.VISIBLE : View.GONE);
@@ -131,10 +126,11 @@ public class FeedArrayAdapter extends RecyclerView.Adapter<FeedArrayAdapter.View
 
     private Boolean hadFeedItemUnread(Feed feed) {
         List<FeedItemRead> feedItemReads = mFeedArrayData.get(feed.getPk());
-
-        for (FeedItemRead feedItemRead : feedItemReads) {
-            if (!feedItemRead.getRead()) {
-                return true;
+        if (feedItemReads != null) {
+            for (FeedItemRead feedItemRead : feedItemReads) {
+                if (!feedItemRead.getRead()) {
+                    return true;
+                }
             }
         }
 

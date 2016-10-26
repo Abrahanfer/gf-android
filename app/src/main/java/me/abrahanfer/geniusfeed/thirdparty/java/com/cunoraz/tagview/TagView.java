@@ -245,11 +245,8 @@ public class TagView extends RelativeLayout {
                 deletableView.setVisibility(View.GONE);
             }
 
-           /* LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
+            LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
                     .WRAP_CONTENT);
-            */
-            LayoutParams tagParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams
-                    .MATCH_PARENT);
 
             //add margin of each line
             tagParams.bottomMargin = lineMargin;

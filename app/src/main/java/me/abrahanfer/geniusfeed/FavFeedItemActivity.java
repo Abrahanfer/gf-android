@@ -33,15 +33,17 @@ public class FavFeedItemActivity extends AppCompatActivity implements NetworkSta
         // Set title in collapsingToolbarLayout
         CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle("Entry");
+        collapsingToolbar.setTitleEnabled(false);
 
         // Set toolbar as support action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         feedItem = getIntent().getParcelableExtra(FeedActivity.FEED_ITEM);
         content = getIntent().getStringExtra("CONTENT");
+
+        getSupportActionBar().setTitle(feedItem.getTitle());
 
         Button viewOnSource = (Button) findViewById(R.id.viewOnSource);
         viewOnSource.setVisibility(Button.VISIBLE);
@@ -56,6 +58,7 @@ public class FavFeedItemActivity extends AppCompatActivity implements NetworkSta
         webView.loadDataWithBaseURL(null, wrapHtml(webView.getContext(), content),
                                     "text/html", "UTF-8", null);
     }
+
 
     private void viewOnSourceAction() {
         String url = feedItem.getLink();

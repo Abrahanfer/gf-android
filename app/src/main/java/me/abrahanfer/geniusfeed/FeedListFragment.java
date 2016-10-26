@@ -581,9 +581,9 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                         feedItemList.add(item);
                     }
 
-                    if(response.body().getNext() != null) {
+                    /*if(response.body().getNext() != null) {
                         getFeedItemReadList(feedItemList, page + 1, feedPk);
-                    }else{
+                    }else{*/
                         mFeedItemsReadByFeed.put(feedPk,feedItemList);
                         Feed nextFeed = getNextFeedToFeedPk(feedPk);
                         if(nextFeed != null)
@@ -599,7 +599,7 @@ public class FeedListFragment extends Fragment implements FeedListUpdater, Searc
                             mFeedListView.setAdapter(feedArrayAdapter);
                         }
 
-                    }
+                    //}
                 }else{
                     // error response, no access to resource?
                     Log.e("ERROR FEED ITEM LIST", "error in response, with bad http code");

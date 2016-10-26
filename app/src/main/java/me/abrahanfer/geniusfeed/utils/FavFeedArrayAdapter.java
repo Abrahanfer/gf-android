@@ -1,6 +1,7 @@
 package me.abrahanfer.geniusfeed.utils;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,7 @@ public class FavFeedArrayAdapter extends RecyclerView.Adapter<FavFeedArrayAdapte
         TextView titleText = (TextView) holder.mContainerView.findViewById(R.id.textFavFeedItemTitle);
         titleText.setText(mFavFeedArrayList.get(position).getFeed_item().getTitle());
 
+        Log.e("Mirando realm ", "postion: " + position + " " + mFavFeedArrayList.get(position).getPk());
         TextView pubDateText = (TextView) holder.mContainerView.findViewById(R.id.textFavFeedItemPubDate);
         Date pubDate = mFavFeedArrayList.get(position).getFeed_item().getPublicationDate();
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");

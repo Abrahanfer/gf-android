@@ -10,8 +10,9 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class FeedItemRealm extends RealmObject {
-    @PrimaryKey
+
     private String pk;
+    @PrimaryKey
     private String title;
     private String link;
     private Date publicationDate;

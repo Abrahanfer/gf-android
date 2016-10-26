@@ -276,12 +276,13 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
 
         // GetRealm instance
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+        RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title", feedItem
+                .getTitle())
                                                           .findAll();
         if (feedItemResults.size() > 0) {
             saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
         } else {
-            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+            RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed.getTitle())
                                                       .findAll();
             if (feedResults.size() > 0) {
                 saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
@@ -316,7 +317,7 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
                     @Override
                     public void onSuccess() {
                         Realm realm = Realm.getDefaultInstance();
-                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                        RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed.getTitle())
                                                                   .findAll();
                         saveFavFeedItemReadForFeed(feedItemRead, feedResults.get(0));
                     }
@@ -349,7 +350,7 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
                 }
 
                 Feed feed = feedItemRead.getFeed_item().getFeed();
-                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("pk", feed.getPk())
+                RealmResults<FeedRealm> feedResults= realm.where(FeedRealm.class).equalTo("title", feed.getTitle())
                                                           .findAll();
 
                 feedItemRealm.setFeed(feedResults.get(0));
@@ -359,7 +360,8 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
             public void onSuccess() {
                 Realm realm = Realm.getDefaultInstance();
                 FeedItem feedItem = feedItemRead.getFeed_item();
-                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title",
+                                                                                                      feedItem.getTitle())
                                                                   .findAll();
                 saveFavFeedItemReadForFeedItem(feedItemRead, feedItemResults.get(0));
             }
@@ -380,7 +382,8 @@ public class FeedItemActivity extends AppCompatActivity implements NetworkStatus
                 feedItemReadRealm.setUser(feedItemRead.getUser());
 
                 FeedItem feedItem = feedItemRead.getFeed_item();
-                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("pk", feedItem.getPk())
+                RealmResults<FeedItemRealm> feedItemResults= realm.where(FeedItemRealm.class).equalTo("title",
+                                                                                                      feedItem.getTitle())
                                                                   .findAll();
                 feedItemReadRealm.setFeed_item(feedItemResults.get(0));
             }

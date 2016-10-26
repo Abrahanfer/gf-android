@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStatusFeed
                 startActivity(intent);
                 return;
             case R.id.nav_logout:
-                // TODO: Remove credentials from database
+                // Remove credentials from database
                 removeLocalDataFromDB();
                 return;
             default:

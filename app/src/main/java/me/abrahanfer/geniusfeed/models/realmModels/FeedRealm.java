@@ -11,8 +11,9 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class FeedRealm extends RealmObject {
-    @PrimaryKey
+
     private String pk;
+    @PrimaryKey
     private String title;
     private String linkURL;
     private RealmList<CategoryRealm> category_set;
